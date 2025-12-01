@@ -1,0 +1,2304 @@
+{
+  "cdn": "https://oymcdn.co.uk/",
+  "resources": [
+    "/built/postlogin-combined/postlogin-combined-d7f180311178d24f02f257190b6ff781.js",
+    "/built/global/global-d48dadde7aeb684c530a002c795f6882.js",
+    "/built/style-main-purple/style-main-purple-e41f6ace05b1ef64d0e1fb3d4efd19eb.css",
+    "/sites/onlinescoutmanager.co.uk/built/language/scouts-scouts/20251127142833/en-GB-js.js?v=4173f320d33bac23c1071c4c55a11f2e",
+    "/built/highcharts/highcharts-2b679c898c02d04dfc364cac02a6d96b.js",
+    "/built/highcharts_drilldown/highcharts_drilldown-25693b09cb65bc064bed1a0e455322c8.js",
+    "/built/highcharts_accessibility/highcharts_accessibility-c87a66a1fd3a04b3249210d6247ab4a9.js",
+    "/built/socket/socket-3fdbb04a97f4bff3edebfac5e61b39b3.js",
+    "/built/vendors/vendors-7abd5d7436562b05fb66cae8513a4655.js",
+    "/built/runtime/runtime-379f22aa4e4b0311108b870e6faf9dde.js",
+    "/built/menu/menu-49b725c164f3e3b1b654770e3dc68898.js",
+    "/built/dojo_built/dojo_built-73bc9a5b24b98bcce2f809dcf5fdcb3e.js"
+  ],
+  "config_hash": "212d00964cda7f9991c2073c137420df",
+  "required_cdn_built_files": {
+    "osm.js": "https://oymcdn.co.uk/built/osm/osm-db1e8c920f36f00cc0db28c887fd5d55.js",
+    "react.js": "https://oymcdn.co.uk/built/react/react-479e0b4c3d288ade26a7cafee3a0c7c9.js"
+  },
+  "cache_bust": "v=db1e8c920f36f00cc0db28c887fd5d55479e0b4c3d288ade26a7cafee3a0c7c9",
+  "globals": {
+    "post_login_action": false,
+    "theme": "purple",
+    "userid": 674661,
+    "roles": [
+      {
+        "groupname": "Pentland District",
+        "groupid": "8871",
+        "group_country": "uk",
+        "sectionid": "37458",
+        "sectionname": "Bore Stane ESU",
+        "section": "explorers",
+        "isDefault": "1",
+        "permissions": {
+          "badge": 20,
+          "member": 20,
+          "user": 100,
+          "register": 20,
+          "programme": 20,
+          "events": 20,
+          "finance": 100,
+          "flexi": 20,
+          "quartermaster": 20
+        },
+        "sectionConfig": {
+          "subscription_level": 3,
+          "subscription_expires": "2026-08-28",
+          "section_type": "explorers",
+          "sectionType": "explorers",
+          "parentSectionId": "0",
+          "discountcodes": [
+            "pentlandscouting"
+          ],
+          "subscription_active": false,
+          "subscription_lastExpires": "2018-08-22",
+          "portal": {
+            "events": 1,
+            "programme": 1,
+            "badges": 1,
+            "details": 1,
+            "emailbolton": 1,
+            "personalDetailsHeader": "",
+            "programmeSummary": "1",
+            "programmeTimes": "1",
+            "programmeDownloadButton": "0",
+            "programmeShow": "0",
+            "programmeIcs": "1",
+            "programmeShowBadges": "0",
+            "programmeParentHelp": "show",
+            "payments": 1,
+            "charityName": "Pentland District Scout Council",
+            "autoGiftAid": "1",
+            "paymentRemindFrequency": "7",
+            "paymentRemindCount": "3",
+            "eventRemindFrequency": "7",
+            "eventRemindCount": "3",
+            "eventIcs": 1,
+            "badgesPartial": "1",
+            "badgesEmail": "0",
+            "badgesShowRequirements": true,
+            "usedGiftAid": "2025-08-11",
+            "emailAddress": "Bore Stane ESU Leaders <leaders@borestaneexplorers.org.uk>",
+            "emailAddressCopy": "",
+            "programmeAllowInformedAbsence": "1",
+            "badgesHomework": "all",
+            "at_home": 0,
+            "chat": 0,
+            "email_track_link_clicks": true,
+            "accounts": 1,
+            "invitesRequired": false,
+            "date_of_birth": "visible",
+            "disabledContacts": [],
+            "eventPersonalDetailsConfirmation": 185,
+            "eventRotaFrequency": -1,
+            "eventRotaNotes": false,
+            "email_archive_disable": false,
+            "filestorage": 1,
+            "photos": true
+          },
+          "portalExpires": {
+            "events": "2026-07-03",
+            "eventsA": 2,
+            "programme": "2026-07-03",
+            "programmeA": 2,
+            "badges": "2026-07-03",
+            "badgesA": 2,
+            "details": "2026-07-03",
+            "detailsA": 2,
+            "emailbolton": "2026-07-03",
+            "emailboltonA": 2,
+            "at_home": "2024-08-13",
+            "at_homeA": 0,
+            "chat": "2021-10-20",
+            "chatA": 0,
+            "accountsA": 2,
+            "accounts": "2026-01-09",
+            "filestorage": "2026-07-03",
+            "filestorageA": 2
+          },
+          "extraRecords": [],
+          "gocardless": "true",
+          "hasUsedBadgeRecords": true,
+          "sms_remaining": 249,
+          "sms_sent": 256,
+          "meeting_day": "Thu",
+          "config_subscriptions_checked": "2025-11-30",
+          "hierarchy_lowest_level": false,
+          "hierarchy_operating_level": "level_0",
+          "offline_disabled": "Too many members"
+        }
+      },
+      {
+        "groupname": "Pentland District",
+        "groupid": "8871",
+        "group_country": "uk",
+        "sectionid": "59520",
+        "sectionname": "DofE Support Group",
+        "section": "explorers",
+        "isDefault": "0",
+        "permissions": {
+          "badge": 20,
+          "member": 20,
+          "user": 100,
+          "register": 20,
+          "programme": 20,
+          "events": 20,
+          "flexi": 20,
+          "finance": 100,
+          "quartermaster": 20
+        },
+        "sectionConfig": {
+          "subscription_level": 3,
+          "subscription_expires": "2026-01-24",
+          "section_type": "explorers",
+          "config_subscriptions_checked": "2025-11-30",
+          "sectionType": "explorers",
+          "parentSectionId": "0",
+          "discountcodes": [
+            "pentlandscouting"
+          ],
+          "subscription_active": false,
+          "portal": {
+            "events": 1,
+            "details": 1,
+            "programme": 1,
+            "emailbolton": 1,
+            "emailAddress": "Pentland DofE Support Group <dofe@pentlandscouts.org.uk>",
+            "emailAddressCopy": "",
+            "disabledContacts": [],
+            "email_track_link_clicks": true,
+            "email_track_opens": true,
+            "invitesRequired": false,
+            "payments": 1,
+            "programmeParentHelp": "email",
+            "email_archive_disable": false,
+            "email_store_attachments": true,
+            "paymentRemindFrequency": "10",
+            "paymentRemindCount": "3",
+            "badges": 0
+          },
+          "portalExpires": {
+            "events": "2026-01-17",
+            "eventsA": 2,
+            "details": "2026-01-17",
+            "detailsA": 2,
+            "programme": "2026-01-17",
+            "programmeA": 2,
+            "emailbolton": "2026-01-17",
+            "emailboltonA": 2,
+            "badges": "2025-06-22",
+            "badgesA": 0
+          },
+          "meeting_day": "Tue",
+          "hasUsedBadgeRecords": true,
+          "extraRecords": [],
+          "hierarchy_lowest_level": false,
+          "hierarchy_operating_level": "level_0",
+          "gocardless": "true",
+          "offline_disabled": "Term too long"
+        }
+      },
+      {
+        "groupname": "Pentland District",
+        "groupid": "8871",
+        "group_country": "uk",
+        "sectionid": "28752",
+        "sectionname": "Young Leaders",
+        "section": "explorers",
+        "isDefault": "0",
+        "permissions": {
+          "badge": 10,
+          "member": 10,
+          "user": 10,
+          "register": 10,
+          "programme": 10,
+          "events": 10,
+          "flexi": 20,
+          "quartermaster": 0
+        },
+        "sectionConfig": {
+          "subscription_level": 3,
+          "subscription_expires": "2026-06-17",
+          "section_type": "explorers",
+          "sectionType": "explorers",
+          "parentSectionId": "0",
+          "hasUsedBadgeRecords": true,
+          "subscription_active": false,
+          "trial": {
+            "any": "available"
+          },
+          "meeting_day": "Sat",
+          "config_subscriptions_checked": "2025-11-30",
+          "portal": {
+            "events": 1,
+            "details": 1,
+            "programme": 0,
+            "badges": 1,
+            "emailbolton": 1,
+            "emailAddress": "Pentland Young Leader ESU <youngleaders@pentlandscouts.org.uk>",
+            "emailAddressCopy": "",
+            "eventRemindFrequency": "3",
+            "eventRemindCount": "1",
+            "eventIcs": 1,
+            "badgesPartial": "1",
+            "badgesEmail": "0",
+            "badgesShowRequirements": true,
+            "badgesHomework": "all",
+            "at_home": 0,
+            "chat": 0,
+            "programmeSummary": "0",
+            "programmeTimes": "0",
+            "programmeDownloadButton": "0",
+            "programmeShow": "0",
+            "programmeIcs": "1",
+            "programmeShowBadges": "0",
+            "programmeAllowInformedAbsence": "1",
+            "programmeParentHelp": "no",
+            "invitesRequired": false,
+            "eventPersonalDetailsConfirmation": 90,
+            "eventRotaFrequency": -1,
+            "eventRotaNotes": false,
+            "disabledContacts": [],
+            "payments": 1,
+            "photos": true
+          },
+          "portalExpires": {
+            "events": "2026-10-29",
+            "eventsA": 2,
+            "details": "2026-10-29",
+            "detailsA": 2,
+            "programme": "2023-09-05",
+            "programmeA": 0,
+            "badges": "2026-10-29",
+            "badgesA": 2,
+            "emailbolton": "2026-10-29",
+            "emailboltonA": 2,
+            "at_home": "2023-09-05",
+            "at_homeA": 0,
+            "chat": "2021-09-04",
+            "chatA": 0
+          },
+          "hierarchy_lowest_level": false,
+          "hierarchy_operating_level": "level_0",
+          "offline_disabled": "Too many members",
+          "gocardless": "true",
+          "discountcodes": [
+            "pentlandscouting"
+          ]
+        }
+      },
+      {
+        "groupname": "South East Scotland Region",
+        "groupid": "14863",
+        "group_country": "uk",
+        "sectionid": "43105",
+        "sectionname": "SE Explorer Expeditions",
+        "section": "explorers",
+        "isDefault": "0",
+        "permissions": {
+          "badge": 0,
+          "member": 0,
+          "user": 0,
+          "register": 0,
+          "programme": 10,
+          "events": 10
+        },
+        "sectionConfig": {
+          "subscription_level": 3,
+          "subscription_expires": "2026-06-07",
+          "sectionType": "explorers",
+          "section_type": "explorers",
+          "parentSectionId": "0",
+          "extraRecords": {
+            "1": {
+              "name": "2026 Expeditions",
+              "extraid": 73848
+            }
+          },
+          "subscription_active": "braintree",
+          "subscription_lastExpires": "2025-06-06",
+          "portal": {
+            "payments": 1,
+            "details": 1,
+            "emailbolton": 1,
+            "events": 1,
+            "personalDetailsHeader": "This information is applicable to members of the Scout Association between the ages of 14 and 24, who are participating in the Duke of Edinburgh programme under the South East Explorer Expeditions programme run by South East Scotland Region(www.sesscouts.org.uk). The information will be stored in this online membership system (OSM) for the duration of the young person\u2019s time with the Scout Association. These details can be accessed through OSM by adult volunteers with Duke of Edinburgh responsibilities, and the Region and District volunteers responsible for managing and running the programme. \nWe use this information to communicate with you and to carry out our obligations as leaders in the Scout Association. In some cases this data will be Sensitive Personal Data, which we request to allow us to provide appropriate care for young people whilst under our supervision.\nPlease ensure all the details are filled in and up to date. \n\n\nIf there is NO info that you need to have added - please type NONE or N/A in the text box. \n",
+            "emailAddress": "SE Explorer Expeditions <expeditions@sesscouts.org.uk>",
+            "emailAddressCopy": "expeditions@sesscouts.org.uk",
+            "eventRemindFrequency": "3",
+            "eventRemindCount": "3",
+            "eventIcs": 1,
+            "charityName": "",
+            "autoGiftAid": "0",
+            "paymentRemindFrequency": "7",
+            "paymentRemindCount": "3",
+            "badges": 0,
+            "at_home": 0,
+            "chat": 0,
+            "badgesPartial": "1",
+            "badgesEmail": "1",
+            "badgesShowRequirements": true,
+            "badgesHomework": "badge",
+            "disabledContacts": [],
+            "email_archive_disable": false,
+            "email_store_attachments": true,
+            "email_track_link_clicks": true,
+            "filestorage": 1,
+            "eventRotaFrequency": -1,
+            "eventRotaNotes": false,
+            "photos": true,
+            "showPatrol": true,
+            "date_of_birth": "visible",
+            "eventPersonalDetailsConfirmation": 30,
+            "expense_cards_fees": 0,
+            "personalDetailsConfirmationRequiresData": true,
+            "invitesRequired": false,
+            "disableLeaderEventPayments": "1",
+            "ai": 1,
+            "tasks": 1
+          },
+          "gocardless": "true",
+          "portalExpires": {
+            "details": "2026-06-07",
+            "detailsA": 2,
+            "emailbolton": "2026-06-07",
+            "emailboltonA": 2,
+            "events": "2026-06-07",
+            "eventsA": 2,
+            "badges": "2021-12-12",
+            "badgesA": 0,
+            "at_home": "2021-12-12",
+            "at_homeA": 0,
+            "chat": "2021-12-12",
+            "chatA": 0,
+            "filestorage": "2026-07-10",
+            "filestorageA": 2,
+            "ai": "2026-11-30",
+            "aiA": 2,
+            "tasks": "2026-11-30",
+            "tasksA": 2
+          },
+          "config_subscriptions_checked": "2025-11-30",
+          "meeting_day": "Sun",
+          "hasUsedBadgeRecords": true,
+          "sms_remaining": 461,
+          "sms_sent": 294,
+          "hierarchy_lowest_level": false,
+          "hierarchy_operating_level": "level_0",
+          "has_expense_account": true,
+          "offline_disabled": "Too many members"
+        }
+      }
+    ],
+    "active_user_member": false,
+    "associated_member_id": false,
+    "email": "david.strachan@mac.com",
+    "firstname": "Admin",
+    "lastname": "User",
+    "fullname": "Admin User",
+    "preferences": {
+      "date": "uk",
+      "calendarStartDayOfWeek": 1,
+      "logins": "1103",
+      "last_read_messages": "2025-09-10 15:58:34",
+      "gamification_disclaimer": true,
+      "saved_comms_prefs": true,
+      "mymember_noticeboards_seen": {
+        "26580_2501201": {
+          "hash": "b425f01c3e921a33458082bac60f47de",
+          "date": "2024-09-28 13:12:23"
+        },
+        "37458_2690515": {
+          "hash": "154415586925692d7d1667d26a601fa0",
+          "date": "2024-09-28 13:12:28"
+        },
+        "17624_1587452": {
+          "hash": "7a7ef817c6d0a3085ceb97a8ba42a512",
+          "date": "2024-09-28 13:12:07"
+        },
+        "37458_2696696": {
+          "hash": "154415586925692d7d1667d26a601fa0",
+          "date": "2024-01-25 14:04:23"
+        },
+        "59520_2690515": {
+          "hash": "d97623d172f087d9640da9acd38830ff",
+          "date": "2024-03-06 16:12:53"
+        },
+        "64075_2696696": {
+          "hash": "d97623d172f087d9640da9acd38830ff",
+          "date": "2024-04-03 19:56:59"
+        },
+        "64075_2690515": {
+          "hash": "d97623d172f087d9640da9acd38830ff",
+          "date": "2024-04-03 19:57:15"
+        },
+        "25164_2690515": {
+          "hash": "3704083dec180fd233b075e710d09d57",
+          "date": "2024-09-28 13:29:28"
+        },
+        "43105_2690515": {
+          "hash": "e0eabed7d16ebbd747a14ab5d6ad75a1",
+          "date": "2025-06-04 05:50:48"
+        },
+        "17624_2690515": {
+          "hash": "650da79568460ce38158a94b47aef9e9",
+          "date": "2025-08-21 14:28:18"
+        }
+      },
+      "behavioural": {
+        "logins": "963",
+        "ts": 1759390607
+      },
+      "contextual_tips": {
+        "badge_completion_wizard_search": true
+      },
+      "lastViewedSectionType": "explorers",
+      "groupdashboard": {
+        "sections": {
+          "37458": true,
+          "59520": true
+        }
+      },
+      "fromAddressName": {
+        "37458": "Bore Stane Explorers Leaders <leaders@borestaneexplorers.org.uk>",
+        "59520": "Pentland Scouts DofE <dofe@pentlandscouts.org.uk>"
+      },
+      "theme": "purple",
+      "tfa": "enabled",
+      "member_icon_sizes": {
+        "badge-grid": "pictures",
+        "shared-event-attendance-grid": "pictures"
+      },
+      "send_email_without_prompt": true,
+      "news": 1741703948,
+      "beta": true,
+      "beta_functions": [
+        "recipes",
+        "react_badges"
+      ],
+      "beta_ts": 1751360112,
+      "programmeDisplayMode": "cards",
+      "disable_background_images": false,
+      "whatsnew_time": 1761755399,
+      "dueBadgesDisplayMode": "scout",
+      "panel_description_visibility": {
+        "badge-info": true
+      },
+      "show_area_chooser": false,
+      "personal_details_download_fields": [
+        "6:7",
+        "6:8",
+        "6:9",
+        "6:10",
+        "6:11",
+        "6:12",
+        "6:14",
+        "6:18",
+        "6:20",
+        "6:2903",
+        "6:7538",
+        "6:15208",
+        "1:2",
+        "1:3",
+        "1:7",
+        "1:8",
+        "1:9",
+        "1:10",
+        "1:11",
+        "1:12",
+        "1:14",
+        "1:18",
+        "1:20",
+        "1:7426",
+        "1:29508",
+        "1:5563",
+        "2:2",
+        "2:3",
+        "2:7",
+        "2:8",
+        "2:9",
+        "2:10",
+        "2:11",
+        "2:12",
+        "2:14",
+        "2:18",
+        "2:20",
+        "2:7426",
+        "2:29509",
+        "2:8500",
+        "3:2",
+        "3:3",
+        "3:7",
+        "3:8",
+        "3:9",
+        "3:10",
+        "3:11",
+        "3:12",
+        "3:14",
+        "3:18",
+        "3:20",
+        "3:7426",
+        "9:24253",
+        "9:24254",
+        "9:24255",
+        "9:24256",
+        "9:24258",
+        "9:24259",
+        "9:24260",
+        "9:24257",
+        "9:24267",
+        "5:15199",
+        "5:1317",
+        "5:7583",
+        "10:24261",
+        "10:24265",
+        "10:27580",
+        "10:38481",
+        "10:38476",
+        "10:38475",
+        "10:38478",
+        "10:38474",
+        "10:38479",
+        "10:38473",
+        "10:38477",
+        "10:38480",
+        "4:2",
+        "4:3",
+        "4:54",
+        "4:7",
+        "4:8",
+        "4:9",
+        "4:10",
+        "4:11",
+        "4:18",
+        "4:20",
+        "other:date_of_birth"
+      ]
+    },
+    "member_access": {
+      "17624": {
+        "name": "100th Pentland: Scouts",
+        "group": "100th Pentland",
+        "section": "Scouts",
+        "abbrv": "Scouts\n100th Pentland",
+        "type": "scouts",
+        "label": "Scouts",
+        "members": {
+          "1587452": {
+            "first_name": "Admin",
+            "last_name": "User",
+            "photo_guid": null,
+            "abbrv_name": "Tom ATroop",
+            "chat_rooms": [],
+            "access_type": "parent",
+            "has_unread_chat_rooms": false,
+            "abbrv": "Tom ATroop",
+            "pane_abbrv": "Tom ATroop, Scouts - 100th Pentland",
+            "permissions": true,
+            "firstname": "Admin",
+            "lastname": "User"
+          },
+          "2690515": {
+            "first_name": "Admin",
+            "last_name": "User",
+            "photo_guid": "f3e022fa-41ce-4e98-bc15-cea9572e1a5d",
+            "abbrv_name": "Natasha",
+            "chat_rooms": [],
+            "access_type": "parent",
+            "has_unread_chat_rooms": false,
+            "abbrv": "Natasha",
+            "pane_abbrv": "Natasha, Scouts - 100th Pentland",
+            "permissions": true,
+            "firstname": "Admin",
+            "lastname": "User"
+          }
+        },
+        "access": true,
+        "config": {
+          "badges": true,
+          "programme": true,
+          "emailbolton": true,
+          "details": true,
+          "events": true,
+          "chat": false,
+          "at_home": false,
+          "email_address": "scouts@100thpentland.org.uk",
+          "giftaid": true,
+          "payments": true,
+          "attachments": false,
+          "photos": false
+        },
+        "noticeboard": true
+      },
+      "43105": {
+        "name": "South East Scotland Region: SE Explorer Expeditions",
+        "group": "South East Scotland Region",
+        "section": "SE Explorer Expeditions",
+        "abbrv": "SE Explorer Expeditions\nSouth East Scotland Region",
+        "type": "explorers",
+        "label": "Explorers (and Network)",
+        "members": {
+          "1960849": {
+            "first_name": "Admin",
+            "last_name": "User",
+            "photo_guid": null,
+            "abbrv_name": "PE-BORE STANE ESU",
+            "chat_rooms": [],
+            "access_type": "parent",
+            "has_unread_chat_rooms": false,
+            "abbrv": "PE-BORE STANE ESU",
+            "pane_abbrv": "PE-BORE STANE ESU, SE Explorer Expeditions - South East Scotland Region",
+            "permissions": true,
+            "patrol": "DofeContacts",
+            "firstname": "Admin",
+            "lastname": "User"
+          },
+          "2690515": {
+            "first_name": "Admin",
+            "last_name": "User",
+            "photo_guid": "f3e022fa-41ce-4e98-bc15-cea9572e1a5d",
+            "abbrv_name": "Natasha",
+            "chat_rooms": [],
+            "access_type": "parent",
+            "has_unread_chat_rooms": false,
+            "abbrv": "Natasha",
+            "pane_abbrv": "Natasha, SE Explorer Expeditions - South East Scotland Region",
+            "permissions": true,
+            "patrol": "PE-BORE STANE",
+            "firstname": "Admin",
+            "lastname": "User"
+          }
+        },
+        "access": true,
+        "config": {
+          "badges": false,
+          "programme": false,
+          "emailbolton": true,
+          "details": true,
+          "events": true,
+          "chat": false,
+          "at_home": false,
+          "email_address": "SE Explorer Expeditions <expeditions@sesscouts.org.uk>",
+          "giftaid": false,
+          "payments": true,
+          "attachments": false,
+          "photos": true
+        },
+        "noticeboard": true,
+        "patrol_label": "Patrol"
+      },
+      "28752": {
+        "name": "Pentland District: Young Leaders",
+        "group": "Pentland District",
+        "section": "Young Leaders",
+        "abbrv": "Young Leaders\nPentland District",
+        "type": "explorers",
+        "label": "Explorers (and Network)",
+        "members": {
+          "2690515": {
+            "first_name": "Admin",
+            "last_name": "User",
+            "photo_guid": "f3e022fa-41ce-4e98-bc15-cea9572e1a5d",
+            "abbrv_name": "Natasha",
+            "chat_rooms": [],
+            "access_type": "parent",
+            "has_unread_chat_rooms": false,
+            "abbrv": "Natasha",
+            "pane_abbrv": "Natasha, Young Leaders - Pentland District",
+            "permissions": true,
+            "firstname": "Admin",
+            "lastname": "User"
+          }
+        },
+        "access": true,
+        "config": {
+          "badges": true,
+          "programme": false,
+          "emailbolton": true,
+          "details": true,
+          "events": true,
+          "chat": false,
+          "at_home": false,
+          "email_address": "Pentland Young Leader ESU <youngleaders@pentlandscouts.org.uk>",
+          "giftaid": false,
+          "payments": true,
+          "attachments": false,
+          "photos": true
+        },
+        "noticeboard": true
+      },
+      "37458": {
+        "name": "Pentland District: Bore Stane ESU",
+        "group": "Pentland District",
+        "section": "Bore Stane ESU",
+        "abbrv": "Bore Stane ESU\nPentland District",
+        "type": "explorers",
+        "label": "Explorers (and Network)",
+        "members": {
+          "2690515": {
+            "first_name": "Admin",
+            "last_name": "User",
+            "photo_guid": "f3e022fa-41ce-4e98-bc15-cea9572e1a5d",
+            "abbrv_name": "Natasha",
+            "chat_rooms": [],
+            "access_type": "parent",
+            "has_unread_chat_rooms": false,
+            "abbrv": "Natasha",
+            "pane_abbrv": "Natasha, Bore Stane ESU - Pentland District",
+            "permissions": true,
+            "firstname": "Admin",
+            "lastname": "User"
+          },
+          "2696696": {
+            "first_name": "Admin",
+            "last_name": "User",
+            "photo_guid": "6cf2ce41-9f3d-4b0e-a25e-b46eb34a8435",
+            "abbrv_name": "David",
+            "chat_rooms": [],
+            "access_type": "member",
+            "has_unread_chat_rooms": false,
+            "abbrv": "David",
+            "pane_abbrv": "David, Bore Stane ESU - Pentland District",
+            "permissions": true,
+            "firstname": "Admin",
+            "lastname": "User"
+          }
+        },
+        "access": true,
+        "config": {
+          "badges": true,
+          "programme": true,
+          "emailbolton": true,
+          "details": true,
+          "events": true,
+          "chat": false,
+          "at_home": false,
+          "email_address": "Bore Stane ESU Leaders <leaders@borestaneexplorers.org.uk>",
+          "giftaid": true,
+          "payments": true,
+          "attachments": false,
+          "photos": true
+        },
+        "noticeboard": true
+      },
+      "59520": {
+        "name": "Pentland District: DofE Support Group",
+        "group": "Pentland District",
+        "section": "DofE Support Group",
+        "abbrv": "DofE Support Group\nPentland District",
+        "type": "explorers",
+        "label": "Explorers (and Network)",
+        "members": {
+          "2690515": {
+            "first_name": "Admin",
+            "last_name": "User",
+            "photo_guid": "f3e022fa-41ce-4e98-bc15-cea9572e1a5d",
+            "abbrv_name": "Natasha",
+            "chat_rooms": [],
+            "access_type": "parent",
+            "has_unread_chat_rooms": false,
+            "abbrv": "Natasha",
+            "pane_abbrv": "Natasha, DofE Support Group - Pentland District",
+            "permissions": true,
+            "firstname": "Admin",
+            "lastname": "User"
+          }
+        },
+        "access": true,
+        "config": {
+          "badges": false,
+          "programme": true,
+          "emailbolton": true,
+          "details": true,
+          "events": true,
+          "chat": false,
+          "at_home": false,
+          "email_address": "Pentland DofE Support Group <dofe@pentlandscouts.org.uk>",
+          "giftaid": false,
+          "payments": true,
+          "attachments": false,
+          "photos": false
+        },
+        "noticeboard": false
+      },
+      "64075": {
+        "name": "Pentland District: Blair Atholl - Pentland",
+        "group": "Pentland District",
+        "section": "Blair Atholl - Pentland",
+        "abbrv": "Blair Atholl - Pentland\nPentland District",
+        "type": "explorers",
+        "label": "Explorers (and Network)",
+        "members": {
+          "2690515": {
+            "first_name": "Admin",
+            "last_name": "User",
+            "photo_guid": "f3e022fa-41ce-4e98-bc15-cea9572e1a5d",
+            "abbrv_name": "Natasha",
+            "chat_rooms": [],
+            "access_type": "parent",
+            "has_unread_chat_rooms": false,
+            "abbrv": "Natasha",
+            "pane_abbrv": "Natasha, Blair Atholl - Pentland - Pentland District",
+            "permissions": true,
+            "patrol": "Patrol 3 - Veenboer/EdgeWildfire",
+            "firstname": "Admin",
+            "lastname": "User"
+          },
+          "2696696": {
+            "first_name": "Admin",
+            "last_name": "User",
+            "photo_guid": "6cf2ce41-9f3d-4b0e-a25e-b46eb34a8435",
+            "abbrv_name": "David",
+            "chat_rooms": [],
+            "access_type": "member",
+            "has_unread_chat_rooms": false,
+            "abbrv": "David",
+            "pane_abbrv": "David, Blair Atholl - Pentland - Pentland District",
+            "permissions": true,
+            "patrol": "Leaders",
+            "firstname": "Admin",
+            "lastname": "User"
+          }
+        },
+        "access": true,
+        "config": {
+          "badges": false,
+          "programme": false,
+          "emailbolton": true,
+          "details": false,
+          "events": true,
+          "chat": false,
+          "at_home": false,
+          "email_address": "Angela Morgan <Angela.Morgan@9thratho.org.uk>",
+          "giftaid": false,
+          "payments": true,
+          "attachments": false,
+          "photos": true
+        },
+        "noticeboard": false,
+        "patrol_label": "Patrol"
+      }
+    },
+    "member_access_unactivated": false,
+    "terms": {
+      "37458": [
+        {
+          "termid": "213916",
+          "sectionid": "37458",
+          "name": "Autumn/Winter 2017",
+          "startdate": "2017-08-01",
+          "enddate": "2017-12-31",
+          "master_term": null,
+          "past": true
+        },
+        {
+          "termid": "214921",
+          "sectionid": "37458",
+          "name": "Winter/Spring 2018",
+          "startdate": "2018-01-01",
+          "enddate": "2018-04-14",
+          "master_term": null,
+          "past": true
+        },
+        {
+          "termid": "214922",
+          "sectionid": "37458",
+          "name": "Summer 2018",
+          "startdate": "2018-04-15",
+          "enddate": "2018-07-31",
+          "master_term": null,
+          "past": true
+        },
+        {
+          "termid": "275064",
+          "sectionid": "37458",
+          "name": "Autumn/Winter 2018",
+          "startdate": "2018-08-01",
+          "enddate": "2018-12-31",
+          "master_term": null,
+          "past": true
+        },
+        {
+          "termid": "275065",
+          "sectionid": "37458",
+          "name": "Winter/Spring 2019",
+          "startdate": "2019-01-01",
+          "enddate": "2019-04-14",
+          "master_term": null,
+          "past": true
+        },
+        {
+          "termid": "275066",
+          "sectionid": "37458",
+          "name": "Summer 2019",
+          "startdate": "2019-04-15",
+          "enddate": "2019-07-31",
+          "master_term": null,
+          "past": true
+        },
+        {
+          "termid": "353076",
+          "sectionid": "37458",
+          "name": "Autumn/Winter 2019",
+          "startdate": "2019-08-01",
+          "enddate": "2019-12-31",
+          "master_term": null,
+          "past": true
+        },
+        {
+          "termid": "353077",
+          "sectionid": "37458",
+          "name": "Winter/Spring 2020",
+          "startdate": "2020-01-01",
+          "enddate": "2020-04-14",
+          "master_term": null,
+          "past": true
+        },
+        {
+          "termid": "353078",
+          "sectionid": "37458",
+          "name": "Summer 2020",
+          "startdate": "2020-04-15",
+          "enddate": "2020-07-31",
+          "master_term": null,
+          "past": true
+        },
+        {
+          "termid": "439452",
+          "sectionid": "37458",
+          "name": "Autumn/Winter 2020",
+          "startdate": "2020-08-01",
+          "enddate": "2020-12-31",
+          "master_term": null,
+          "past": true
+        },
+        {
+          "termid": "439453",
+          "sectionid": "37458",
+          "name": "Winter/Spring 2021",
+          "startdate": "2021-01-01",
+          "enddate": "2021-04-14",
+          "master_term": null,
+          "past": true
+        },
+        {
+          "termid": "492856",
+          "sectionid": "37458",
+          "name": "Summer 2021",
+          "startdate": "2021-04-15",
+          "enddate": "2021-07-31",
+          "master_term": null,
+          "past": true
+        },
+        {
+          "termid": "492858",
+          "sectionid": "37458",
+          "name": "Autumn/Winter 2021",
+          "startdate": "2021-08-01",
+          "enddate": "2021-12-31",
+          "master_term": null,
+          "past": true
+        },
+        {
+          "termid": "533451",
+          "sectionid": "37458",
+          "name": "Winter/Spring 2022",
+          "startdate": "2022-01-01",
+          "enddate": "2022-04-14",
+          "master_term": null,
+          "past": true
+        },
+        {
+          "termid": "533452",
+          "sectionid": "37458",
+          "name": "Summer 2022",
+          "startdate": "2022-04-15",
+          "enddate": "2022-07-31",
+          "master_term": null,
+          "past": true
+        },
+        {
+          "termid": "593013",
+          "sectionid": "37458",
+          "name": "Autumn/Winter 2022",
+          "startdate": "2022-08-01",
+          "enddate": "2022-12-31",
+          "master_term": null,
+          "past": true
+        },
+        {
+          "termid": "593014",
+          "sectionid": "37458",
+          "name": "Winter/Spring 2023",
+          "startdate": "2023-01-01",
+          "enddate": "2023-04-14",
+          "master_term": null,
+          "past": true
+        },
+        {
+          "termid": "622634",
+          "sectionid": "37458",
+          "name": "Summer 2023",
+          "startdate": "2023-04-15",
+          "enddate": "2023-07-31",
+          "master_term": null,
+          "past": true
+        },
+        {
+          "termid": "622635",
+          "sectionid": "37458",
+          "name": "Autumn 2023",
+          "startdate": "2023-08-01",
+          "enddate": "2023-12-31",
+          "master_term": null,
+          "past": true
+        },
+        {
+          "termid": "702328",
+          "sectionid": "37458",
+          "name": "Winter 2024",
+          "startdate": "2024-01-01",
+          "enddate": "2024-04-14",
+          "master_term": null,
+          "past": true
+        },
+        {
+          "termid": "702329",
+          "sectionid": "37458",
+          "name": "Summer 2024",
+          "startdate": "2024-04-15",
+          "enddate": "2024-08-11",
+          "master_term": null,
+          "past": true
+        },
+        {
+          "termid": "746689",
+          "sectionid": "37458",
+          "name": "Autumn 2024",
+          "startdate": "2024-08-12",
+          "enddate": "2024-12-31",
+          "master_term": null,
+          "past": true
+        },
+        {
+          "termid": "753729",
+          "sectionid": "37458",
+          "name": "Winter 2025",
+          "startdate": "2025-01-01",
+          "enddate": "2025-04-20",
+          "master_term": null,
+          "past": true
+        },
+        {
+          "termid": "753730",
+          "sectionid": "37458",
+          "name": "Summer 2025",
+          "startdate": "2025-04-21",
+          "enddate": "2025-08-17",
+          "master_term": null,
+          "past": true
+        },
+        {
+          "termid": "842886",
+          "sectionid": "37458",
+          "name": "Autumn 2025",
+          "startdate": "2025-08-18",
+          "enddate": "2025-12-31",
+          "master_term": null,
+          "past": true
+        },
+        {
+          "termid": "842887",
+          "sectionid": "37458",
+          "name": "Winter 2026",
+          "startdate": "2026-01-01",
+          "enddate": "2026-04-19",
+          "master_term": null,
+          "past": false
+        },
+        {
+          "termid": "842888",
+          "sectionid": "37458",
+          "name": "Summer 2026",
+          "startdate": "2026-04-20",
+          "enddate": "2026-08-16",
+          "master_term": null,
+          "past": false
+        }
+      ],
+      "43105": [
+        {
+          "termid": "267658",
+          "sectionid": "43105",
+          "name": "Summer 2018",
+          "startdate": "2018-04-03",
+          "enddate": "2018-08-01",
+          "master_term": null,
+          "past": true
+        },
+        {
+          "termid": "293757",
+          "sectionid": "43105",
+          "name": "Autumn 2018",
+          "startdate": "2018-07-30",
+          "enddate": "2018-12-21",
+          "master_term": null,
+          "past": true
+        },
+        {
+          "termid": "315092",
+          "sectionid": "43105",
+          "name": "Winter 2019",
+          "startdate": "2018-12-28",
+          "enddate": "2019-03-31",
+          "master_term": null,
+          "past": true
+        },
+        {
+          "termid": "338857",
+          "sectionid": "43105",
+          "name": "Summer 2019",
+          "startdate": "2019-04-01",
+          "enddate": "2019-08-31",
+          "master_term": null,
+          "past": true
+        },
+        {
+          "termid": "381857",
+          "sectionid": "43105",
+          "name": "Winter 2019",
+          "startdate": "2019-10-01",
+          "enddate": "2020-03-31",
+          "master_term": null,
+          "past": true
+        },
+        {
+          "termid": "418483",
+          "sectionid": "43105",
+          "name": "Spring 2020",
+          "startdate": "2020-04-01",
+          "enddate": "2020-05-31",
+          "master_term": null,
+          "past": true
+        },
+        {
+          "termid": "429218",
+          "sectionid": "43105",
+          "name": "Summer 2020",
+          "startdate": "2020-06-01",
+          "enddate": "2020-09-30",
+          "master_term": null,
+          "past": true
+        },
+        {
+          "termid": "449877",
+          "sectionid": "43105",
+          "name": "Autumn 2020",
+          "startdate": "2020-10-01",
+          "enddate": "2020-12-31",
+          "master_term": null,
+          "past": true
+        },
+        {
+          "termid": "467122",
+          "sectionid": "43105",
+          "name": "2021",
+          "startdate": "2021-01-01",
+          "enddate": "2021-12-31",
+          "master_term": null,
+          "past": true
+        },
+        {
+          "termid": "547440",
+          "sectionid": "43105",
+          "name": "2022",
+          "startdate": "2022-01-01",
+          "enddate": "2022-12-31",
+          "master_term": null,
+          "past": true
+        },
+        {
+          "termid": "616503",
+          "sectionid": "43105",
+          "name": "nov 2022",
+          "startdate": "2022-11-01",
+          "enddate": "2022-11-29",
+          "master_term": null,
+          "past": true
+        },
+        {
+          "termid": "640522",
+          "sectionid": "43105",
+          "name": "2023 Spring",
+          "startdate": "2023-01-01",
+          "enddate": "2023-04-30",
+          "master_term": null,
+          "past": true
+        },
+        {
+          "termid": "662071",
+          "sectionid": "43105",
+          "name": "Summer 2023",
+          "startdate": "2023-04-30",
+          "enddate": "2023-10-31",
+          "master_term": null,
+          "past": true
+        },
+        {
+          "termid": "699024",
+          "sectionid": "43105",
+          "name": "Autumn 2023",
+          "startdate": "2023-11-01",
+          "enddate": "2023-12-01",
+          "master_term": null,
+          "past": true
+        },
+        {
+          "termid": "702897",
+          "sectionid": "43105",
+          "name": "Winter 2024/2024",
+          "startdate": "2023-12-01",
+          "enddate": "2024-03-31",
+          "master_term": null,
+          "past": true
+        },
+        {
+          "termid": "702898",
+          "sectionid": "43105",
+          "name": "Summer 2024",
+          "startdate": "2024-03-01",
+          "enddate": "2024-11-30",
+          "master_term": null,
+          "past": true
+        },
+        {
+          "termid": "791740",
+          "sectionid": "43105",
+          "name": "Spring 2025",
+          "startdate": "2024-11-30",
+          "enddate": "2025-04-01",
+          "master_term": null,
+          "past": true
+        },
+        {
+          "termid": "791750",
+          "sectionid": "43105",
+          "name": "summer 2025",
+          "startdate": "2025-04-01",
+          "enddate": "2025-07-31",
+          "master_term": null,
+          "past": true
+        },
+        {
+          "termid": "791751",
+          "sectionid": "43105",
+          "name": "autumn 2025",
+          "startdate": "2025-07-31",
+          "enddate": "2025-12-31",
+          "master_term": null,
+          "past": true
+        }
+      ],
+      "28752": [
+        {
+          "termid": "411900",
+          "sectionid": "28752",
+          "name": "Winter/Spring 2019",
+          "startdate": "2019-01-01",
+          "enddate": "2019-04-14",
+          "master_term": null,
+          "past": true
+        },
+        {
+          "termid": "327887",
+          "sectionid": "28752",
+          "name": "Summer 2019",
+          "startdate": "2019-04-15",
+          "enddate": "2019-07-31",
+          "master_term": null,
+          "past": true
+        },
+        {
+          "termid": "338796",
+          "sectionid": "28752",
+          "name": "Autumn/Winter 2019",
+          "startdate": "2019-08-01",
+          "enddate": "2019-12-31",
+          "master_term": null,
+          "past": true
+        },
+        {
+          "termid": "385724",
+          "sectionid": "28752",
+          "name": "Winter/Spring 2020",
+          "startdate": "2020-01-01",
+          "enddate": "2020-04-14",
+          "master_term": null,
+          "past": true
+        },
+        {
+          "termid": "428726",
+          "sectionid": "28752",
+          "name": "Summer 2020",
+          "startdate": "2020-04-15",
+          "enddate": "2020-07-31",
+          "master_term": null,
+          "past": true
+        },
+        {
+          "termid": "440771",
+          "sectionid": "28752",
+          "name": "Autumn/Winter 2020",
+          "startdate": "2020-08-01",
+          "enddate": "2020-12-31",
+          "master_term": null,
+          "past": true
+        },
+        {
+          "termid": "454700",
+          "sectionid": "28752",
+          "name": "Winter/Spring 2021",
+          "startdate": "2021-01-01",
+          "enddate": "2021-04-14",
+          "master_term": null,
+          "past": true
+        },
+        {
+          "termid": "454701",
+          "sectionid": "28752",
+          "name": "Summer 2021",
+          "startdate": "2021-04-15",
+          "enddate": "2021-07-31",
+          "master_term": null,
+          "past": true
+        },
+        {
+          "termid": "492859",
+          "sectionid": "28752",
+          "name": "Autumn/Winter 2021",
+          "startdate": "2021-08-01",
+          "enddate": "2021-12-31",
+          "master_term": null,
+          "past": true
+        },
+        {
+          "termid": "550599",
+          "sectionid": "28752",
+          "name": "Winter/Spring 2022",
+          "startdate": "2022-01-01",
+          "enddate": "2022-04-14",
+          "master_term": null,
+          "past": true
+        },
+        {
+          "termid": "550600",
+          "sectionid": "28752",
+          "name": "Summer 2022",
+          "startdate": "2022-04-15",
+          "enddate": "2022-07-31",
+          "master_term": null,
+          "past": true
+        },
+        {
+          "termid": "594967",
+          "sectionid": "28752",
+          "name": "Autumn/Winter 2022",
+          "startdate": "2022-08-01",
+          "enddate": "2022-12-31",
+          "master_term": null,
+          "past": true
+        },
+        {
+          "termid": "640056",
+          "sectionid": "28752",
+          "name": "Winter/Spring 2023",
+          "startdate": "2023-01-01",
+          "enddate": "2023-04-14",
+          "master_term": null,
+          "past": true
+        },
+        {
+          "termid": "640058",
+          "sectionid": "28752",
+          "name": "Summer 2023",
+          "startdate": "2023-04-15",
+          "enddate": "2023-07-31",
+          "master_term": null,
+          "past": true
+        },
+        {
+          "termid": "640059",
+          "sectionid": "28752",
+          "name": "Autumn/Winter 2023",
+          "startdate": "2023-08-01",
+          "enddate": "2023-12-31",
+          "master_term": null,
+          "past": true
+        },
+        {
+          "termid": "717223",
+          "sectionid": "28752",
+          "name": "Winter/Spring 2024",
+          "startdate": "2024-01-01",
+          "enddate": "2024-04-14",
+          "master_term": null,
+          "past": true
+        },
+        {
+          "termid": "747418",
+          "sectionid": "28752",
+          "name": "Summer 2024",
+          "startdate": "2024-04-15",
+          "enddate": "2024-07-31",
+          "master_term": null,
+          "past": true
+        },
+        {
+          "termid": "762456",
+          "sectionid": "28752",
+          "name": "Autumn/Winter 2024",
+          "startdate": "2024-08-01",
+          "enddate": "2024-12-31",
+          "master_term": null,
+          "past": true
+        },
+        {
+          "termid": "806935",
+          "sectionid": "28752",
+          "name": "Winter/Spring 2024",
+          "startdate": "2025-01-01",
+          "enddate": "2025-04-14",
+          "master_term": null,
+          "past": true
+        },
+        {
+          "termid": "827871",
+          "sectionid": "28752",
+          "name": "Summer 2025",
+          "startdate": "2025-04-15",
+          "enddate": "2025-07-31",
+          "master_term": null,
+          "past": true
+        },
+        {
+          "termid": "854202",
+          "sectionid": "28752",
+          "name": "Autumn/Winter 2025",
+          "startdate": "2025-08-01",
+          "enddate": "2025-12-31",
+          "master_term": null,
+          "past": true
+        }
+      ],
+      "59520": [
+        {
+          "termid": "472494",
+          "sectionid": "59520",
+          "name": "Winter/Spring 2021",
+          "startdate": "2021-01-01",
+          "enddate": "2021-04-14",
+          "master_term": null,
+          "past": true
+        },
+        {
+          "termid": "492855",
+          "sectionid": "59520",
+          "name": "Summer 2021",
+          "startdate": "2021-04-15",
+          "enddate": "2021-07-31",
+          "master_term": null,
+          "past": true
+        },
+        {
+          "termid": "492857",
+          "sectionid": "59520",
+          "name": "Autumn/Winter 2021",
+          "startdate": "2021-08-01",
+          "enddate": "2021-12-31",
+          "master_term": null,
+          "past": true
+        },
+        {
+          "termid": "549561",
+          "sectionid": "59520",
+          "name": "Winter/Spring 2022",
+          "startdate": "2022-01-01",
+          "enddate": "2022-04-14",
+          "master_term": null,
+          "past": true
+        },
+        {
+          "termid": "549562",
+          "sectionid": "59520",
+          "name": "Summer 2022",
+          "startdate": "2022-04-15",
+          "enddate": "2022-07-31",
+          "master_term": null,
+          "past": true
+        },
+        {
+          "termid": "549564",
+          "sectionid": "59520",
+          "name": "Autumn/Winter 2022",
+          "startdate": "2022-08-01",
+          "enddate": "2022-12-31",
+          "master_term": null,
+          "past": true
+        },
+        {
+          "termid": "626140",
+          "sectionid": "59520",
+          "name": "2023",
+          "startdate": "2023-01-01",
+          "enddate": "2023-12-31",
+          "master_term": null,
+          "past": true
+        },
+        {
+          "termid": "640055",
+          "sectionid": "59520",
+          "name": "2024",
+          "startdate": "2024-01-01",
+          "enddate": "2024-12-31",
+          "master_term": null,
+          "past": true
+        },
+        {
+          "termid": "814271",
+          "sectionid": "59520",
+          "name": "2025",
+          "startdate": "2025-01-01",
+          "enddate": "2025-12-31",
+          "master_term": null,
+          "past": true
+        }
+      ]
+    },
+    "global_roles": [],
+    "hasSectionAccess": true,
+    "notepads": [],
+    "sockets": "28752-9daa0a66edf029b2f782fc7ac139eaab,37458-cfe52313728af82bbf48664cccd6ec85,43105-1d23ad2d8cf44cc03e2ebea0e9f9d862,59520-8630ad9d3a3c160e55831354abf93238",
+    "user_socket": "674661-6d4ebadab462365c3d3ca391804c3057",
+    "session_id": "t7tbbigjg1d951c1sesitv30d1",
+    "security_prompt": false,
+    "user_has_image": false,
+    "user_hash": "ad6966c15a8bcbc4f297ccf7792c9c391e0f4542a759b1e6f6f1e2b1dc5403e0",
+    "csrf_token": "86e129aa-1103-4bd8-853a-1b9e90f6e138",
+    "language": "en-GB",
+    "gamification": {
+      "47": {
+        "total_steps": 1,
+        "steps_completed": 1,
+        "id": 47
+      },
+      "55": {
+        "total_steps": 2,
+        "steps_completed": 2,
+        "id": 55
+      },
+      "54": {
+        "total_steps": 2,
+        "steps_completed": 2,
+        "id": 54
+      },
+      "53": {
+        "total_steps": 2,
+        "steps_completed": 2,
+        "id": 53
+      },
+      "52": {
+        "total_steps": 4,
+        "steps_completed": 1,
+        "id": 52
+      },
+      "51": {
+        "total_steps": 1,
+        "steps_completed": 1,
+        "id": 51
+      },
+      "50": {
+        "total_steps": 1,
+        "steps_completed": 1,
+        "id": 50
+      },
+      "49": {
+        "total_steps": 1,
+        "steps_completed": 1,
+        "id": 49
+      },
+      "48": {
+        "total_steps": 1,
+        "steps_completed": 1,
+        "id": 48
+      },
+      "56": {
+        "total_steps": 1,
+        "steps_completed": 1,
+        "id": 56
+      },
+      "46": {
+        "total_steps": 1,
+        "steps_completed": 0,
+        "id": 46
+      },
+      "45": {
+        "total_steps": 6,
+        "steps_completed": 6,
+        "id": 45
+      },
+      "44": {
+        "total_steps": 3,
+        "steps_completed": 2,
+        "id": 44
+      },
+      "43": {
+        "total_steps": 3,
+        "steps_completed": 1,
+        "id": 43
+      },
+      "42": {
+        "total_steps": 3,
+        "steps_completed": 1,
+        "id": 42
+      },
+      "41": {
+        "total_steps": 1,
+        "steps_completed": 1,
+        "id": 41
+      },
+      "40": {
+        "total_steps": 1,
+        "steps_completed": 0,
+        "id": 40
+      },
+      "39": {
+        "total_steps": 2,
+        "steps_completed": 2,
+        "id": 39
+      },
+      "64": {
+        "total_steps": 2,
+        "steps_completed": 2,
+        "id": 64
+      },
+      "72": {
+        "total_steps": 1,
+        "steps_completed": 0,
+        "id": 72
+      },
+      "71": {
+        "total_steps": 3,
+        "steps_completed": 0,
+        "id": 71
+      },
+      "70": {
+        "total_steps": 2,
+        "steps_completed": 2,
+        "id": 70
+      },
+      "69": {
+        "total_steps": 1,
+        "steps_completed": 0,
+        "id": 69
+      },
+      "68": {
+        "total_steps": 9,
+        "steps_completed": 0,
+        "id": 68
+      },
+      "67": {
+        "total_steps": 1,
+        "steps_completed": 0,
+        "id": 67
+      },
+      "66": {
+        "total_steps": 2,
+        "steps_completed": 2,
+        "id": 66
+      },
+      "65": {
+        "total_steps": 1,
+        "steps_completed": 1,
+        "id": 65
+      },
+      "37": {
+        "total_steps": 3,
+        "steps_completed": 1,
+        "id": 37
+      },
+      "63": {
+        "total_steps": 1,
+        "steps_completed": 0,
+        "id": 63
+      },
+      "62": {
+        "total_steps": 1,
+        "steps_completed": 0,
+        "id": 62
+      },
+      "61": {
+        "total_steps": 1,
+        "steps_completed": 0,
+        "id": 61
+      },
+      "60": {
+        "total_steps": 1,
+        "steps_completed": 0,
+        "id": 60
+      },
+      "59": {
+        "total_steps": 1,
+        "steps_completed": 0,
+        "id": 59
+      },
+      "58": {
+        "total_steps": 1,
+        "steps_completed": 0,
+        "id": 58
+      },
+      "57": {
+        "total_steps": 1,
+        "steps_completed": 0,
+        "id": 57
+      },
+      "36": {
+        "total_steps": 3,
+        "steps_completed": 3,
+        "id": 36
+      },
+      "10": {
+        "total_steps": 2,
+        "steps_completed": 2,
+        "id": 10
+      },
+      "12": {
+        "total_steps": 1,
+        "steps_completed": 1,
+        "id": 12
+      },
+      "13": {
+        "total_steps": 1,
+        "steps_completed": 0,
+        "id": 13
+      },
+      "14": {
+        "total_steps": 2,
+        "steps_completed": 2,
+        "id": 14
+      },
+      "15": {
+        "total_steps": 2,
+        "steps_completed": 1,
+        "id": 15
+      },
+      "16": {
+        "total_steps": 1,
+        "steps_completed": 1,
+        "id": 16
+      },
+      "17": {
+        "total_steps": 3,
+        "steps_completed": 2,
+        "id": 17
+      },
+      "18": {
+        "total_steps": 1,
+        "steps_completed": 0,
+        "id": 18
+      },
+      "19": {
+        "total_steps": 1,
+        "steps_completed": 0,
+        "id": 19
+      },
+      "20": {
+        "total_steps": 1,
+        "steps_completed": 0,
+        "id": 20
+      },
+      "21": {
+        "total_steps": 1,
+        "steps_completed": 1,
+        "id": 21
+      },
+      "22": {
+        "total_steps": 2,
+        "steps_completed": 2,
+        "id": 22
+      },
+      "24": {
+        "total_steps": 4,
+        "steps_completed": 2,
+        "id": 24
+      },
+      "35": {
+        "total_steps": 2,
+        "steps_completed": 1,
+        "id": 35
+      },
+      "34": {
+        "total_steps": 3,
+        "steps_completed": 0,
+        "id": 34
+      },
+      "33": {
+        "total_steps": 3,
+        "steps_completed": 1,
+        "id": 33
+      },
+      "32": {
+        "total_steps": 3,
+        "steps_completed": 3,
+        "id": 32
+      },
+      "30": {
+        "total_steps": 8,
+        "steps_completed": 7,
+        "id": 30
+      },
+      "29": {
+        "total_steps": 6,
+        "steps_completed": 4,
+        "id": 29
+      },
+      "28": {
+        "total_steps": 2,
+        "steps_completed": 1,
+        "id": 28
+      },
+      "27": {
+        "total_steps": 3,
+        "steps_completed": 0,
+        "id": 27
+      },
+      "26": {
+        "total_steps": 2,
+        "steps_completed": 2,
+        "id": 26
+      },
+      "25": {
+        "total_steps": 2,
+        "steps_completed": 2,
+        "id": 25
+      },
+      "23": {
+        "total_steps": 3,
+        "steps_completed": 3,
+        "id": 23
+      },
+      "personaldetails": {
+        "total_steps": 32,
+        "steps_completed": 24,
+        "id": 6
+      },
+      "attendance": {
+        "total_steps": 10,
+        "steps_completed": 6,
+        "id": 7
+      },
+      "badges": {
+        "total_steps": 39,
+        "steps_completed": 24,
+        "id": 4
+      },
+      "programme": {
+        "total_steps": 25,
+        "steps_completed": 15,
+        "id": 5
+      },
+      "events": {
+        "total_steps": 52,
+        "steps_completed": 38,
+        "id": 2
+      },
+      "invoices": {
+        "total_steps": 15,
+        "steps_completed": 10,
+        "id": 1
+      },
+      "onlinepayments": {
+        "total_steps": 21,
+        "steps_completed": 15,
+        "id": 3
+      },
+      "accounts": {
+        "total_steps": 16,
+        "steps_completed": 8,
+        "id": 8
+      },
+      "user": {
+        "total_steps": 13,
+        "steps_completed": 10,
+        "id": 9
+      }
+    },
+    "gamification_rank": 906,
+    "gamification_total": 591217,
+    "features_used": [
+      "accessed help centre",
+      "accessed help centre topic",
+      "added two factor device",
+      "added webauthn",
+      "answered a forum question correctly",
+      "changed section",
+      "commented on global chat room",
+      "confirmed personal details on parent portal",
+      "disabled beta function incident_logs",
+      "disabled beta function parent_portal_badges",
+      "disabled beta function parent_portal_payments",
+      "disabled beta function section_switcher",
+      "edited event attendance on parent portal",
+      "edited recipe price",
+      "enabled beta function gilbert_upgrade",
+      "enabled beta function group_dashboard",
+      "enabled beta function incident_logs",
+      "enabled beta function parent_portal_badges",
+      "enabled beta function parent_portal_dashboard",
+      "enabled beta function parent_portal_events",
+      "enabled beta function parent_portal_payments",
+      "enabled beta function parent_portal_programme",
+      "enabled beta function react_badges",
+      "enabled beta function react_payment_editor",
+      "enabled beta function recipes",
+      "enabled beta function retention",
+      "enabled beta function section_switcher",
+      "enabled beta function task_planner",
+      "enabled beta function your_programme",
+      "enabled beta mode",
+      "liked a comment",
+      "made gift aid declaration on parent portal",
+      "opened menu on mobile",
+      "opted in to offline use",
+      "parent clicked email_leader button",
+      "requested offline data",
+      "searched chat rooms",
+      "searched help centre",
+      "seen advert adsense",
+      "seen advert internal 2",
+      "seen advert internal 41",
+      "seen advert internal 51",
+      "seen advert internal 52",
+      "signed up to programme parent rota on parent portal",
+      "synchronised offline changes",
+      "tour: parent portal event card",
+      "used one tap login",
+      "viewed all emails on parent portal",
+      "viewed all events on parent portal",
+      "viewed all payment schedules on parent portal",
+      "viewed email on parent portal",
+      "viewed event calender feed on parent portal",
+      "viewed event on parent portal",
+      "viewed gamification",
+      "viewed gift aid on parent portal",
+      "viewed group dashboard",
+      "viewed noticeboard on parent portal",
+      "viewed parent portal",
+      "viewed parent portal access page",
+      "viewed parent portal badge requirement dialog",
+      "viewed parent portal badges page",
+      "viewed payment schedule on parent portal",
+      "viewed personal details on parent portal",
+      "viewed programme calender feed on parent portal",
+      "viewed programme on parent portal",
+      "viewed recipe",
+      "viewed recipes",
+      "voted for feature request",
+      "edited contact details",
+      "accessed",
+      "added badge to programme meeting",
+      "changed term",
+      "clicked register icon",
+      "downloaded badge",
+      "downloaded event",
+      "edited attendance register",
+      "edited attendance register retrospectively",
+      "edited attendance register with badges",
+      "edited attendance register with informed absence",
+      "edited event attendance",
+      "edited members for badge wizard",
+      "edited programme meeting",
+      "expanded advanced select",
+      "responded MaybeLater to ExpenseCardsUpsell",
+      "responded NotInterested to ExpenseCardsUpsell",
+      "returned member",
+      "risk assessment added to meeting",
+      "risk assessment added to programme",
+      "risk assessment reused for meeting",
+      "searched",
+      "searched activities by badge",
+      "searched activities by text",
+      "searched activities newest",
+      "sent email",
+      "tour: change due badges grouping",
+      "tour: click to award due badges",
+      "tour: clicking register icons",
+      "tour: tick due badges",
+      "tour: updating attendance in bulk",
+      "tour: updating badges from register",
+      "tour: use advanced select in due badges",
+      "updated attendance in bulk",
+      "updated badges from register",
+      "used beta dashboard",
+      "used section size planning",
+      "view event audit for member",
+      "viewed activity",
+      "viewed attendance register",
+      "viewed attendance register beta",
+      "viewed badge records",
+      "viewed badge wizard",
+      "viewed badges by person",
+      "viewed balanced programme checker",
+      "viewed beta online payments",
+      "viewed email campaign in template mode",
+      "viewed email campaigns",
+      "viewed email delivery reports",
+      "viewed event",
+      "viewed event beta",
+      "viewed events",
+      "viewed giftaid",
+      "viewed member",
+      "viewed online payment schedule",
+      "viewed online payments",
+      "viewed personal details changed by parents",
+      "viewed personal details grid view",
+      "viewed personal details simple view",
+      "viewed programme",
+      "viewed programme meeting",
+      "watched university ParentPortalContactForLeaders",
+      "viewed flexi-records",
+      "achievement unlocked",
+      "achievement unlocked view clicked",
+      "added accident_form",
+      "added badge to event",
+      "added bank account to accounting system",
+      "added bank transaction in accounting system",
+      "added budget to accounting system",
+      "added category to accounting system",
+      "added column for event",
+      "added column to badge",
+      "added email campaign block",
+      "added entry to cashbook from bank in accounting system",
+      "added entry to cashbook with item in accounting system",
+      "added equipment to event",
+      "added financial year to accounting system",
+      "added item to accounting system",
+      "added kit list collection",
+      "added kit list to event",
+      "added link to item in accounting system",
+      "added parent portal link to email",
+      "added payment to event",
+      "added term",
+      "added user to section",
+      "archived event",
+      "archived item from accounting system",
+      "archived online payment request",
+      "awarded badge",
+      "awarded due badges",
+      "billing reminder 28 - card ok",
+      "billing reminder 7 - card ok",
+      "billing renewed",
+      "cancelled subscription for At Home",
+      "cancelled subscription for Badges",
+      "cancelled subscription for Email System",
+      "cancelled subscription for Events",
+      "cancelled subscription for Personal Details",
+      "cancelled subscription for Programme",
+      "changed badge records mode to grid",
+      "changed badge records mode to optimal",
+      "changed badge records mode to requirements",
+      "changed due badges grouping",
+      "changed parent portal setting emailAddress",
+      "changed parent portal setting eventIcs",
+      "changed parent portal setting eventPersonalDetailsConfirmation",
+      "changed parent portal setting eventRemindFrequency",
+      "changed parent portal setting photos",
+      "changed parent portal setting programmeSummary",
+      "cloned email campaign",
+      "copied event",
+      "copied member",
+      "created email campaign",
+      "created event",
+      "created flexi-record",
+      "created invoice",
+      "created invoice category",
+      "created invoice record",
+      "created member",
+      "created online payment schedule payment",
+      "created programme meeting",
+      "created qm list",
+      "deleted accident_form",
+      "deleted column for event",
+      "deleted event",
+      "deleted kit list item",
+      "deleted member",
+      "downloaded attendance register",
+      "downloaded camp contacts",
+      "downloaded due badge inserts",
+      "downloaded due badges",
+      "downloaded invoice",
+      "downloaded member spreadsheet",
+      "downloaded online payments pdf",
+      "downloaded online payments spreadsheet",
+      "downloaded qm list",
+      "downloaded record cards",
+      "edited attendance register for absent leaders in future",
+      "edited badge column name",
+      "edited badge record",
+      "edited badge record for partial completion",
+      "edited badge record in bulk",
+      "edited badge stock",
+      "edited budget in accounting system",
+      "edited column for event",
+      "edited data retention settings",
+      "edited email campaign block",
+      "edited entry in cashbook in accounting system",
+      "edited event location",
+      "edited event roll call",
+      "edited event structure",
+      "edited event timetable",
+      "edited flexi-record",
+      "edited giftaid",
+      "edited invoice category",
+      "edited invoice record",
+      "edited item in accounting system",
+      "edited kit list collection",
+      "edited kit list item",
+      "edited online payment request",
+      "edited online payment schedule",
+      "edited online payments for members",
+      "edited parent portal young person access setting",
+      "edited personal details parent changes notification",
+      "edited programme meeting parent rota",
+      "edited qm list item",
+      "event 1320312",
+      "event 1326179",
+      "finalised invoice",
+      "forwarded email",
+      "ics",
+      "ics generated for events",
+      "imported transactions in accounting system",
+      "invited member to event",
+      "invited member to event in bulk",
+      "opened sending email from address editor",
+      "overrode badge completion",
+      "pasted invalid text into email",
+      "purchased upgrade for Badges",
+      "purchased upgrade for Email System",
+      "purchased upgrade for Events",
+      "purchased upgrade for Increased File Storage Quota",
+      "purchased upgrade for Personal Details",
+      "purchased upgrade for Programme",
+      "removed member from online payments schedule",
+      "removed member from section",
+      "removed user from section",
+      "responded group to section size predictor",
+      "responded inform to section size predictor",
+      "responded Same to Beta Feedback group_dashboard",
+      "restored programme",
+      "returned member to section",
+      "risk assessment added to event",
+      "selected draft email",
+      "sent email campaign",
+      "sent email from event",
+      "sent email to parent portal details",
+      "sent email to parent portal events",
+      "sent email to parent portal payments",
+      "sent email to parent portal programme",
+      "sent email to shared event attendees",
+      "set eligible members for badge",
+      "setup online payments for members",
+      "shared event",
+      "shared member",
+      "show event in parent portal for member",
+      "show event in parent portal for member in bulk",
+      "ticked due badges",
+      "tour: campaign editor add block",
+      "tour: campaign editor copy",
+      "tour: campaign editor image",
+      "tour: campaign editor move block",
+      "tour: edit email from addresses",
+      "tour: edit email to addresses",
+      "tour: email attachments",
+      "tour: email templates",
+      "tour: gilbert email composer",
+      "tour: member avatar opens dialog",
+      "tour: parent portal invitations dropdown",
+      "tour: programme calendar",
+      "tour: programme create meeting",
+      "tour: programme display mode",
+      "tour: programme share",
+      "tour: select all for updating badges",
+      "tour: use badges at home",
+      "tour: view badge modes",
+      "tour: view badge modes v2",
+      "transferred member",
+      "unarchived event",
+      "unarchived online payment request",
+      "updated automatic online payments for member on event",
+      "updated badges from event",
+      "updated event column for member",
+      "updated event column for member in bulk",
+      "updated event notepad",
+      "updated event parent portal description",
+      "updated notepad",
+      "updated parent portal email settings",
+      "updated parent portal email system settings",
+      "updated parent portal email template",
+      "updated parent portal event settings",
+      "updated parent portal noticeboard",
+      "updated parent portal programme settings",
+      "uploaded attachment for event",
+      "uploaded attachment for programme meeting",
+      "uploaded photo for member",
+      "uploaded receipt for cashbook transaction",
+      "uploaded receipt for invoice",
+      "used advanced select in due badges",
+      "used myscout giftaid",
+      "used react badge records",
+      "view parent portal login history",
+      "viewed announcement 240",
+      "viewed announcement 253",
+      "viewed announcement 263",
+      "viewed announcement 266",
+      "viewed announcement 269",
+      "viewed announcement undefined",
+      "viewed annual report in accounting system",
+      "viewed audit trail for member",
+      "viewed audit trail for section",
+      "viewed badge record summary",
+      "viewed badge records for another section type",
+      "viewed badge stock",
+      "viewed bank transactions in accounting system",
+      "viewed budgets in accounting system",
+      "viewed cashbook in accounting system",
+      "viewed census aggregates",
+      "viewed data retention settings",
+      "viewed due badges",
+      "viewed email campaign in email mode",
+      "viewed flexi-record",
+      "viewed invoice",
+      "viewed invoices",
+      "viewed online payments bank account details",
+      "viewed qm list",
+      "viewed qm lists",
+      "viewed section dropbox",
+      "viewed whatsnew",
+      "watched university Invoices",
+      "watched university SendEmail2",
+      "responded Better to Beta Feedback section_switcher",
+      "trial badges activated"
+    ],
+    "unread_message_count": 0,
+    "client_time": "1764510520335",
+    "first_name": "Admin",
+    "last_name": "User",
+    "full_name": "Admin User"
+  },
+  "dojo": {
+    "cacheBust": "v=db1e8c920f36f00cc0db28c887fd5d55479e0b4c3d288ade26a7cafee3a0c7c9",
+    "locale": "en-gb"
+  }
+}

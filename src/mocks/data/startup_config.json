@@ -1,0 +1,2904 @@
+{
+  "site_type": "scouts",
+  "site_folder": "sites/onlinescoutmanager.co.uk/site",
+  "siteConfig": {
+    "disableParentRota": false,
+    "expense_cards": {
+      "fees": {
+        "card_issuing": 10,
+        "lost_dispute": 20,
+        "fx_percentage": 3,
+        "cross_border": {
+          "percentage": 2,
+          "fixed": 0.3
+        }
+      },
+      "maximum_overdrawn_charges": 10
+    },
+    "online_payment_gateways": [
+      "gocardless",
+      "stripe"
+    ],
+    "beta": [
+      {
+        "key": "react_badges",
+        "title": "Badge records",
+        "description": "This modernises the badge record system to make it work better on small devices, and adds a \"Completion Plan\" view to help identify the quickest way to complete a badge.  This will replace the existing \"Badge Completion Wizard\" as the functionality is broadly the same.",
+        "role": "all",
+        "release_ts": 1746774946,
+        "feedback": {
+          "min_days": 30,
+          "mode": "change"
+        }
+      },
+      {
+        "key": "recipes",
+        "title": "Recipe planner",
+        "description": "The recipe planner is a community driven database of recipes with simple instructions written for young people.  It appears in the Programme menu.",
+        "role": "all",
+        "release_ts": 1638205905
+      }
+    ],
+    "boltons": {
+      "b": "badges",
+      "c": "campsiteexternalbookings",
+      "d": "details",
+      "e": "events",
+      "m": "emailbolton",
+      "p": "programme",
+      "a": "accounts",
+      "f": "filestorage",
+      "r": "chat",
+      "i": "ai",
+      "t": "tasks",
+      "h": "at_home"
+    },
+    "hasOnlinePayments": true,
+    "upgrade_config": {
+      "badges": {
+        "price": 1
+      },
+      "events": {
+        "price": 10
+      },
+      "ai": {
+        "price": 7.5
+      },
+      "programme": {
+        "price": 1
+      },
+      "details": {
+        "price": 2.5
+      },
+      "emailbolton": {
+        "price": 4.5
+      },
+      "filestorage": {
+        "price": 5
+      },
+      "silver": {
+        "price": 18
+      },
+      "gold": {
+        "price": 24
+      },
+      "campsiteexternalbookings": {
+        "price": 36
+      },
+      "chat": {
+        "price": 2.5
+      },
+      "at_home": {
+        "price": 10
+      },
+      "accounts": {
+        "price": 20
+      },
+      "tasks": {
+        "price": 2.5
+      }
+    },
+    "sms_prices": {
+      "250": 14.25,
+      "500": 28,
+      "1000": 55
+    },
+    "hideSmsOriginator": false,
+    "filestorage_bolton": true,
+    "chat_bolton": true,
+    "whatsnew": true,
+    "risk_assessments": true,
+    "recipes": {
+      "meals": [
+        "breakfast",
+        "snack",
+        "lunch",
+        "dinner",
+        "pudding",
+        "drink"
+      ],
+      "methods": [
+        "stove",
+        "oven",
+        "fire",
+        "dutch",
+        "expedition",
+        "no-cooking"
+      ],
+      "suitability": [
+        "vegetarian",
+        "vegan",
+        "gluten",
+        "dairy",
+        "nuts",
+        "wheat",
+        "fish",
+        "shellfish",
+        "egg",
+        "oatmeal",
+        "soya"
+      ],
+      "allergies": [
+        "meat",
+        "animal",
+        "gluten",
+        "dairy",
+        "nuts",
+        "wheat",
+        "fish",
+        "shellfish",
+        "egg",
+        "oatmeal",
+        "soya"
+      ],
+      "aisles": [
+        "dairy",
+        "deli",
+        "bakery",
+        "vegetable",
+        "fruit",
+        "fish",
+        "frozen",
+        "meat",
+        "canned",
+        "condiments",
+        "dried",
+        "drink",
+        "snack",
+        "simple",
+        "cereal",
+        "cleaning",
+        "other"
+      ]
+    },
+    "hideMyPermissions": false,
+    "events_attachments_quota": 50,
+    "events_attachments_quota_private": -1,
+    "user_can_delete_section": true,
+    "add_invoices_to_events": false,
+    "hide_user_active_subscriptions": false,
+    "user_can_rename_self": true,
+    "members_discoverable": false,
+    "event_approvals_config": {
+      "assign": false
+    },
+    "events_force_allow_changes": "configurable",
+    "events_prevent_deadline_change": false,
+    "hide_age_after": 25,
+    "hq_terms": false,
+    "default_currency": "GBP",
+    "ask_communication_preferences": true,
+    "email_list_domain": "lists.onlinescoutmanager.co.uk",
+    "waiting_list_application": [
+      "contact_primary_1",
+      "contact_primary_2"
+    ],
+    "myscout": "Parent Portal",
+    "communicatable_emails_use_opt_ins": [],
+    "allowFutureJoinedMovement": false,
+    "joinedMovementOptional": false,
+    "hideExternalAccess": false,
+    "support_network": false,
+    "support_network_personal": false,
+    "support_network_disabled_section_types": [],
+    "event_shared_member_record_cards": false,
+    "language": "en-GB",
+    "available_languages": {
+      "en-GB": "English (British)"
+    },
+    "disable_patrol_points": false,
+    "disable_help_videos": false,
+    "file_proxy": "https://files.onlineyouthmanager.co.uk/",
+    "cdn": "oymcdn.co.uk",
+    "global_cdn": "oymcdn.co.uk",
+    "hide_upgrades": false,
+    "root_url": "https://www.onlinescoutmanager.co.uk",
+    "url_www": "www.onlinescoutmanager.co.uk",
+    "fullname": "Admin User",
+    "myscout_email": "myscout@onlinescoutmanager.co.uk",
+    "section_types": {
+      "uk": {
+        "earlyyears": "Squirrels",
+        "beavers": "Beavers",
+        "cubs": "Cubs",
+        "scouts": "Scouts",
+        "explorers": "Explorers (and Network)",
+        "adults": "Adults"
+      },
+      "navigators": {
+        "juniornavigators": "Juniors",
+        "seniornavigators": "Seniors"
+      },
+      "au": {
+        "ausscouts": "Scouts",
+        "aucubs": "Cubs",
+        "aujoeys": "Joeys"
+      }
+    },
+    "badge_types": {
+      "uk": [
+        "challenge",
+        "staged",
+        "core",
+        "activity"
+      ],
+      "au": [
+        "activity",
+        "challenge"
+      ]
+    },
+    "adult_section_types": [
+      "adults"
+    ],
+    "adult_section_types_emailable": [
+      "adults"
+    ],
+    "youth_section_types": [
+      "earlyyears",
+      "beavers",
+      "cubs",
+      "scouts",
+      "explorers",
+      "juniornavigators",
+      "seniornavigators",
+      "aujoeys",
+      "aucubs",
+      "ausscouts",
+      "campsite"
+    ],
+    "free_sections": [
+      "adults",
+      "waiting",
+      "campsite",
+      "national",
+      "earlyyearswaiting"
+    ],
+    "abbr": "osm",
+    "facebookpage": "onlinescoutmanager",
+    "personaldetails_configurable": true,
+    "colour_primary": "4d2177",
+    "colour_secondary": "84a40b",
+    "colour_tertiary": "8b0066",
+    "default_currency_symbol": "\u00a3",
+    "communicatable_contact_groups": {
+      "default": {
+        "contact_primary_1": "Primary Contact 1",
+        "contact_primary_2": "Primary Contact 2",
+        "contact_primary_member": "Member"
+      },
+      "campsite": {
+        "contact_primary_campsite": "Customer"
+      }
+    },
+    "section_type_setup": {
+      "earlyyears": {
+        "ai_risk_activities": true,
+        "programme": true,
+        "events": true,
+        "flexi": true,
+        "quartermaster": true,
+        "attendance": true,
+        "finances": true,
+        "giftaid": true,
+        "patrols": true,
+        "subscription": true,
+        "badgeMenu": true,
+        "isScout": true,
+        "showStartedSection": true,
+        "isDOBNeeded": true,
+        "isWaiting": false,
+        "isAdult": false,
+        "useTerms": true,
+        "showDetails": true,
+        "campDirectory": true,
+        "census": true,
+        "allowSMS": true,
+        "showCountry": true,
+        "myscout": true,
+        "onlinepayments": true,
+        "waitingListType": "waiting",
+        "badgeTitle": "Badges",
+        "showSectionSizePredictor": true,
+        "showBadgesByPerson": true,
+        "sectionSizePredictor": {
+          "earlyyears": 2190,
+          "beavers": 2920,
+          "cubs": 3832,
+          "scouts": 5110,
+          "explorers": 6570
+        },
+        "fileStorage": true,
+        "badgeStock": true,
+        "badges": {
+          "challenge": {
+            "type": "challenge",
+            "singular": "Challenge",
+            "menu": "Challenge",
+            "title": "Challenge Badges",
+            "type_id": 1
+          },
+          "activity": {
+            "type": "activity",
+            "singular": "Activity",
+            "menu": "Activity",
+            "title": "Activity Badges",
+            "type_id": 2
+          },
+          "staged": {
+            "type": "staged",
+            "singular": "Staged",
+            "menu": "Staged",
+            "title": "Staged Badges",
+            "type_id": 3
+          },
+          "core": {
+            "type": "core",
+            "singular": "Core",
+            "menu": "Core",
+            "title": "Core Badges",
+            "type_id": 4
+          }
+        },
+        "audit_trail": {
+          "member": {
+            "note_types": [
+              "notes",
+              "received-email",
+              "received-phonecall",
+              "received-letter",
+              "sent-email",
+              "sent-phonecall",
+              "sent-letter"
+            ]
+          },
+          "section": {
+            "note_types": [
+              "notes"
+            ]
+          }
+        },
+        "showParentPortalLoginHistory": true,
+        "hasYoungLeadersPatrol": true,
+        "hideUpgrades": false
+      },
+      "beavers": {
+        "ai_risk_activities": true,
+        "programme": true,
+        "events": true,
+        "flexi": true,
+        "quartermaster": true,
+        "attendance": true,
+        "finances": true,
+        "giftaid": true,
+        "patrols": true,
+        "subscription": true,
+        "badgeMenu": true,
+        "isScout": true,
+        "showStartedSection": true,
+        "isDOBNeeded": true,
+        "isWaiting": false,
+        "isAdult": false,
+        "useTerms": true,
+        "showDetails": true,
+        "campDirectory": true,
+        "census": true,
+        "allowSMS": true,
+        "showCountry": true,
+        "myscout": true,
+        "onlinepayments": true,
+        "waitingListType": "waiting",
+        "badgeTitle": "Badges",
+        "showSectionSizePredictor": true,
+        "showBadgesByPerson": true,
+        "sectionSizePredictor": {
+          "earlyyears": 2190,
+          "beavers": 2920,
+          "cubs": 3832,
+          "scouts": 5110,
+          "explorers": 6570
+        },
+        "fileStorage": true,
+        "badgeStock": true,
+        "badges": {
+          "challenge": {
+            "type": "challenge",
+            "singular": "Challenge",
+            "menu": "Challenge",
+            "title": "Challenge Badges",
+            "type_id": 1
+          },
+          "activity": {
+            "type": "activity",
+            "singular": "Activity",
+            "menu": "Activity",
+            "title": "Activity Badges",
+            "type_id": 2
+          },
+          "staged": {
+            "type": "staged",
+            "singular": "Staged",
+            "menu": "Staged",
+            "title": "Staged Badges",
+            "type_id": 3
+          },
+          "core": {
+            "type": "core",
+            "singular": "Core",
+            "menu": "Core",
+            "title": "Core Badges",
+            "type_id": 4
+          }
+        },
+        "audit_trail": {
+          "member": {
+            "note_types": [
+              "notes",
+              "received-email",
+              "received-phonecall",
+              "received-letter",
+              "sent-email",
+              "sent-phonecall",
+              "sent-letter"
+            ]
+          },
+          "section": {
+            "note_types": [
+              "notes"
+            ]
+          }
+        },
+        "showParentPortalLoginHistory": true,
+        "hasYoungLeadersPatrol": true,
+        "hideUpgrades": false
+      },
+      "cubs": {
+        "ai_risk_activities": true,
+        "programme": true,
+        "events": true,
+        "flexi": true,
+        "quartermaster": true,
+        "attendance": true,
+        "finances": true,
+        "giftaid": true,
+        "patrols": true,
+        "subscription": true,
+        "badgeMenu": true,
+        "isScout": true,
+        "showStartedSection": true,
+        "isDOBNeeded": true,
+        "isWaiting": false,
+        "isAdult": false,
+        "useTerms": true,
+        "showDetails": true,
+        "campDirectory": true,
+        "census": true,
+        "allowSMS": true,
+        "showCountry": true,
+        "myscout": true,
+        "onlinepayments": true,
+        "waitingListType": "waiting",
+        "badgeTitle": "Badges",
+        "showSectionSizePredictor": true,
+        "showBadgesByPerson": true,
+        "sectionSizePredictor": {
+          "earlyyears": 2190,
+          "beavers": 2920,
+          "cubs": 3832,
+          "scouts": 5110,
+          "explorers": 6570
+        },
+        "fileStorage": true,
+        "badgeStock": true,
+        "badges": {
+          "challenge": {
+            "type": "challenge",
+            "singular": "Challenge",
+            "menu": "Challenge",
+            "title": "Challenge Badges",
+            "type_id": 1
+          },
+          "activity": {
+            "type": "activity",
+            "singular": "Activity",
+            "menu": "Activity",
+            "title": "Activity Badges",
+            "type_id": 2
+          },
+          "staged": {
+            "type": "staged",
+            "singular": "Staged",
+            "menu": "Staged",
+            "title": "Staged Badges",
+            "type_id": 3
+          },
+          "core": {
+            "type": "core",
+            "singular": "Core",
+            "menu": "Core",
+            "title": "Core Badges",
+            "type_id": 4
+          }
+        },
+        "audit_trail": {
+          "member": {
+            "note_types": [
+              "notes",
+              "received-email",
+              "received-phonecall",
+              "received-letter",
+              "sent-email",
+              "sent-phonecall",
+              "sent-letter"
+            ]
+          },
+          "section": {
+            "note_types": [
+              "notes"
+            ]
+          }
+        },
+        "showParentPortalLoginHistory": true,
+        "hasYoungLeadersPatrol": true,
+        "hideUpgrades": false
+      },
+      "scouts": {
+        "ai_risk_activities": true,
+        "programme": true,
+        "events": true,
+        "flexi": true,
+        "quartermaster": true,
+        "attendance": true,
+        "finances": true,
+        "giftaid": true,
+        "patrols": true,
+        "subscription": true,
+        "badgeMenu": true,
+        "isScout": true,
+        "showStartedSection": true,
+        "isDOBNeeded": true,
+        "isWaiting": false,
+        "isAdult": false,
+        "useTerms": true,
+        "showDetails": true,
+        "campDirectory": true,
+        "census": true,
+        "allowSMS": true,
+        "showCountry": true,
+        "myscout": true,
+        "onlinepayments": true,
+        "waitingListType": "waiting",
+        "badgeTitle": "Badges",
+        "showSectionSizePredictor": true,
+        "showBadgesByPerson": true,
+        "sectionSizePredictor": {
+          "earlyyears": 2190,
+          "beavers": 2920,
+          "cubs": 3832,
+          "scouts": 5110,
+          "explorers": 6570
+        },
+        "fileStorage": true,
+        "badgeStock": true,
+        "badges": {
+          "challenge": {
+            "type": "challenge",
+            "singular": "Challenge",
+            "menu": "Challenge",
+            "title": "Challenge Badges",
+            "type_id": 1
+          },
+          "activity": {
+            "type": "activity",
+            "singular": "Activity",
+            "menu": "Activity",
+            "title": "Activity Badges",
+            "type_id": 2
+          },
+          "staged": {
+            "type": "staged",
+            "singular": "Staged",
+            "menu": "Staged",
+            "title": "Staged Badges",
+            "type_id": 3
+          },
+          "core": {
+            "type": "core",
+            "singular": "Core",
+            "menu": "Core",
+            "title": "Core Badges",
+            "type_id": 4
+          }
+        },
+        "audit_trail": {
+          "member": {
+            "note_types": [
+              "notes",
+              "received-email",
+              "received-phonecall",
+              "received-letter",
+              "sent-email",
+              "sent-phonecall",
+              "sent-letter"
+            ]
+          },
+          "section": {
+            "note_types": [
+              "notes"
+            ]
+          }
+        },
+        "showParentPortalLoginHistory": true,
+        "hasYoungLeadersPatrol": true,
+        "hideUpgrades": false
+      },
+      "explorers": {
+        "ai_risk_activities": true,
+        "programme": true,
+        "events": true,
+        "flexi": true,
+        "quartermaster": true,
+        "attendance": true,
+        "finances": true,
+        "giftaid": true,
+        "patrols": true,
+        "subscription": true,
+        "badgeMenu": true,
+        "isScout": true,
+        "showStartedSection": true,
+        "isDOBNeeded": true,
+        "isWaiting": false,
+        "isAdult": false,
+        "useTerms": true,
+        "showDetails": true,
+        "campDirectory": true,
+        "census": true,
+        "allowSMS": true,
+        "showCountry": true,
+        "myscout": true,
+        "onlinepayments": true,
+        "waitingListType": "waiting",
+        "badgeTitle": "Badges",
+        "showSectionSizePredictor": true,
+        "showBadgesByPerson": true,
+        "sectionSizePredictor": {
+          "earlyyears": 2190,
+          "beavers": 2920,
+          "cubs": 3832,
+          "scouts": 5110,
+          "explorers": 6570
+        },
+        "fileStorage": true,
+        "badgeStock": true,
+        "badges": {
+          "challenge": {
+            "type": "challenge",
+            "singular": "Challenge",
+            "menu": "Challenge",
+            "title": "Challenge Badges",
+            "type_id": 1
+          },
+          "activity": {
+            "type": "activity",
+            "singular": "Activity",
+            "menu": "Activity",
+            "title": "Activity Badges",
+            "type_id": 2
+          },
+          "staged": {
+            "type": "staged",
+            "singular": "Staged",
+            "menu": "Staged",
+            "title": "Staged Badges",
+            "type_id": 3
+          },
+          "core": {
+            "type": "core",
+            "singular": "Core",
+            "menu": "Core",
+            "title": "Core Badges",
+            "type_id": 4
+          }
+        },
+        "audit_trail": {
+          "member": {
+            "note_types": [
+              "notes",
+              "received-email",
+              "received-phonecall",
+              "received-letter",
+              "sent-email",
+              "sent-phonecall",
+              "sent-letter"
+            ]
+          },
+          "section": {
+            "note_types": [
+              "notes"
+            ]
+          }
+        },
+        "showParentPortalLoginHistory": true,
+        "hasYoungLeadersPatrol": false,
+        "hideUpgrades": false
+      },
+      "adults": {
+        "programme": true,
+        "events": true,
+        "flexi": true,
+        "quartermaster": true,
+        "giftaid": true,
+        "attendance": false,
+        "finances": true,
+        "badgeTitle": "Records",
+        "subscription": false,
+        "badgeMenu": false,
+        "isDOBNeeded": false,
+        "isScout": false,
+        "showStartedSection": true,
+        "isAdult": true,
+        "myscout": true,
+        "patrols": true,
+        "isWaiting": false,
+        "showDetails": true,
+        "useTerms": true,
+        "waitingListType": "waiting",
+        "allowSMS": true,
+        "showYouthBadgeLinks": false,
+        "showCountry": true,
+        "census": true,
+        "onlinepayments": true,
+        "fileStorage": true,
+        "badges": {
+          "challenge": {
+            "type": "challenge",
+            "singular": "Records",
+            "menu": "Records",
+            "title": "Records",
+            "type_id": 1
+          }
+        },
+        "audit_trail": {
+          "member": {
+            "note_types": [
+              "notes",
+              "received-email",
+              "received-phonecall",
+              "received-letter",
+              "sent-email",
+              "sent-phonecall",
+              "sent-letter"
+            ]
+          },
+          "section": {
+            "note_types": [
+              "notes"
+            ]
+          }
+        },
+        "showParentPortalLoginHistory": true,
+        "excludeFromHierarchy": true,
+        "hideUpgrades": false
+      },
+      "discount": {
+        "programme": false,
+        "events": false,
+        "flexi": false,
+        "attendance": false,
+        "finances": false,
+        "subscription": false,
+        "badgeMenu": false,
+        "isScout": false,
+        "showStartedSection": false,
+        "hideUpgrades": true,
+        "isDOBNeeded": false,
+        "showSectionSizePredictor": false,
+        "showDetails": false,
+        "isAdult": false,
+        "isWaiting": false,
+        "isDiscount": true,
+        "hideForum": true,
+        "useTerms": false,
+        "allowSMS": false,
+        "badges": [],
+        "audit_trail": {
+          "member": {
+            "note_types": [
+              "notes",
+              "received-email",
+              "received-phonecall",
+              "received-letter",
+              "sent-email",
+              "sent-phonecall",
+              "sent-letter"
+            ]
+          },
+          "section": {
+            "note_types": [
+              "notes"
+            ]
+          }
+        },
+        "showParentPortalLoginHistory": false,
+        "excludeFromHierarchy": true,
+        "disableOffline": true
+      },
+      "waiting": {
+        "programme": false,
+        "events": false,
+        "flexi": true,
+        "attendance": false,
+        "patrols": false,
+        "finances": false,
+        "subscription": false,
+        "badgeMenu": false,
+        "isScout": false,
+        "showStartedSection": false,
+        "isDOBNeeded": false,
+        "showSectionSizePredictor": true,
+        "isAdult": false,
+        "isWaiting": true,
+        "showDetails": true,
+        "useTerms": false,
+        "allowSMS": true,
+        "waitingListType": "waiting",
+        "showYouthBadgeLinks": false,
+        "badges": [],
+        "audit_trail": {
+          "member": {
+            "note_types": [
+              "notes",
+              "received-email",
+              "received-phonecall",
+              "received-letter",
+              "sent-email",
+              "sent-phonecall",
+              "sent-letter"
+            ]
+          },
+          "section": {
+            "note_types": [
+              "notes"
+            ]
+          }
+        },
+        "showParentPortalLoginHistory": true,
+        "excludeFromHierarchy": true,
+        "disableOffline": true,
+        "hideUpgrades": false
+      },
+      "earlyyearswaiting": {
+        "programme": false,
+        "events": false,
+        "flexi": true,
+        "attendance": false,
+        "patrols": false,
+        "finances": false,
+        "subscription": false,
+        "badgeMenu": false,
+        "isScout": false,
+        "showStartedSection": false,
+        "isDOBNeeded": false,
+        "showSectionSizePredictor": true,
+        "isAdult": false,
+        "isWaiting": true,
+        "showDetails": true,
+        "useTerms": false,
+        "allowSMS": true,
+        "waitingListType": "waiting",
+        "showYouthBadgeLinks": false,
+        "badges": [],
+        "audit_trail": {
+          "member": {
+            "note_types": [
+              "notes",
+              "received-email",
+              "received-phonecall",
+              "received-letter",
+              "sent-email",
+              "sent-phonecall",
+              "sent-letter"
+            ]
+          },
+          "section": {
+            "note_types": [
+              "notes"
+            ]
+          }
+        },
+        "showParentPortalLoginHistory": true,
+        "excludeFromHierarchy": true,
+        "disableOffline": true,
+        "hideUpgrades": false
+      },
+      "national": {
+        "hideUpgrades": true,
+        "programme": false,
+        "events": false,
+        "flexi": false,
+        "attendance": false,
+        "finances": false,
+        "subscription": false,
+        "badgeMenu": false,
+        "patrolRoles": true,
+        "additionalRoles": true,
+        "restrict_primary_role_changes": true,
+        "hasCommentsOnDashboard": true,
+        "isScout": false,
+        "isDOBNeeded": false,
+        "campDirectory": true,
+        "showSectionSizePredictor": false,
+        "isPrimarySection": true,
+        "showDetails": false,
+        "isAdult": false,
+        "isWaiting": false,
+        "isDiscount": false,
+        "isNational": true,
+        "hideForum": true,
+        "useTerms": false,
+        "allowSMS": false,
+        "showYouthBadgeLinks": false,
+        "waitingListType": "waiting",
+        "preventSectionRename": true,
+        "badges": [],
+        "audit_trail": {
+          "member": {
+            "note_types": [
+              "notes",
+              "received-email",
+              "received-phonecall",
+              "received-letter",
+              "sent-email",
+              "sent-phonecall",
+              "sent-letter"
+            ]
+          },
+          "section": {
+            "note_types": [
+              "notes"
+            ]
+          }
+        },
+        "showParentPortalLoginHistory": false,
+        "showSurveyEditor": true,
+        "excludeFromHierarchy": true,
+        "disableOffline": true
+      },
+      "ausscouts": {
+        "programme": true,
+        "events": true,
+        "flexi": true,
+        "quartermaster": true,
+        "attendance": true,
+        "patrols": true,
+        "finances": true,
+        "subscription": true,
+        "badgeMenu": true,
+        "currencyHTML": "$",
+        "isScout": true,
+        "showStartedSection": true,
+        "isDOBNeeded": true,
+        "isWaiting": false,
+        "isAdult": false,
+        "showDetails": true,
+        "useTerms": true,
+        "campDirectory": false,
+        "badgeTitle": "Badges",
+        "allowSMS": false,
+        "myscout": true,
+        "waitingListType": "waiting",
+        "onlinepayments": true,
+        "fileStorage": true,
+        "badgeStock": true,
+        "showBadgesByPerson": true,
+        "badges": {
+          "challenge": {
+            "type": "challenge",
+            "singular": "Target",
+            "menu": "Target",
+            "title": "Target Badges",
+            "type_id": 1
+          },
+          "activity": {
+            "type": "activity",
+            "singular": "Proficiency",
+            "menu": "Proficiency",
+            "title": "Proficiency Badges",
+            "type_id": 2
+          }
+        },
+        "audit_trail": {
+          "member": {
+            "note_types": [
+              "notes",
+              "received-email",
+              "received-phonecall",
+              "received-letter",
+              "sent-email",
+              "sent-phonecall",
+              "sent-letter"
+            ]
+          },
+          "section": {
+            "note_types": [
+              "notes"
+            ]
+          }
+        },
+        "ics": false,
+        "showParentPortalLoginHistory": true,
+        "excludeFromHierarchy": true,
+        "hideUpgrades": false
+      },
+      "campsite": {
+        "campsite": true,
+        "programme": false,
+        "events": false,
+        "flexi": false,
+        "quartermaster": false,
+        "attendance": false,
+        "finances": false,
+        "giftaid": false,
+        "patrols": false,
+        "subscription": false,
+        "badgeMenu": false,
+        "isScout": false,
+        "showStartedSection": false,
+        "isDOBNeeded": false,
+        "isWaiting": false,
+        "isAdult": false,
+        "isCampsite": true,
+        "visibleOnSiteTypes": [
+          "scouts"
+        ],
+        "useTerms": false,
+        "preventTransfers": true,
+        "preventMemberSharing": true,
+        "preventImportSpreadsheet": true,
+        "disabled_joined_movement": true,
+        "showDetails": false,
+        "campDirectory": false,
+        "census": false,
+        "allowSMS": false,
+        "showCountry": false,
+        "myscout": false,
+        "onlinepayments": false,
+        "showSectionSizePredictor": false,
+        "showBadgesByPerson": false,
+        "fileStorage": false,
+        "badgeStock": false,
+        "audit_trail": {
+          "member": {
+            "note_types": [
+              "notes",
+              "received-email",
+              "received-phonecall",
+              "received-letter",
+              "sent-email",
+              "sent-phonecall",
+              "sent-letter"
+            ]
+          },
+          "section": {
+            "note_types": [
+              "notes"
+            ]
+          }
+        },
+        "showParentPortalLoginHistory": false,
+        "excludeFromHierarchy": true,
+        "disableOffline": true,
+        "hideUpgrades": false
+      },
+      "aucubs": {
+        "programme": true,
+        "events": true,
+        "flexi": true,
+        "attendance": true,
+        "quartermaster": true,
+        "patrols": true,
+        "finances": true,
+        "subscription": true,
+        "badgeMenu": true,
+        "currencyHTML": "$",
+        "isScout": true,
+        "showStartedSection": true,
+        "isDOBNeeded": true,
+        "isWaiting": false,
+        "isAdult": false,
+        "showDetails": true,
+        "useTerms": true,
+        "campDirectory": false,
+        "badgeTitle": "Badges",
+        "allowSMS": false,
+        "myscout": true,
+        "waitingListType": "waiting",
+        "onlinepayments": true,
+        "fileStorage": true,
+        "badgeStock": true,
+        "showBadgesByPerson": true,
+        "badges": {
+          "challenge": {
+            "type": "challenge",
+            "singular": "Badges",
+            "menu": "Main Badges",
+            "title": "Main Badges",
+            "type_id": 1
+          },
+          "activity": {
+            "type": "activity",
+            "singular": "Achievements",
+            "menu": "Achievement and Interest",
+            "title": "Achievement and Special Interest Badges",
+            "type_id": 2
+          }
+        },
+        "audit_trail": {
+          "member": {
+            "note_types": [
+              "notes",
+              "received-email",
+              "received-phonecall",
+              "received-letter",
+              "sent-email",
+              "sent-phonecall",
+              "sent-letter"
+            ]
+          },
+          "section": {
+            "note_types": [
+              "notes"
+            ]
+          }
+        },
+        "ics": false,
+        "showParentPortalLoginHistory": true,
+        "excludeFromHierarchy": true,
+        "hideUpgrades": false
+      },
+      "aujoeys": {
+        "programme": true,
+        "events": true,
+        "flexi": true,
+        "attendance": true,
+        "quartermaster": true,
+        "patrols": true,
+        "finances": true,
+        "subscription": true,
+        "badgeMenu": true,
+        "currencyHTML": "$",
+        "isScout": true,
+        "showStartedSection": true,
+        "isDOBNeeded": true,
+        "isWaiting": false,
+        "isAdult": false,
+        "showDetails": true,
+        "useTerms": true,
+        "campDirectory": false,
+        "badgeTitle": "Badges",
+        "allowSMS": false,
+        "waitingListType": "waiting",
+        "myscout": true,
+        "onlinepayments": true,
+        "fileStorage": true,
+        "badgeStock": true,
+        "showBadgesByPerson": true,
+        "badges": {
+          "activity": {
+            "type": "activity",
+            "singular": "Mobs",
+            "menu": "Mobs",
+            "title": "Mob Participation Scheme",
+            "type_id": 2
+          }
+        },
+        "audit_trail": {
+          "member": {
+            "note_types": [
+              "notes",
+              "received-email",
+              "received-phonecall",
+              "received-letter",
+              "sent-email",
+              "sent-phonecall",
+              "sent-letter"
+            ]
+          },
+          "section": {
+            "note_types": [
+              "notes"
+            ]
+          }
+        },
+        "ics": false,
+        "showParentPortalLoginHistory": true,
+        "excludeFromHierarchy": true,
+        "hideUpgrades": false
+      },
+      "zadventure": {
+        "programme": true,
+        "events": true,
+        "flexi": true,
+        "quartermaster": true,
+        "attendance": true,
+        "finances": true,
+        "giftaid": true,
+        "patrols": true,
+        "subscription": true,
+        "badgeMenu": true,
+        "isScout": true,
+        "showStartedSection": true,
+        "isDOBNeeded": true,
+        "isWaiting": false,
+        "isAdult": false,
+        "useTerms": true,
+        "showDetails": true,
+        "campDirectory": false,
+        "census": false,
+        "allowSMS": true,
+        "myscout": true,
+        "onlinepayments": true,
+        "badgeTitle": "Badges",
+        "showSectionSizePredictor": false,
+        "fileStorage": true,
+        "badges": {
+          "activity": {
+            "type": "activity",
+            "singular": "Activity",
+            "menu": "Activity",
+            "title": "Activity Badges",
+            "type_id": 2
+          }
+        },
+        "audit_trail": {
+          "member": {
+            "note_types": [
+              "notes",
+              "received-email",
+              "received-phonecall",
+              "received-letter",
+              "sent-email",
+              "sent-phonecall",
+              "sent-letter"
+            ]
+          },
+          "section": {
+            "note_types": [
+              "notes"
+            ]
+          }
+        },
+        "showParentPortalLoginHistory": true,
+        "excludeFromHierarchy": true,
+        "hideUpgrades": false
+      },
+      "juniornavigators": {
+        "programme": true,
+        "events": true,
+        "flexi": true,
+        "quartermaster": true,
+        "attendance": true,
+        "finances": true,
+        "giftaid": true,
+        "patrols": true,
+        "subscription": true,
+        "badgeMenu": true,
+        "isScout": true,
+        "showStartedSection": true,
+        "isDOBNeeded": true,
+        "isWaiting": false,
+        "isAdult": false,
+        "useTerms": true,
+        "showDetails": true,
+        "campDirectory": true,
+        "census": false,
+        "allowSMS": true,
+        "myscout": true,
+        "onlinepayments": true,
+        "badgeTitle": "Badges",
+        "showSectionSizePredictor": false,
+        "fileStorage": true,
+        "badges": {
+          "challenge": {
+            "type": "challenge",
+            "singular": "Badges",
+            "menu": "Badges",
+            "title": "Badges",
+            "type_id": 1
+          },
+          "activity": {
+            "type": "activity",
+            "singular": "Levels",
+            "menu": "Levels",
+            "title": "Level Badges",
+            "type_id": 2
+          },
+          "staged": {
+            "type": "staged",
+            "singular": "Staged",
+            "menu": "Staged",
+            "title": "Staged Badges",
+            "type_id": 3
+          },
+          "core": {
+            "type": "core",
+            "singular": "Core",
+            "menu": "Core",
+            "title": "Core Badges",
+            "type_id": 4
+          }
+        },
+        "audit_trail": {
+          "member": {
+            "note_types": [
+              "notes",
+              "received-email",
+              "received-phonecall",
+              "received-letter",
+              "sent-email",
+              "sent-phonecall",
+              "sent-letter"
+            ]
+          },
+          "section": {
+            "note_types": [
+              "notes"
+            ]
+          }
+        },
+        "showParentPortalLoginHistory": true,
+        "excludeFromHierarchy": true,
+        "hideUpgrades": false
+      },
+      "seniornavigators": {
+        "programme": true,
+        "events": true,
+        "flexi": true,
+        "quartermaster": true,
+        "attendance": true,
+        "finances": true,
+        "giftaid": true,
+        "patrols": true,
+        "subscription": true,
+        "badgeMenu": true,
+        "isScout": true,
+        "showStartedSection": true,
+        "isDOBNeeded": true,
+        "isWaiting": false,
+        "isAdult": false,
+        "useTerms": true,
+        "showDetails": true,
+        "campDirectory": true,
+        "census": false,
+        "allowSMS": true,
+        "myscout": true,
+        "onlinepayments": true,
+        "badgeTitle": "Badges",
+        "showSectionSizePredictor": false,
+        "fileStorage": true,
+        "badges": {
+          "challenge": {
+            "type": "challenge",
+            "singular": "Badges",
+            "menu": "Badges",
+            "title": "Badges",
+            "type_id": 1
+          },
+          "activity": {
+            "type": "activity",
+            "singular": "Levels",
+            "menu": "Levels",
+            "title": "Level Badges",
+            "type_id": 2
+          },
+          "staged": {
+            "type": "staged",
+            "singular": "Staged",
+            "menu": "Staged",
+            "title": "Staged Badges",
+            "type_id": 3
+          },
+          "core": {
+            "type": "core",
+            "singular": "Core",
+            "menu": "Core",
+            "title": "Core Badges",
+            "type_id": 4
+          }
+        },
+        "audit_trail": {
+          "member": {
+            "note_types": [
+              "notes",
+              "received-email",
+              "received-phonecall",
+              "received-letter",
+              "sent-email",
+              "sent-phonecall",
+              "sent-letter"
+            ]
+          },
+          "section": {
+            "note_types": [
+              "notes"
+            ]
+          }
+        },
+        "showParentPortalLoginHistory": true,
+        "excludeFromHierarchy": true,
+        "hideUpgrades": false
+      }
+    },
+    "buy_links": {
+      "due_badge_bags": "https://amzn.to/41iYtJM"
+    },
+    "feature_preview": [],
+    "risk_assessments_config": {
+      "mode": "freeform",
+      "reuse_programme": true,
+      "reuse_events": true,
+      "residual_risk": false,
+      "who": true,
+      "has_generic_events": true,
+      "has_activities": true
+    },
+    "tld": "onlinescoutmanager.co.uk",
+    "accounting": true,
+    "accounting_expense_cards": true,
+    "activity_database": true,
+    "ai": true,
+    "api_manage_hq": false,
+    "badge_homework": true,
+    "badge_show_completion_certificate": false,
+    "badge_wizard": true,
+    "campaign_template_designs": [
+      "purpleandgreen",
+      "lightblue",
+      "darkblue",
+      "turquoise",
+      "purpleandpink",
+      "purple",
+      "default",
+      "blank"
+    ],
+    "deletable_users": true,
+    "duplicate_member_checks": false,
+    "elearning_editor": false,
+    "elearning_viewer": false,
+    "email_from_reports": [],
+    "email_signatures": true,
+    "email_template_colours": [
+      "#ffffff",
+      "#000000",
+      "#ffcd00",
+      "#ff8200",
+      "#ba0c2f",
+      "#7C3A2D",
+      "#AD1AAC",
+      "#7413dc",
+      "#4d2177",
+      "#003DA5",
+      "#002855",
+      "#0095C8",
+      "#004851",
+      "#00594F",
+      "#00a794",
+      "#009A44",
+      "#84A40B",
+      "#8C857B"
+    ],
+    "event_directions": true,
+    "event_duplicate": true,
+    "event_types_single_select": false,
+    "events_additional_information": [],
+    "events_approvals": false,
+    "events_at_home": true,
+    "events_parent_rota": true,
+    "events_past_read_only": false,
+    "events_personal_details_confirmation_restriction": "standard_fields:confirmation:24267",
+    "events_summary_approval_status_highlights": [],
+    "events_v2": true,
+    "group_dashboard": true,
+    "hasJoinedMovement": true,
+    "has_main_section_per_person": false,
+    "help_websites": false,
+    "hierarchy_sms": false,
+    "hq_support": false,
+    "kill": {
+      "built_files": false,
+      "built_files_admin": false,
+      "cdn": false,
+      "cdn_admin": false,
+      "extralogging": false,
+      "extralogging_admin": false,
+      "gilbert": false,
+      "gilbert_admin": false,
+      "gocardless": false,
+      "gocardless_admin": false,
+      "offlinedata": false,
+      "offlinedata_admin": false,
+      "proxysql": false,
+      "proxysql_admin": false,
+      "sms": false,
+      "sms_admin": false
+    },
+    "kit_lists": true,
+    "lockdown_email_from_address": false,
+    "member_deletion_review": true,
+    "member_elsewhere_review": false,
+    "member_erase_extra_data": [
+      "badge",
+      "events",
+      "register",
+      "finance"
+    ],
+    "member_removal_warn_if_active": false,
+    "member_view_email_history": false,
+    "member_view_own_badge_details": false,
+    "members_users_linked": false,
+    "members_users_linked_edit": false,
+    "mymember_access_restrictions": "section",
+    "national_opt_in_or_out": false,
+    "national_opt_in_or_out_sms": false,
+    "national_parent_portal_file_storage": false,
+    "organisation_import": false,
+    "parent_portal_auto_join": "opt-in",
+    "parent_portal_date_of_birth_custom_data_group": "standard_fields",
+    "prevent_import_spreadsheet": false,
+    "prevent_leader_edit_portal_templates": false,
+    "programme_primary_leader": true,
+    "programmes_at_home": true,
+    "purge_event_audit_trail": 3,
+    "remove_member_allowed_functions": {
+      "default": [
+        "keepname",
+        "keepcontact",
+        "keepall",
+        "delete",
+        "erase"
+      ]
+    },
+    "require_global_role_inactive_searches": false,
+    "section_edit_details": false,
+    "section_edit_details_mode": "all_sections",
+    "section_editable_locations": false,
+    "section_requires_two_admins": true,
+    "shared_events_opt_in_email": true,
+    "showCommentsOnAllDashboards": false,
+    "show_additional_roles_dates_comments": false,
+    "show_community_help_forum": true,
+    "show_feature_requests": true,
+    "summary_dashboards": false,
+    "to_do_tasks": true,
+    "urgent_event_approvals": -1,
+    "full_name": "Admin User"
+  },
+  "patrolLabels": {
+    "scouts": {
+      "patrol": "Patrol",
+      "patrols": "Patrols"
+    },
+    "cubs": {
+      "patrol": "Six",
+      "patrols": "Sixes"
+    },
+    "beavers": {
+      "patrol": "Lodge",
+      "patrols": "Lodges"
+    },
+    "explorers": {
+      "patrol": "Patrol",
+      "patrols": "Patrols"
+    },
+    "adults": {
+      "patrol": "Section / Role",
+      "patrols": "Sections"
+    },
+    "earlyyears": {
+      "patrol": "Nest",
+      "patrols": "Nests"
+    },
+    "juniornavigators": {
+      "patrol": "Team",
+      "patrols": "Teams"
+    },
+    "seniornavigators": {
+      "patrol": "Team",
+      "patrols": "Teams"
+    },
+    "aucubs": {
+      "patrol": "Six",
+      "patrols": "Sixes"
+    }
+  },
+  "patrolRoles": {
+    "adults": {
+      "7": {
+        "level": 7,
+        "label": "Chair",
+        "abbr": "",
+        "changes": null,
+        "census_costs": false,
+        "visibility": 0,
+        "allow_duplicates": true,
+        "archived": 0
+      },
+      "12": {
+        "level": 12,
+        "label": "Fundraising Rep",
+        "abbr": "",
+        "changes": null,
+        "census_costs": false,
+        "visibility": 0,
+        "allow_duplicates": true,
+        "archived": 0
+      },
+      "6": {
+        "level": 6,
+        "label": "Group Lead Volunteer",
+        "abbr": "GLV",
+        "changes": null,
+        "census_costs": false,
+        "visibility": 0,
+        "allow_duplicates": true,
+        "archived": 0
+      },
+      "13": {
+        "level": 13,
+        "label": "Group Leadership Team Member",
+        "abbr": "",
+        "changes": null,
+        "census_costs": false,
+        "visibility": 0,
+        "allow_duplicates": true,
+        "archived": 0
+      },
+      "5": {
+        "level": 5,
+        "label": "Non Member - Needs Disclosure",
+        "abbr": "",
+        "changes": null,
+        "census_costs": false,
+        "visibility": 0,
+        "allow_duplicates": true,
+        "archived": 0
+      },
+      "14": {
+        "level": 14,
+        "label": "Parent Rep",
+        "abbr": "",
+        "changes": null,
+        "census_costs": false,
+        "visibility": 0,
+        "allow_duplicates": true,
+        "archived": 0
+      },
+      "11": {
+        "level": 11,
+        "label": "Quartermaster",
+        "abbr": "",
+        "changes": null,
+        "census_costs": false,
+        "visibility": 0,
+        "allow_duplicates": true,
+        "archived": 0
+      },
+      "9": {
+        "level": 9,
+        "label": "Secretary",
+        "abbr": "",
+        "changes": null,
+        "census_costs": false,
+        "visibility": 0,
+        "allow_duplicates": true,
+        "archived": 0
+      },
+      "4": {
+        "level": 4,
+        "label": "Section Assistant",
+        "abbr": "SA",
+        "changes": null,
+        "census_costs": false,
+        "visibility": 0,
+        "allow_duplicates": true,
+        "archived": 1
+      },
+      "2": {
+        "level": 2,
+        "label": "Section Team Leader",
+        "abbr": "",
+        "changes": null,
+        "census_costs": false,
+        "visibility": 0,
+        "allow_duplicates": true,
+        "archived": 0
+      },
+      "1": {
+        "level": 1,
+        "label": "Section Team Member",
+        "abbr": "",
+        "changes": null,
+        "census_costs": false,
+        "visibility": 0,
+        "allow_duplicates": true,
+        "archived": 0
+      },
+      "8": {
+        "level": 8,
+        "label": "Treasurer",
+        "abbr": "",
+        "changes": null,
+        "census_costs": false,
+        "visibility": 0,
+        "allow_duplicates": true,
+        "archived": 0
+      },
+      "15": {
+        "level": 15,
+        "label": "Trustee",
+        "abbr": "",
+        "changes": null,
+        "census_costs": false,
+        "visibility": 0,
+        "allow_duplicates": true,
+        "archived": 0
+      },
+      "0": {
+        "level": 0,
+        "label": "Unspecified",
+        "abbr": "",
+        "changes": null,
+        "census_costs": false,
+        "visibility": 0,
+        "allow_duplicates": true,
+        "archived": 0
+      },
+      "10": {
+        "level": 10,
+        "label": "Waiting List Coordinator",
+        "abbr": "",
+        "changes": null,
+        "census_costs": false,
+        "visibility": 0,
+        "allow_duplicates": true,
+        "archived": 0
+      },
+      "3": {
+        "level": 3,
+        "label": "Young Leader",
+        "abbr": "YL",
+        "changes": null,
+        "census_costs": false,
+        "visibility": 0,
+        "allow_duplicates": true,
+        "archived": 0
+      }
+    },
+    "beavers": [
+      {
+        "level": 0,
+        "label": "Normal",
+        "abbr": "",
+        "changes": null,
+        "census_costs": false,
+        "visibility": 0,
+        "allow_duplicates": true,
+        "archived": 0
+      },
+      {
+        "level": 1,
+        "label": "Assistant Lodge Leader",
+        "abbr": "ALL",
+        "changes": null,
+        "census_costs": false,
+        "visibility": 0,
+        "allow_duplicates": true,
+        "archived": 0
+      },
+      {
+        "level": 2,
+        "label": "Lodge Leader",
+        "abbr": "LL",
+        "changes": null,
+        "census_costs": false,
+        "visibility": 0,
+        "allow_duplicates": true,
+        "archived": 0
+      },
+      {
+        "level": 3,
+        "label": "Senior Lodge Leader",
+        "abbr": "SLL",
+        "changes": null,
+        "census_costs": false,
+        "visibility": 0,
+        "allow_duplicates": true,
+        "archived": 0
+      }
+    ],
+    "ausscouts": [
+      {
+        "level": 0,
+        "label": "Normal",
+        "abbr": "",
+        "changes": null,
+        "census_costs": false,
+        "visibility": 0,
+        "allow_duplicates": true,
+        "archived": 0
+      },
+      {
+        "level": 1,
+        "label": "Assistant Patrol Leader",
+        "abbr": "APL",
+        "changes": null,
+        "census_costs": false,
+        "visibility": 0,
+        "allow_duplicates": true,
+        "archived": 0
+      },
+      {
+        "level": 2,
+        "label": "Patrol Leader",
+        "abbr": "PL",
+        "changes": null,
+        "census_costs": false,
+        "visibility": 0,
+        "allow_duplicates": true,
+        "archived": 0
+      }
+    ],
+    "cubs": [
+      {
+        "level": 0,
+        "label": "Normal",
+        "abbr": "",
+        "changes": null,
+        "census_costs": false,
+        "visibility": 0,
+        "allow_duplicates": true,
+        "archived": 0
+      },
+      {
+        "level": 1,
+        "label": "Seconder",
+        "abbr": "2nd",
+        "changes": null,
+        "census_costs": false,
+        "visibility": 0,
+        "allow_duplicates": true,
+        "archived": 0
+      },
+      {
+        "level": 2,
+        "label": "Sixer",
+        "abbr": "6er",
+        "changes": null,
+        "census_costs": false,
+        "visibility": 0,
+        "allow_duplicates": true,
+        "archived": 0
+      },
+      {
+        "level": 3,
+        "label": "Senior Sixer",
+        "abbr": "S6er",
+        "changes": null,
+        "census_costs": false,
+        "visibility": 0,
+        "allow_duplicates": true,
+        "archived": 0
+      }
+    ],
+    "aujoeys": [
+      {
+        "level": 0,
+        "label": "Normal",
+        "abbr": "",
+        "changes": null,
+        "census_costs": false,
+        "visibility": 0,
+        "allow_duplicates": true,
+        "archived": 0
+      },
+      {
+        "level": 1,
+        "label": "Assistant Lodge Leader",
+        "abbr": "ALL",
+        "changes": null,
+        "census_costs": false,
+        "visibility": 0,
+        "allow_duplicates": true,
+        "archived": 0
+      },
+      {
+        "level": 2,
+        "label": "Lodge Leader",
+        "abbr": "LL",
+        "changes": null,
+        "census_costs": false,
+        "visibility": 0,
+        "allow_duplicates": true,
+        "archived": 0
+      }
+    ],
+    "earlyyears": [
+      {
+        "level": 0,
+        "label": "Normal",
+        "abbr": "",
+        "changes": null,
+        "census_costs": false,
+        "visibility": 0,
+        "allow_duplicates": true,
+        "archived": 0
+      }
+    ],
+    "aucubs": [
+      {
+        "level": 0,
+        "label": "Normal",
+        "abbr": "",
+        "changes": null,
+        "census_costs": false,
+        "visibility": 0,
+        "allow_duplicates": true,
+        "archived": 0
+      },
+      {
+        "level": 1,
+        "label": "Seconder",
+        "abbr": "2nd",
+        "changes": null,
+        "census_costs": false,
+        "visibility": 0,
+        "allow_duplicates": true,
+        "archived": 0
+      },
+      {
+        "level": 2,
+        "label": "Sixer",
+        "abbr": "6er",
+        "changes": null,
+        "census_costs": false,
+        "visibility": 0,
+        "allow_duplicates": true,
+        "archived": 0
+      }
+    ],
+    "explorers": [
+      {
+        "level": 0,
+        "label": "Normal",
+        "abbr": "",
+        "changes": null,
+        "census_costs": false,
+        "visibility": 0,
+        "allow_duplicates": true,
+        "archived": 0
+      },
+      {
+        "level": 1,
+        "label": "Assistant Patrol Leader",
+        "abbr": "APL",
+        "changes": null,
+        "census_costs": false,
+        "visibility": 0,
+        "allow_duplicates": true,
+        "archived": 0
+      },
+      {
+        "level": 2,
+        "label": "Patrol Leader",
+        "abbr": "PL",
+        "changes": null,
+        "census_costs": false,
+        "visibility": 0,
+        "allow_duplicates": true,
+        "archived": 0
+      },
+      {
+        "level": 3,
+        "label": "Senior Patrol Leader",
+        "abbr": "SPL",
+        "changes": null,
+        "census_costs": false,
+        "visibility": 0,
+        "allow_duplicates": true,
+        "archived": 0
+      }
+    ],
+    "iescouts": [
+      {
+        "level": 0,
+        "label": "Normal",
+        "abbr": "",
+        "changes": null,
+        "census_costs": false,
+        "visibility": 0,
+        "allow_duplicates": true,
+        "archived": 0
+      },
+      {
+        "level": 1,
+        "label": "Assistant Patrol Leader",
+        "abbr": "APL",
+        "changes": null,
+        "census_costs": false,
+        "visibility": 0,
+        "allow_duplicates": true,
+        "archived": 0
+      },
+      {
+        "level": 2,
+        "label": "Patrol Leader",
+        "abbr": "PL",
+        "changes": null,
+        "census_costs": false,
+        "visibility": 0,
+        "allow_duplicates": true,
+        "archived": 0
+      },
+      {
+        "level": 3,
+        "label": "Senior Patrol Leader",
+        "abbr": "SPL",
+        "changes": null,
+        "census_costs": false,
+        "visibility": 0,
+        "allow_duplicates": true,
+        "archived": 0
+      }
+    ],
+    "juniornavigators": [
+      {
+        "level": 0,
+        "label": "Normal",
+        "abbr": "",
+        "changes": null,
+        "census_costs": false,
+        "visibility": 0,
+        "allow_duplicates": true,
+        "archived": 0
+      },
+      {
+        "level": 1,
+        "label": "Assistant Team Leader",
+        "abbr": "ATL",
+        "changes": null,
+        "census_costs": false,
+        "visibility": 0,
+        "allow_duplicates": true,
+        "archived": 0
+      },
+      {
+        "level": 2,
+        "label": "Team Leader",
+        "abbr": "TL",
+        "changes": null,
+        "census_costs": false,
+        "visibility": 0,
+        "allow_duplicates": true,
+        "archived": 0
+      },
+      {
+        "level": 3,
+        "label": "Young Mentor",
+        "abbr": "YM",
+        "changes": null,
+        "census_costs": false,
+        "visibility": 0,
+        "allow_duplicates": true,
+        "archived": 0
+      }
+    ],
+    "scouts": [
+      {
+        "level": 0,
+        "label": "Normal",
+        "abbr": "",
+        "changes": null,
+        "census_costs": false,
+        "visibility": 0,
+        "allow_duplicates": true,
+        "archived": 0
+      },
+      {
+        "level": 1,
+        "label": "Assistant Patrol Leader",
+        "abbr": "APL",
+        "changes": null,
+        "census_costs": false,
+        "visibility": 0,
+        "allow_duplicates": true,
+        "archived": 0
+      },
+      {
+        "level": 2,
+        "label": "Patrol Leader",
+        "abbr": "PL",
+        "changes": null,
+        "census_costs": false,
+        "visibility": 0,
+        "allow_duplicates": true,
+        "archived": 0
+      },
+      {
+        "level": 3,
+        "label": "Senior Patrol Leader",
+        "abbr": "SPL",
+        "changes": null,
+        "census_costs": false,
+        "visibility": 0,
+        "allow_duplicates": true,
+        "archived": 0
+      }
+    ],
+    "seniornavigators": [
+      {
+        "level": 0,
+        "label": "Normal",
+        "abbr": "",
+        "changes": null,
+        "census_costs": false,
+        "visibility": 0,
+        "allow_duplicates": true,
+        "archived": 0
+      },
+      {
+        "level": 1,
+        "label": "Assistant Team Leader",
+        "abbr": "ATL",
+        "changes": null,
+        "census_costs": false,
+        "visibility": 0,
+        "allow_duplicates": true,
+        "archived": 0
+      },
+      {
+        "level": 2,
+        "label": "Team Leader",
+        "abbr": "TL",
+        "changes": null,
+        "census_costs": false,
+        "visibility": 0,
+        "allow_duplicates": true,
+        "archived": 0
+      },
+      {
+        "level": 3,
+        "label": "Young Mentor",
+        "abbr": "YM",
+        "changes": null,
+        "census_costs": false,
+        "visibility": 0,
+        "allow_duplicates": true,
+        "archived": 0
+      }
+    ],
+    "water": {
+      "11": {
+        "level": 11,
+        "label": "Adult Member",
+        "abbr": "",
+        "changes": null,
+        "census_costs": false,
+        "visibility": 0,
+        "allow_duplicates": true,
+        "archived": 0
+      },
+      "1": {
+        "level": 1,
+        "label": "Chairman",
+        "abbr": "",
+        "changes": null,
+        "census_costs": false,
+        "visibility": 0,
+        "allow_duplicates": true,
+        "archived": 0
+      },
+      "6": {
+        "level": 6,
+        "label": "Child Protection Officer",
+        "abbr": "",
+        "changes": null,
+        "census_costs": false,
+        "visibility": 0,
+        "allow_duplicates": true,
+        "archived": 0
+      },
+      "8": {
+        "level": 8,
+        "label": "Coach",
+        "abbr": "",
+        "changes": null,
+        "census_costs": false,
+        "visibility": 0,
+        "allow_duplicates": true,
+        "archived": 0
+      },
+      "7": {
+        "level": 7,
+        "label": "Coaching Development Officer",
+        "abbr": "",
+        "changes": null,
+        "census_costs": false,
+        "visibility": 0,
+        "allow_duplicates": true,
+        "archived": 0
+      },
+      "18": {
+        "level": 18,
+        "label": "Committee Member",
+        "abbr": "",
+        "changes": null,
+        "census_costs": false,
+        "visibility": 0,
+        "allow_duplicates": true,
+        "archived": 0
+      },
+      "5": {
+        "level": 5,
+        "label": "Grants Officer",
+        "abbr": "",
+        "changes": null,
+        "census_costs": false,
+        "visibility": 0,
+        "allow_duplicates": true,
+        "archived": 0
+      },
+      "16": {
+        "level": 16,
+        "label": "Junior Chairman",
+        "abbr": "",
+        "changes": null,
+        "census_costs": false,
+        "visibility": 0,
+        "allow_duplicates": true,
+        "archived": 0
+      },
+      "17": {
+        "level": 17,
+        "label": "Junior Committee",
+        "abbr": "",
+        "changes": null,
+        "census_costs": false,
+        "visibility": 0,
+        "allow_duplicates": true,
+        "archived": 0
+      },
+      "12": {
+        "level": 12,
+        "label": "Junior Member",
+        "abbr": "",
+        "changes": null,
+        "census_costs": false,
+        "visibility": 0,
+        "allow_duplicates": true,
+        "archived": 0
+      },
+      "4": {
+        "level": 4,
+        "label": "Membership Secretary",
+        "abbr": "",
+        "changes": null,
+        "census_costs": false,
+        "visibility": 0,
+        "allow_duplicates": true,
+        "archived": 0
+      },
+      "0": {
+        "level": 0,
+        "label": "Normal",
+        "abbr": "",
+        "changes": null,
+        "census_costs": false,
+        "visibility": 0,
+        "allow_duplicates": true,
+        "archived": 0
+      },
+      "15": {
+        "level": 15,
+        "label": "Parent Helper",
+        "abbr": "",
+        "changes": null,
+        "census_costs": false,
+        "visibility": 0,
+        "allow_duplicates": true,
+        "archived": 0
+      },
+      "13": {
+        "level": 13,
+        "label": "Scout/Cub Member",
+        "abbr": "",
+        "changes": null,
+        "census_costs": false,
+        "visibility": 0,
+        "allow_duplicates": true,
+        "archived": 0
+      },
+      "3": {
+        "level": 3,
+        "label": "Secretary",
+        "abbr": "",
+        "changes": null,
+        "census_costs": false,
+        "visibility": 0,
+        "allow_duplicates": true,
+        "archived": 0
+      },
+      "9": {
+        "level": 9,
+        "label": "Trainee coach",
+        "abbr": "",
+        "changes": null,
+        "census_costs": false,
+        "visibility": 0,
+        "allow_duplicates": true,
+        "archived": 0
+      },
+      "10": {
+        "level": 10,
+        "label": "Treasurer",
+        "abbr": "",
+        "changes": null,
+        "census_costs": false,
+        "visibility": 0,
+        "allow_duplicates": true,
+        "archived": 0
+      },
+      "2": {
+        "level": 2,
+        "label": "Vice Chairman",
+        "abbr": "",
+        "changes": null,
+        "census_costs": false,
+        "visibility": 0,
+        "allow_duplicates": true,
+        "archived": 0
+      },
+      "14": {
+        "level": 14,
+        "label": "Volunteer Coordinator",
+        "abbr": "",
+        "changes": null,
+        "census_costs": false,
+        "visibility": 0,
+        "allow_duplicates": true,
+        "archived": 0
+      }
+    },
+    "zadventure": [
+      {
+        "level": 0,
+        "label": "Normal",
+        "abbr": "",
+        "changes": null,
+        "census_costs": false,
+        "visibility": 0,
+        "allow_duplicates": true,
+        "archived": 0
+      },
+      {
+        "level": 1,
+        "label": "Assistant",
+        "abbr": "AL",
+        "changes": null,
+        "census_costs": false,
+        "visibility": 0,
+        "allow_duplicates": true,
+        "archived": 0
+      },
+      {
+        "level": 2,
+        "label": "Leader",
+        "abbr": "L",
+        "changes": null,
+        "census_costs": false,
+        "visibility": 0,
+        "allow_duplicates": true,
+        "archived": 0
+      }
+    ]
+  },
+  "extraSectionTypes": {
+    "staged": "n/a",
+    "adults": "Adults",
+    "aucubs": "Australian Cubs",
+    "zadventure": "Adventure",
+    "campsite": "Campsite",
+    "national": "National Office"
+  },
+  "featurelevels": {
+    "addbadge": 3,
+    "badgeeligibility": 3,
+    "badge_records": 1,
+    "badgepdf": 3,
+    "badgespreadsheet": 3,
+    "calendarsync": 3,
+    "census": 3,
+    "eventdownload": 3,
+    "events": 2,
+    "eventsharing": 2,
+    "exportemail": 2,
+    "exportpatrolpdf": 3,
+    "extrapdf": 3,
+    "extras": 2,
+    "filestorage": 3,
+    "finances": 3,
+    "genericpdf": 3,
+    "giftaid": 3,
+    "helloworld": 99,
+    "ics": 3,
+    "intouchpdf": 2,
+    "mobile": 2,
+    "outstanding": 2,
+    "printoutstanding": 3,
+    "programmepdf": 3,
+    "quartermaster": 3,
+    "recordcard": 3,
+    "register": 2,
+    "registerpdf": 3,
+    "reporting": 1,
+    "sendemail": 2,
+    "sharebadgestock": 3,
+    "showprogrammeinbadgerecords": 3,
+    "spreadsheet": 3,
+    "survey": 3,
+    "recipes": 3,
+    "risk_assessments": 3,
+    "badgewizard": 3,
+    "activity": 2,
+    "badgestock": 1,
+    "programme": 1,
+    "accidentforms": 3
+  },
+  "changedlevels": [],
+  "availableRoles": {
+    "nobody": "Nobody",
+    "siteadministrator": "OSM Site Administrator"
+  },
+  "globalAccessRoles": [
+    {
+      "user_role": "siteadministrator",
+      "access_type": "advanced_helpdesk_tools",
+      "id": "n/a"
+    },
+    {
+      "user_role": "_support",
+      "access_type": "audit_member_support",
+      "id": "*"
+    },
+    {
+      "user_role": "_support",
+      "access_type": "audit_member_support",
+      "id": "n/a"
+    },
+    {
+      "user_role": "_support",
+      "access_type": "audit_section_support",
+      "id": "*"
+    },
+    {
+      "user_role": "_support",
+      "access_type": "audit_section_support",
+      "id": "n/a"
+    },
+    {
+      "user_role": "_support",
+      "access_type": "audit_user_support",
+      "id": "*"
+    },
+    {
+      "user_role": "_oym_site_administrator",
+      "access_type": "chat_room_focus_group",
+      "id": "new_post"
+    },
+    {
+      "user_role": "_finances",
+      "access_type": "edit_detailed_finances",
+      "id": "*"
+    },
+    {
+      "user_role": "_oym_site_administrator",
+      "access_type": "edit_gilbert",
+      "id": "n/a"
+    },
+    {
+      "user_role": "siteadministrator",
+      "access_type": "edit_live_badges",
+      "id": "n/a"
+    },
+    {
+      "user_role": "siteadministrator",
+      "access_type": "edit_myscout_templates",
+      "id": "n/a"
+    },
+    {
+      "user_role": "_finances",
+      "access_type": "entrepreneur_fund",
+      "id": "view"
+    },
+    {
+      "user_role": "_oym_site_administrator",
+      "access_type": "entrepreneur_fundxx",
+      "id": "view"
+    },
+    {
+      "user_role": "_support",
+      "access_type": "facilities_delete",
+      "id": "n/a"
+    },
+    {
+      "user_role": "siteadministrator",
+      "access_type": "feature_request",
+      "id": "update_status"
+    },
+    {
+      "user_role": "_support",
+      "access_type": "grant_access",
+      "id": "*"
+    },
+    {
+      "user_role": "siteadministrator",
+      "access_type": "helpdesk_add_user",
+      "id": "request"
+    },
+    {
+      "user_role": "siteadministrator",
+      "access_type": "kill_switches",
+      "id": "n/a"
+    },
+    {
+      "user_role": "_oym_site_administrator",
+      "access_type": "manage_site_config",
+      "id": "edit"
+    },
+    {
+      "user_role": "_oym_site_administrator",
+      "access_type": "manage_site_config",
+      "id": "view"
+    },
+    {
+      "user_role": "_oym_site_administrator",
+      "access_type": "moderate_global_forums",
+      "id": "n/a"
+    },
+    {
+      "user_role": "_support",
+      "access_type": "online_badge_order",
+      "id": "*"
+    },
+    {
+      "user_role": "badge_orders",
+      "access_type": "online_badge_order",
+      "id": "*"
+    },
+    {
+      "user_role": "_support",
+      "access_type": "onlinepayments_edit_require_mode",
+      "id": "n/a"
+    },
+    {
+      "user_role": "_all",
+      "access_type": "preview_badge_wizard",
+      "id": "n/a"
+    },
+    {
+      "user_role": "_support",
+      "access_type": "remove_from_section",
+      "id": "n/a"
+    },
+    {
+      "user_role": "_support",
+      "access_type": "unlock_gocardless",
+      "id": "Chargedback"
+    },
+    {
+      "user_role": "_support",
+      "access_type": "unlock_gocardless",
+      "id": "Received"
+    },
+    {
+      "user_role": "_support",
+      "access_type": "unlock_gocardless",
+      "id": "Refunded"
+    },
+    {
+      "user_role": "_marketing",
+      "access_type": "view_ad_manager",
+      "id": "*"
+    },
+    {
+      "user_role": "_finances",
+      "access_type": "view_basic_finances",
+      "id": "*"
+    },
+    {
+      "user_role": "_marketing",
+      "access_type": "view_basic_finances",
+      "id": "*"
+    },
+    {
+      "user_role": "_finances",
+      "access_type": "view_detailed_finances",
+      "id": "*"
+    },
+    {
+      "user_role": "_support",
+      "access_type": "view_helpdesk",
+      "id": "*"
+    }
+  ],
+  "terminology": {
+    "Level_1": "Group",
+    "Level_2": "District",
+    "Level_3": "County",
+    "Level_4": "Region/Area",
+    "Level_5": "Country",
+    "Level_6": "Association"
+  },
+  "forms": [
+    {
+      "name": "Accident Forms",
+      "menu_config": [
+        {
+          "reference": "ext.members.health",
+          "menu": "members",
+          "area": "members",
+          "offline": false,
+          "order": 10,
+          "subscription_feature": "accidentforms",
+          "params": {
+            "props": {
+              "tabs": [
+                {
+                  "state": "null",
+                  "label": "Draft"
+                },
+                {
+                  "state": "complete",
+                  "label": "Finalised"
+                }
+              ],
+              "title": "Accident Forms",
+              "form_id": 1
+            },
+            "id": "ext_forms_FormListPane1"
+          },
+          "visibility": [
+            [
+              {
+                "type": "permission",
+                "item": "member",
+                "value": 10
+              },
+              {
+                "type": "section_type_config",
+                "item": "showDetails",
+                "value": true
+              },
+              {
+                "type": "feature_preview",
+                "item": "ext.members.contact",
+                "value": true
+              }
+            ]
+          ],
+          "title": "Accident Forms",
+          "title_is_translated": true,
+          "react": "ext_forms_FormListPane"
+        }
+      ]
+    },
+    {
+      "name": "Medication History",
+      "menu_config": [
+        {
+          "reference": "ext.members.medication",
+          "menu": "members",
+          "area": "members",
+          "offline": false,
+          "order": 11,
+          "subscription_feature": "accidentforms",
+          "params": {
+            "props": {
+              "tabs": [
+                {
+                  "state": "null",
+                  "label": "Ongoing"
+                },
+                {
+                  "state": "complete",
+                  "label": "Complete"
+                }
+              ],
+              "title": "Medication History",
+              "form_id": 2
+            },
+            "id": "ext_forms_FormListPane2"
+          },
+          "visibility": [
+            [
+              {
+                "type": "permission",
+                "item": "member",
+                "value": 10
+              },
+              {
+                "type": "section_type_config",
+                "item": "showDetails",
+                "value": true
+              },
+              {
+                "type": "feature_preview",
+                "item": "ext.members.contact",
+                "value": true
+              }
+            ]
+          ],
+          "title": "Medication History",
+          "title_is_translated": true,
+          "react": "ext_forms_FormListPane"
+        }
+      ]
+    },
+    {
+      "name": "Incident Logs",
+      "menu_config": [
+        {
+          "reference": "ext.members.incidents",
+          "menu": "members",
+          "area": "members",
+          "offline": false,
+          "order": 15,
+          "subscription_feature": "accidentforms",
+          "params": {
+            "props": {
+              "tabs": [
+                {
+                  "state": "null",
+                  "label": "Ongoing"
+                },
+                {
+                  "state": "complete",
+                  "label": "Complete"
+                }
+              ],
+              "title": "Incident Logs",
+              "form_id": 3
+            },
+            "id": "ext_forms_FormListPane3"
+          },
+          "visibility": [
+            [
+              {
+                "type": "permission",
+                "item": "member",
+                "value": 10
+              },
+              {
+                "type": "section_type_config",
+                "item": "showDetails",
+                "value": true
+              },
+              {
+                "type": "feature_preview",
+                "item": "ext.members.contact",
+                "value": true
+              }
+            ]
+          ],
+          "title": "Incident Logs",
+          "title_is_translated": true,
+          "react": "ext_forms_FormListPane"
+        }
+      ]
+    },
+    {
+      "name": "Entrepreneur Fund",
+      "menu_config": [
+        {
+          "reference": "ext.forms.entrepreneur",
+          "menu": "sectionadmin",
+          "area": "grants",
+          "offline": false,
+          "order": 1000,
+          "subscription_feature": "accidentforms",
+          "params": {
+            "props": {
+              "tabs": [
+                {
+                  "state": "null",
+                  "label": "Draft"
+                },
+                {
+                  "state": "complete",
+                  "label": "Submitted"
+                },
+                {
+                  "state": "approved",
+                  "label": "Approved"
+                },
+                {
+                  "state": "declined",
+                  "label": "Declined"
+                }
+              ],
+              "title": "Entrepreneur Fund",
+              "form_id": 4
+            },
+            "id": "ext_forms_FormListPane4"
+          },
+          "visibility": [
+            [
+              {
+                "type": "permission",
+                "item": "user",
+                "value": 10
+              },
+              {
+                "type": "globals",
+                "item": "section",
+                "value": "scouts"
+              }
+            ],
+            [
+              {
+                "type": "permission",
+                "item": "user",
+                "value": 10
+              },
+              {
+                "type": "globals",
+                "item": "section",
+                "value": "explorers"
+              }
+            ]
+          ],
+          "title": "Entrepreneur Fund",
+          "title_is_translated": true,
+          "react": "ext_forms_FormListPane"
+        }
+      ]
+    }
+  ],
+  "default_terminology": {
+    "section": "section",
+    "sections": "sections",
+    "Section": "Section",
+    "Sections": "Sections",
+    "Group": "Group",
+    "group": "group",
+    "District": "District",
+    "Level_1": "Group",
+    "Level_2": "District",
+    "Level_3": "Area",
+    "Level_4": "Country",
+    "Level_5": "",
+    "Level_6": ""
+  },
+  "leaderPatrolIds": [
+    -2,
+    -3
+  ]
+}

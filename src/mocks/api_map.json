@@ -1,0 +1,306 @@
+[
+  {
+    "original_file": "getEventSummary2.txt",
+    "mock_data_file": "event_summary_2.json",
+    "full_url": "https://www.onlinescoutmanager.co.uk/v3/events/event/1631576/summary",
+    "path": "/v3/events/event/1631576/summary",
+    "method": "GET",
+    "action": null,
+    "query_params": {},
+    "is_static_resource": false
+  },
+  {
+    "original_file": "getStartupConfig.txt",
+    "mock_data_file": "startup_config.json",
+    "full_url": "https://oymcdn.co.uk/ext/generic/startup/?action=getConfig&v=212d00964cda7f9991c2073c137420df",
+    "path": "/ext/generic/startup/",
+    "method": "GET",
+    "action": "getConfig",
+    "query_params": {
+      "action": [
+        "getConfig"
+      ],
+      "v": [
+        "212d00964cda7f9991c2073c137420df"
+      ]
+    },
+    "is_static_resource": false
+  },
+  {
+    "original_file": "getEvents.txt",
+    "mock_data_file": "events.json",
+    "full_url": "https://www.onlinescoutmanager.co.uk/ext/events/summary/?action=get&sectionid=37458&termid=842886",
+    "path": "/ext/events/summary/",
+    "method": "GET",
+    "action": "get",
+    "query_params": {
+      "action": [
+        "get"
+      ],
+      "sectionid": [
+        "37458"
+      ],
+      "termid": [
+        "842886"
+      ]
+    },
+    "is_static_resource": false
+  },
+  {
+    "original_file": "getBadgeByPerson.txt",
+    "mock_data_file": "badge_assignments.json",
+    "full_url": "https://www.onlinescoutmanager.co.uk/ext/badges/badgesbyperson/?action=loadBadgesByMember&section=explorers&sectionid=37458&term_id=842886",
+    "path": "/ext/badges/badgesbyperson/",
+    "method": "GET",
+    "action": "loadBadgesByMember",
+    "query_params": {
+      "action": [
+        "loadBadgesByMember"
+      ],
+      "section": [
+        "explorers"
+      ],
+      "sectionid": [
+        "37458"
+      ],
+      "term_id": [
+        "842886"
+      ]
+    },
+    "is_static_resource": false
+  },
+  {
+    "original_file": "memberImage.txt",
+    "mock_data_file": "images.json",
+    "full_url": "https://oymcdn.co.uk/sites/onlinescoutmanager.co.uk/public/member_photos/746000/746425/54efff76-0e07-4c58-9453-9528de978d57/125x125_0.jpg",
+    "path": "/sites/onlinescoutmanager.co.uk/public/member_photos/746000/746425/54efff76-0e07-4c58-9453-9528de978d57/125x125_0.jpg",
+    "method": "GET",
+    "action": null,
+    "query_params": {},
+    "is_static_resource": true
+  },
+  {
+    "original_file": "getStartupData.txt",
+    "mock_data_file": "startup_data.json",
+    "full_url": "https://www.onlinescoutmanager.co.uk/ext/generic/startup/?action=getData&client_time=1764510520335",
+    "path": "/ext/generic/startup/",
+    "method": "GET",
+    "action": "getData",
+    "query_params": {
+      "action": [
+        "getData"
+      ],
+      "client_time": [
+        "1764510520335"
+      ]
+    },
+    "is_static_resource": false
+  },
+  {
+    "original_file": "getBadgeRecord.txt",
+    "mock_data_file": "badge_records.json",
+    "full_url": "https://www.onlinescoutmanager.co.uk/ext/badges/records/?action=getBadgeRecords&term_id=842886&section=explorers&badge_id=391&section_id=37458&badge_version=1&payload=1&type_id=1",
+    "path": "/ext/badges/records/",
+    "method": "GET",
+    "action": "getBadgeRecords",
+    "query_params": {
+      "action": [
+        "getBadgeRecords"
+      ],
+      "term_id": [
+        "842886"
+      ],
+      "section": [
+        "explorers"
+      ],
+      "badge_id": [
+        "391"
+      ],
+      "section_id": [
+        "37458"
+      ],
+      "badge_version": [
+        "1"
+      ],
+      "payload": [
+        "1"
+      ],
+      "type_id": [
+        "1"
+      ]
+    },
+    "is_static_resource": false
+  },
+  {
+    "original_file": "getFlexiRecords.txt",
+    "mock_data_file": "flexi_definitions.json",
+    "full_url": "https://www.onlinescoutmanager.co.uk/ext/members/flexirecords/?action=getFlexiRecords&sectionid=37458&archived=n",
+    "path": "/ext/members/flexirecords/",
+    "method": "GET",
+    "action": "getFlexiRecords",
+    "query_params": {
+      "action": [
+        "getFlexiRecords"
+      ],
+      "sectionid": [
+        "37458"
+      ],
+      "archived": [
+        "n"
+      ]
+    },
+    "is_static_resource": false
+  },
+  {
+    "original_file": "getFlexiRecordStructure.txt",
+    "mock_data_file": "flexi_structure.json",
+    "full_url": "https://www.onlinescoutmanager.co.uk/ext/members/flexirecords/?action=getStructure&sectionid=37458&extraid=73915",
+    "path": "/ext/members/flexirecords/",
+    "method": "GET",
+    "action": "getStructure",
+    "query_params": {
+      "action": [
+        "getStructure"
+      ],
+      "sectionid": [
+        "37458"
+      ],
+      "extraid": [
+        "73915"
+      ]
+    },
+    "is_static_resource": false
+  },
+  {
+    "original_file": "getEventDetails.txt",
+    "mock_data_file": "event_details.json",
+    "full_url": "https://www.onlinescoutmanager.co.uk/v3/events/event/1623399/basic_details",
+    "path": "/v3/events/event/1623399/basic_details",
+    "method": "GET",
+    "action": null,
+    "query_params": {},
+    "is_static_resource": false
+  },
+  {
+    "original_file": "getEventSummary.txt",
+    "mock_data_file": "event_summary.json",
+    "full_url": "https://www.onlinescoutmanager.co.uk/v3/events/event/1623399/summary",
+    "path": "/v3/events/event/1623399/summary",
+    "method": "GET",
+    "action": null,
+    "query_params": {},
+    "is_static_resource": false
+  },
+  {
+    "original_file": "getmembers.txt",
+    "mock_data_file": "members.json",
+    "full_url": "https://www.onlinescoutmanager.co.uk/ext/members/contact/?action=getListOfMembers&sort=dob&sectionid=37458&termid=842886&section=explorers",
+    "path": "/ext/members/contact/",
+    "method": "GET",
+    "action": "getListOfMembers",
+    "query_params": {
+      "action": [
+        "getListOfMembers"
+      ],
+      "sort": [
+        "dob"
+      ],
+      "sectionid": [
+        "37458"
+      ],
+      "termid": [
+        "842886"
+      ],
+      "section": [
+        "explorers"
+      ]
+    },
+    "is_static_resource": false
+  },
+  {
+    "original_file": "getPatrols.txt",
+    "mock_data_file": "patrols.json",
+    "full_url": "https://www.onlinescoutmanager.co.uk/ext/members/patrols/?action=getPatrolsWithPeople&sectionid=37458&termid=842886&include_no_patrol=y",
+    "path": "/ext/members/patrols/",
+    "method": "GET",
+    "action": "getPatrolsWithPeople",
+    "query_params": {
+      "action": [
+        "getPatrolsWithPeople"
+      ],
+      "sectionid": [
+        "37458"
+      ],
+      "termid": [
+        "842886"
+      ],
+      "include_no_patrol": [
+        "y"
+      ]
+    },
+    "is_static_resource": false
+  },
+  {
+    "original_file": "getBadges.txt",
+    "mock_data_file": "badges.json",
+    "full_url": "https://www.onlinescoutmanager.co.uk/ext/badges/records/?action=getAvailableBadges&section=explorers&sectionid=37458&type_id=1&payload=1",
+    "path": "/ext/badges/records/",
+    "method": "GET",
+    "action": "getAvailableBadges",
+    "query_params": {
+      "action": [
+        "getAvailableBadges"
+      ],
+      "section": [
+        "explorers"
+      ],
+      "sectionid": [
+        "37458"
+      ],
+      "type_id": [
+        "1"
+      ],
+      "payload": [
+        "1"
+      ]
+    },
+    "is_static_resource": false
+  },
+  {
+    "original_file": "getEventAttendance.txt",
+    "mock_data_file": "attendance.json",
+    "full_url": "https://www.onlinescoutmanager.co.uk/v3/events/event/1631576/members/attendance?term_id=842886",
+    "path": "/v3/events/event/1631576/members/attendance",
+    "method": "GET",
+    "action": null,
+    "query_params": {
+      "term_id": [
+        "842886"
+      ]
+    },
+    "is_static_resource": false
+  },
+  {
+    "original_file": "getFlexiRecordData.txt",
+    "mock_data_file": "flexi_data.json",
+    "full_url": "https://www.onlinescoutmanager.co.uk/ext/members/flexirecords/?action=getData&extraid=73915&sectionid=37458&termid=842886&nototal",
+    "path": "/ext/members/flexirecords/",
+    "method": "GET",
+    "action": "getData",
+    "query_params": {
+      "action": [
+        "getData"
+      ],
+      "extraid": [
+        "73915"
+      ],
+      "sectionid": [
+        "37458"
+      ],
+      "termid": [
+        "842886"
+      ]
+    },
+    "is_static_resource": false
+  }
+]
