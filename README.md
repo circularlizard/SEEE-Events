@@ -82,6 +82,9 @@ npm test
 
 # Watch mode
 npm run test:watch
+
+# Phase 1 Safety Layer validation
+npm run validate:safety
 ```
 
 Tests use Mock Service Worker (MSW) to intercept network requests.
