@@ -76,7 +76,7 @@ function generateHandlers() {
     if (method === 'GET') {
       return http.get(full_url, () => {
         // Simulate API rate limit headers
-        return HttpResponse.json(mockData, {
+        return HttpResponse.json(mockData as Record<string, unknown>, {
           headers: {
             'X-RateLimit-Limit': '1000',
             'X-RateLimit-Remaining': '950',
@@ -100,7 +100,7 @@ function generateHandlers() {
     }
     
     // Fallback
-    return http.get(full_url, () => HttpResponse.json(mockData))
+    return http.get(full_url, () => HttpResponse.json(mockData as Record<string, unknown>))
   })
   
   return handlers
