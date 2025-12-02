@@ -180,12 +180,13 @@ All agents must adhere to this structure. Do not create new top-level directorie
   * [x] **Seeding:** Create src/lib/config-loader.ts to load defaults.json into Redis if empty (Required for User Role detection).  
 * [ ] **2.3 Initialization Flow:**  
   * [ ] Implement getStartupData fetch on app load (requires Auth & Config).  
-  * [ ] Build **Section Picker Modal** if user has access to multiple sections.  
+  
 * [ ] **2.4 App Shell & Login UI:**  
   * [ ] **Theme Configuration:**  
     1. [ ] Select **Typeface**: Choose a modern, readable sans-serif (e.g., Inter or Geist Sans) as per "Clean & Modern" requirement.  
     2. [ ] Select **Palette**: Define CSS variables for Primary (Brand), Secondary, Destructive, and Muted colors in globals.css. Ensure high contrast and professional look (e.g., Slate/Zinc neutrals + a bold accent).  
     3. [ ] **Radius & Spacing**: Define consistent border-radius and spacing tokens.  
+  * [ ] Build **Section Picker Modal** if user has access to multiple sections (styled with theme tokens).  
   * [ ] **Login Screen:** Implement src/app/page.tsx (Root/Login) with:  
     1. [ ] "Sign in with OSM" button (triggers real OAuth).  
     2. [ ] "Dev: Mock Login" button (conditionally rendered only if MOCK_AUTH_ENABLED=true).  
