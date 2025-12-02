@@ -151,6 +151,55 @@ All agents must adhere to this structure. Do not create new top-level directorie
   * [x] Created middleware.ts for route protection (dashboard routes and /api/proxy require authentication).  
   * [x] Created TypeScript type definitions (src/types/next-auth.d.ts) for session and JWT.  
   * [ ] **TEST (Manual):** Verify authentication flow once OSM OAuth credentials are configured in .env.local.  
+
+* [ ] **2.1.A ALTERNATE Authentication (Architecture 5.7):**  
+  * [ ] **Environment Setup:** Configure .env.local to use **HTTPS**:  
+    1. OSM_API_BASE_URL: The root URL for OSM (e.g., https://www.onlinescoutmanager.co.uk).  
+    2. OSM_CLIENT_ID & OSM_CLIENT_SECRET: From OSM Developer Portal.  
+    3. NEXTAUTH_SECRET: Generated string.  
+    4. NEXTAUTH_URL: https://localhost:3000 (HTTPS Required).  
+    5. MOCK_AUTH_ENABLED: true to bypass OSM (Offline Mode).  
+    6. NEXT_PUBLIC_USE_MOCK_DATA: true to use JSON files instead of Proxy.  
+  * [ ] **Callback Registration:** Ensure https://localhost:3000/api/auth/callback/osm is registered in OSM Developer Portal.  
+  * [ ] Install next-auth.  
+  * [ ] Configure src/lib/auth.ts:  
+    1. **OSM Provider:** Standard OAuth 2.0 flow.  
+    2. **Mock Provider:** Custom Credential provider triggered by MOCK_AUTH_ENABLED=true that returns a dummy session.  
+  * [ ] Implement **Token Rotation Strategy** (refresh_token) to handle 1-hour expiry (Skip for Mock Provider).  
+  * [ ] Create app/api/auth/[...nextauth]/route.ts.  
+  * [ ] **TEST (Manual):** Verify 3 Operation Modes:  
+    1. **Real Auth + Real Data:** MOCK_AUTH_ENABLED=false, NEXT_PUBLIC_USE_MOCK_DATA=false (Production).  
+    2. **Real Auth + Mock Data:** MOCK_AUTH_ENABLED=false, NEXT_PUBLIC_USE_MOCK_DATA=true (Safe Dev).  
+    3. **Mock Auth + Mock Data:** MOCK_AUTH_ENABLED=true, NEXT_PUBLIC_USE_MOCK_DATA=true (Offline/CI).  
+
+* [ ] **2.1.1 Mock Authentication & Multi-Mode Support:**  
+  **Goal:** Enable offline development and CI testing without OSM credentials (addresses 2.1.A requirements).
+  * [ ] **Environment Variables:**
+    * [ ] Add `MOCK_AUTH_ENABLED` to .env.example (defaults to `false`)
+    * [ ] Verify `NEXT_PUBLIC_USE_MSW` exists for MSW control (already configured in Phase 0)
+  * [ ] **Mock Provider Implementation:**
+    * [ ] Add mock credentials provider to `src/lib/auth.ts` that:
+      1. Returns a dummy session when `MOCK_AUTH_ENABLED=true`
+      2. Bypasses OAuth flow entirely
+      3. Provides fixed user data (e.g., "Mock User", mock@example.com)
+  * [ ] **Conditional Provider Loading:**
+    * [ ] Update `src/lib/auth.ts` to conditionally include OSM or Mock provider based on `MOCK_AUTH_ENABLED`
+    * [ ] Ensure token rotation is skipped for Mock provider
+  * [ ] **Mock Session Data:**
+    * [ ] Create `src/mocks/mockSession.ts` with:
+      1. Mock user profile (id, name, email, roles)
+      2. Mock section access (to test section picker with multiple sections)
+      3. Mock roles (admin, standard viewer, read-only)
+  * [ ] **Documentation:**
+    * [ ] Update README with three operation modes:
+      1. **Real Auth + Real Data:** Production mode
+      2. **Real Auth + Mock Data:** Safe development with real OAuth
+      3. **Mock Auth + Mock Data:** Offline/CI mode (no credentials needed)
+  * [ ] **Testing:**
+    * [ ] Verify Mock Auth + Mock Data mode works without OSM credentials
+    * [ ] Verify switching between modes via environment variables
+    * [ ] Test middleware allows mock sessions through protected routes
+
 * [ ] **2.2 State & Configuration Seeding:**  
   * [ ] Setup TanStack Query (staleTime: 5 mins) for API data.  
   * [ ] Setup Zustand for Session state (Section ID, User Role).  
