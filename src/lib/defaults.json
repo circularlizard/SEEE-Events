@@ -1,0 +1,39 @@
+{
+  "version": "1.0.0",
+  "description": "Default configuration for SEEE Expedition Dashboard",
+  "userRoles": {
+    "admin": {
+      "permissions": ["read", "write", "delete", "configure"],
+      "accessStrategy": "all"
+    },
+    "standard": {
+      "permissions": ["read", "write"],
+      "accessStrategy": "patrol_or_event"
+    },
+    "readonly": {
+      "permissions": ["read"],
+      "accessStrategy": "all"
+    }
+  },
+  "badgeMappings": {
+    "firstAid": "123",
+    "camping": "456",
+    "hiking": "789"
+  },
+  "flexiColumnMappings": {
+    "tentGroup": "Tent Group",
+    "dietaryRequirements": "Dietary Requirements",
+    "medicalNotes": "Medical Notes",
+    "emergencyContact": "Emergency Contact"
+  },
+  "rateLimit": {
+    "maxRequests": 100,
+    "windowMs": 60000,
+    "safetyBuffer": 0.8
+  },
+  "cache": {
+    "defaultTTL": 300,
+    "startupDataTTL": 3600,
+    "eventDataTTL": 600
+  }
+}

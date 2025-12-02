@@ -174,10 +174,10 @@ All agents must adhere to this structure. Do not create new top-level directorie
        1. **Real Auth + Real Data:** Production mode  
        2. **Real Auth + Mock Data:** Safe development with real OAuth  
        3. **Mock Auth + Mock Data:** Offline/CI mode (no credentials needed)  
-* [ ] **2.2 State & Configuration Seeding:**  
-  * [ ] Setup TanStack Query (staleTime: 5 mins) for API data.  
-  * [ ] Setup Zustand for Session state (Section ID, User Role).  
-  * [ ] **Seeding:** Create src/lib/config-loader.ts to load defaults.json into Redis if empty (Required for User Role detection).  
+* [x] **2.2 State & Configuration Seeding:**  
+  * [x] Setup TanStack Query (staleTime: 5 mins) for API data.  
+  * [x] Setup Zustand for Session state (Section ID, User Role).  
+  * [x] **Seeding:** Create src/lib/config-loader.ts to load defaults.json into Redis if empty (Required for User Role detection).  
 * [ ] **2.3 Initialization Flow:**  
   * [ ] Implement getStartupData fetch on app load (requires Auth & Config).  
   * [ ] Build **Section Picker Modal** if user has access to multiple sections.  
