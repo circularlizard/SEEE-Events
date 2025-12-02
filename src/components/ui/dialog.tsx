@@ -6,7 +6,7 @@ export function Dialog({ open, children }: { open?: boolean; children: React.Rea
 }
 
 export function DialogContent({ children, ...props }: React.HTMLAttributes<HTMLDivElement>) {
-  return <div className="bg-[var(--background)] border rounded-[var(--radius-md)] p-4 max-w-md w-full" {...props}>{children}</div>
+  return <div className="bg-card text-card-foreground border border-border rounded-md p-4 max-w-md w-full shadow-md" {...props}>{children}</div>
 }
 
 export function DialogHeader({ children, ...props }: React.HTMLAttributes<HTMLDivElement>) {
