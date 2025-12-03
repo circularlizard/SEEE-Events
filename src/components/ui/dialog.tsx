@@ -54,11 +54,11 @@ export function DialogContent({ children, ...props }: React.HTMLAttributes<HTMLD
     <div 
       role="dialog" 
       aria-modal="true" 
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/80"
       onClick={() => context.onOpenChange(false)}
     >
       <div 
-        className="bg-card text-card-foreground border border-border rounded-md p-4 w-full shadow-md"
+        className="bg-card text-card-foreground border rounded-lg p-6 w-full max-w-lg shadow-lg"
         onClick={(e) => e.stopPropagation()}
         {...props}
       >

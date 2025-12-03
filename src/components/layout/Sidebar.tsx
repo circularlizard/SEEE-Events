@@ -2,18 +2,18 @@ import Link from 'next/link';
 
 export default function Sidebar() {
   return (
-    <aside className="hidden md:block w-60 border-r bg-[var(--muted)] min-h-screen p-4">
+    <aside className="hidden md:block w-60 border-r bg-muted min-h-screen p-4">
       <nav className="space-y-2 text-sm">
-        <Link className="block px-2 py-1 rounded hover:bg-white/50" href="/dashboard">
+        <Link className="block px-2 py-1 rounded-md hover:bg-accent hover:text-accent-foreground" href="/dashboard">
           Overview
         </Link>
-        <Link className="block px-2 py-1 rounded hover:bg-white/50" href="/dashboard/events">
+        <Link className="block px-2 py-1 rounded-md hover:bg-accent hover:text-accent-foreground" href="/dashboard/events">
           Events
         </Link>
-        <Link className="block px-2 py-1 rounded hover:bg-white/50" href="#">
+        <Link className="block px-2 py-1 rounded-md hover:bg-accent hover:text-accent-foreground" href="#">
           Patrols
         </Link>
-        <Link className="block px-2 py-1 rounded hover:bg-white/50" href="#">
+        <Link className="block px-2 py-1 rounded-md hover:bg-accent hover:text-accent-foreground" href="#">
           Readiness
         </Link>
         <div className="border-t my-4 pt-4">
@@ -21,7 +21,7 @@ export default function Sidebar() {
             Developer Tools
           </p>
           <Link
-            className="block px-2 py-1 rounded hover:bg-white/50 text-muted-foreground"
+            className="block px-2 py-1 rounded-md hover:bg-accent hover:text-accent-foreground text-muted-foreground"
             href="/dashboard/api-browser"
           >
             API Browser
@@ -30,7 +30,7 @@ export default function Sidebar() {
             <p className="px-2 text-xs font-semibold text-muted-foreground uppercase mb-2">
               Settings
             </p>
-            <Link className="block px-2 py-1 rounded hover:bg-white/50" href="/dashboard/settings">
+            <Link className="block px-2 py-1 rounded-md hover:bg-accent hover:text-accent-foreground" href="/dashboard/settings">
               Settings
             </Link>
           </div>
