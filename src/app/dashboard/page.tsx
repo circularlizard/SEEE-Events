@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default function DashboardPage() {
   const { data: session, status } = useSession();
+  const useMSW = process.env.NEXT_PUBLIC_USE_MSW === 'true';
 
   if (status === "loading") {
     return (
@@ -73,17 +74,19 @@ export default function DashboardPage() {
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Mock Data Status</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-sm text-muted-foreground">
-              Mock Service Worker is active and serving mock data from the proxy endpoint.
-              All API calls to OSM are intercepted and return sanitized mock data.
-            </p>
-          </CardContent>
-        </Card>
+        {useMSW && (
+          <Card>
+            <CardHeader>
+              <CardTitle>Mock Data Status</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-muted-foreground">
+                Mock Service Worker is active and serving mock data from the proxy endpoint.
+                All API calls to OSM are intercepted and return sanitized mock data.
+              </p>
+            </CardContent>
+          </Card>
+        )}
 
         <Card>
           <CardHeader>

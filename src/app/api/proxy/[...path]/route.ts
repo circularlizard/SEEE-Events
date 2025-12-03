@@ -203,7 +203,15 @@ export async function GET(
     // Build target URL
     const path = resolvedParams.path.join('/')
     const searchParams = request.nextUrl.searchParams.toString()
-    const targetUrl = `${OSM_API_BASE}/${path}${searchParams ? `?${searchParams}` : ''}`
+    // Preserve trailing slash if present on the original request path
+    const originalPathname = request.nextUrl.pathname.replace(/^\/?api\/proxy\//, '')
+    const hasTrailingSlash = originalPathname.endsWith('/')
+    const basePath = `${OSM_API_BASE}/${path}`
+    // Heuristic: OSM "ext" endpoints conventionally require a trailing slash before query
+    const isExtEndpoint = originalPathname.startsWith('ext/') || originalPathname.includes('/ext/')
+    const needsTrailingSlash = hasTrailingSlash || isExtEndpoint
+    const normalizedPath = needsTrailingSlash ? (basePath.endsWith('/') ? basePath : `${basePath}/`) : basePath
+    const targetUrl = `${normalizedPath}${searchParams ? `?${searchParams}` : ''}`
     
     // MSW Mode: Return mock data directly (server-side)
     if (USE_MSW) {
@@ -253,6 +261,7 @@ export async function GET(
         status: 200,
         headers: {
           'X-Cache': 'HIT',
+          'X-Upstream-URL': targetUrl,
         },
       })
     }
@@ -260,13 +269,16 @@ export async function GET(
     logCache({ operation: 'miss', key: cacheKey })
 
     // Schedule request through rate limiter
+    // Build upstream request headers (mask sensitive values when echoing back)
+    const upstreamRequestHeaders: Record<string, string> = {
+      Authorization: `Bearer ${session.accessToken}`,
+      'Content-Type': 'application/json',
+    }
+
     const response = await scheduleRequest(async () => {
       const res = await fetch(targetUrl, {
         method: 'GET',
-        headers: {
-          Authorization: `Bearer ${session.accessToken}`,
-          'Content-Type': 'application/json',
-        },
+        headers: upstreamRequestHeaders,
       })
 
       return res
@@ -300,7 +312,7 @@ export async function GET(
           message: `OSM API returned ${response.status}`,
           details: errorText,
         },
-        { status: response.status }
+        { status: response.status, headers: { 'X-Upstream-URL': targetUrl, 'X-Upstream-Request-Headers': JSON.stringify({ ...upstreamRequestHeaders, Authorization: 'Bearer REDACTED' }) } }
       )
     }
 
@@ -323,6 +335,8 @@ export async function GET(
         'X-Cache': 'MISS',
         'X-RateLimit-Remaining': response.headers.get('X-RateLimit-Remaining') || '',
         'X-RateLimit-Limit': response.headers.get('X-RateLimit-Limit') || '',
+        'X-Upstream-URL': targetUrl,
+        'X-Upstream-Request-Headers': JSON.stringify({ ...upstreamRequestHeaders, Authorization: 'Bearer REDACTED' }),
       },
     })
   } catch (error) {

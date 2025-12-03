@@ -8,6 +8,7 @@ interface UseApiRequestResult {
   data: unknown;
   error: Error | null;
   isLoading: boolean;
+  meta: { proxyUrl?: string; upstreamUrl?: string; status?: number; headers?: Record<string, string> } | null;
   reset: () => void;
 }
 
@@ -15,6 +16,7 @@ export function useApiRequest(): UseApiRequestResult {
   const [data, setData] = useState<unknown>(null);
   const [error, setError] = useState<Error | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [meta, setMeta] = useState<UseApiRequestResult['meta']>(null);
 
   const execute = async (config: ApiRequestConfig) => {
     setIsLoading(true);
@@ -63,6 +65,9 @@ export function useApiRequest(): UseApiRequestResult {
       }
 
       const responseData = await response.json();
+      const headers: Record<string, string> = {};
+      response.headers.forEach((value, key) => { headers[key] = value; });
+      setMeta({ proxyUrl: url, upstreamUrl: headers['x-upstream-url'], status: response.status, headers });
       setData(responseData);
     } catch (err) {
       console.error('[API Browser] Request failed:', err);
@@ -80,7 +85,8 @@ export function useApiRequest(): UseApiRequestResult {
     setData(null);
     setError(null);
     setIsLoading(false);
+    setMeta(null);
   };
 
-  return { execute, data, error, isLoading, reset };
+  return { execute, data, error, isLoading, meta, reset };
 }
