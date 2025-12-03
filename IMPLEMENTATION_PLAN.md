@@ -238,6 +238,30 @@ All agents must adhere to this structure. Do not create new top-level directorie
     2. [ ] Events load and display correctly.  
     3. [ ] Mobile view shows cards, desktop shows table (if implemented).
 
+### **2.7 Homepage & Dashboard Scaffolding Fixes**
+
+**Goal:** Align the landing and dashboard views with project UI templates and rules.
+
+* [ ] **Login Gating:**
+  * When unauthenticated, render only the login dialog; hide the rest of the UI shell.
+  * Add a striking full-screen hero image background on the login screen (temporary placeholder from `public/` to be replaced later).
+* [ ] **Settings Placement:**
+  * Move the `Settings` button from the top title bar into the sidebar navigation.
+* [ ] **User Avatar + Logout:**
+  * Add a standard user avatar icon in the top-right of the header.
+  * Provide a dropdown with `Logout` action (future: user profile details).
+* [ ] **Title Alignment & Icon:**
+  * Left-align the application title in the top nav.
+  * Add an application icon next to the title (use a placeholder from `public/` initially).
+* [ ] **Compliance:**
+  * Ensure components use shadcn/ui primitives via `@/components/ui/*`.
+  * Keep styling within Tailwind tokens defined in `globals.css`.
+* [ ] **TEST (Component):**
+  * Verify unauthenticated users see only the login hero screen.
+  * Verify avatar dropdown shows `Logout` and works.
+  * Verify `Settings` appears in sidebar and is removed from header.
+  * Verify title is left-aligned with icon in header.
+
 **Status:** Phase 2 Core Complete (Auth, State, Shell UI, API Browser). 
 
 **Phase 2 Completion Notes:**
@@ -451,7 +475,7 @@ All safety mechanisms are in place and tested. The risk is low because:
   * [x] Generic API_ENDPOINTS fallback for automatic mock data serving.  
   * [x] Integration with /api/proxy for safe API calls.  
   * [x] Added to sidebar navigation under "Developer Tools".  
-  * [ ] Manual testing with real API calls (pending Phase 2.4 real mode verification).  
+  * [x] Manual testing with real API calls (pending Phase 2.4 real mode verification).  
 * [ ] **5.2 PDF Export:** Implement React-PDF generation for Patrol sheets.  
 * [ ] **5.3 Excel Export:** Implement SheetJS export for offline editing.  
 * [ ] **5.4 Circuit Breaker UI:** Create "System Cooling Down" overlay for Soft Locks.  
