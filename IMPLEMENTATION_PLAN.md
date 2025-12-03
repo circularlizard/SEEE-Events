@@ -238,7 +238,162 @@ All agents must adhere to this structure. Do not create new top-level directorie
     2. [ ] Events load and display correctly.  
     3. [ ] Mobile view shows cards, desktop shows table (if implemented).
 
-**Status:** Phase 2 Core Complete (Auth, State, Shell UI). Next: Install Playwright → Build Events List → Write E2E Tests → Move to Phase 3.
+**Status:** Phase 2 Core Complete (Auth, State, Shell UI, API Browser). 
+
+**Phase 2 Completion Notes:**
+- OAuth authentication with Redis storage pattern (solves JWT size limits)
+- Multi-section support verified (4 sections accessible)
+- StartupInitializer without infinite loops
+- Mock auth + Real auth modes implemented
+- API Browser built as optional developer tool (Phase 5.1 completed early)
+- Redis availability handling with 503 Service Unavailable
+- README documentation updated with required Redis startup
+
+**Next:** Complete Phase 2.4 manual testing (Real Auth + Real Data mode) → Install Playwright → Build Events List → Write E2E Tests → Move to Phase 3.
+
+## **Pre-Phase 3: Real API Testing Readiness Assessment**
+
+**Goal:** Verify safety layer protection before enabling real OSM API calls.
+
+### **Safety Layer Verification Checklist**
+
+✅ **Rate Limiting (Bottleneck):**
+- [x] 80% safety factor implemented (800 req/hr from 1000 limit)
+- [x] Dynamic reservoir updates based on X-RateLimit headers
+- [x] Minimum 50ms between requests (smooth throttling)
+- [x] Maximum 5 concurrent requests
+- [x] Automatic soft lock when quota < 10%
+- [x] Integration tests passing (6 tests)
+
+✅ **Circuit Breaker (Redis):**
+- [x] Soft lock (pause queue) when quota exhausted
+- [x] Hard lock (global 503 halt) on X-Blocked header detection
+- [x] Redis connectivity check (isRedisAvailable)
+- [x] 503 Service Unavailable on Redis failure
+- [x] Quota tracking in Redis (remaining, limit, reset)
+- [x] Integration tests for soft/hard locks passing
+
+✅ **Read-Only Enforcement:**
+- [x] POST/PUT/DELETE/PATCH handlers return 405 Method Not Allowed
+- [x] Integration test verifying mutation blocking
+- [x] Frontend never calls mutations (proxy is only route to OSM)
+
+✅ **Authentication & Authorization:**
+- [x] OAuth 2.0 flow with token rotation
+- [x] Access token refresh on 1-hour expiry
+- [x] Session-based auth with NextAuth
+- [x] Middleware protection on /dashboard and /api/proxy routes
+- [x] Redis storage for OAuth data (24hr TTL)
+
+✅ **Error Handling:**
+- [x] Standardized JSON error responses with codes
+- [x] 401 Unauthorized for missing auth
+- [x] 429 Too Many Requests for soft lock
+- [x] 503 Service Unavailable for hard lock/Redis down
+- [x] Retry-After headers on 429/503 responses
+- [x] X-Blocked detection triggers 5-minute hard lock
+
+✅ **Caching:**
+- [x] Read-through cache pattern (5-minute TTL)
+- [x] Cache-Control headers on responses
+- [x] Redis-based cache storage
+- [x] Integration test for cache hit/miss
+
+✅ **Observability:**
+- [x] Pino structured logging
+- [x] Rate limit logging (remaining, limit, reset)
+- [x] Circuit breaker event logging
+- [x] Proxy request logging (method, path, status, duration, cached)
+- [x] Redis event logging
+
+### **Testing Status**
+
+**Unit Tests:** ✅ 16/16 passing (Zod schemas)
+**Integration Tests:** ✅ 6/6 passing (Proxy route)
+**Total:** ✅ 22/22 tests passing
+
+**Mock Data Testing:** ✅ Complete
+- Mock Auth + Mock Data mode verified
+- Real Auth + Mock Data mode verified
+- API Browser endpoints returning mock data
+- MSW interception working correctly
+
+**Real API Testing:** ⚠️ NOT YET TESTED
+- Real Auth + Real Data mode not yet verified
+- Rate limiting behavior with actual OSM API not confirmed
+- X-RateLimit header parsing not tested against real responses
+- Circuit breaker thresholds not validated with real quota
+
+### **Recommended Testing Approach for Real API**
+
+**Phase 1: Single Request Verification (Low Risk)**
+1. Set NEXT_PUBLIC_USE_MSW=false in .env.local
+2. Use API Browser to make ONE request to a safe read endpoint (e.g., getEvents)
+3. Verify:
+   - Request succeeds and returns real data
+   - X-RateLimit headers are parsed and logged
+   - Redis quota is updated correctly
+   - Response is cached in Redis
+4. Check logs for rate limit info and bottleneck execution
+
+**Phase 2: Rate Limit Observation (Medium Risk)**
+1. Make 5-10 requests through API Browser with different endpoints
+2. Monitor rate limit quota decrease in logs
+3. Verify reservoir updates in bottleneck
+4. Confirm caching reduces duplicate requests
+5. Check that requests are throttled (50ms minimum spacing)
+
+**Phase 3: Soft Lock Testing (Controlled Risk)**
+1. Manually trigger soft lock by setting Redis key:
+   ```bash
+   docker exec -it seee-redis-local redis-cli SET circuit:soft_lock 1 EX 60
+   ```
+2. Attempt request via API Browser
+3. Verify 429 response with Retry-After header
+4. Wait for lock expiry and retry
+
+**Phase 4: Real Quota Monitoring (Production-like)**
+1. Use Events List page to load ~10-20 events
+2. Monitor quota consumption over 30 minutes
+3. Verify quota never exceeds 80% threshold
+4. Confirm soft lock triggers if approaching limit
+
+### **Risk Assessment**
+
+**LOW RISK** - Safe to proceed with real API testing:
+- ✅ All safety mechanisms implemented and tested with mocks
+- ✅ Read-only enforcement prevents data corruption
+- ✅ Rate limiting has 20% buffer (800/1000)
+- ✅ Circuit breaker will halt system before hard limit
+- ✅ Caching reduces redundant requests
+- ✅ Error handling prevents cascading failures
+
+**MEDIUM RISK** - Unknown behaviors:
+- ⚠️ OSM API rate limit headers format not confirmed (assumed standard)
+- ⚠️ X-Blocked header behavior not observed in practice
+- ⚠️ Actual request timing and quota consumption unknown
+
+**MITIGATION STRATEGIES:**
+- Start with API Browser (manual, controlled requests)
+- Monitor logs closely during initial testing
+- Keep requests under 50/hour initially to stay well under limit
+- Test during low-usage times (avoid peak hours)
+- Have Redis connection ready to manually set locks if needed
+
+### **Decision Point**
+
+**Recommendation:** ✅ **SAFE TO PROCEED** with real API testing using the phased approach above.
+
+All safety mechanisms are in place and tested. The risk is low because:
+1. Read-only prevents damage
+2. Rate limiting has substantial buffer
+3. Circuit breaker provides fail-safe
+4. Manual testing allows observation before automation
+5. API Browser provides controlled test environment
+
+**Action:** Complete Phase 2.4 manual testing (Real Auth + Real Data) using API Browser before building Events List.
+
+---
 
 ## **Phase 3: Data Visualization**
 
@@ -285,11 +440,17 @@ All agents must adhere to this structure. Do not create new top-level directorie
 
 **Goal:** Finalize export features and production safety.
 
-* [ ] **5.1 API Browser & Debug Tool (Optional - Deferred from Phase 2):**  
-  * [ ] Create src/app/(dashboard)/debug/page.tsx (Protected route).  
-  * [ ] Endpoint selector, parameter inputs, execute button.  
-  * [ ] Display panel: Environment status, upstream URL, rate limits, request/response payloads.  
-  * [ ] Manual testing: Rate limit updates, soft/hard locks, mock vs real data verification.  
+* [x] **5.1 API Browser (Optional - Completed Early):**  
+  * [x] Created /dashboard/api-browser route with full UI (Protected route).  
+  * [x] Endpoint selector with category filtering and search (15+ OSM API endpoints).  
+  * [x] Parameter form with auto-population from current section.  
+  * [x] Response viewer with formatted and raw JSON views.  
+  * [x] Request history with localStorage persistence (max 20 items).  
+  * [x] Example modal to view sample responses from mock data.  
+  * [x] Generic API_ENDPOINTS fallback for automatic mock data serving.  
+  * [x] Integration with /api/proxy for safe API calls.  
+  * [x] Added to sidebar navigation under "Developer Tools".  
+  * [ ] Manual testing with real API calls (pending Phase 2.4 real mode verification).  
 * [ ] **5.2 PDF Export:** Implement React-PDF generation for Patrol sheets.  
 * [ ] **5.3 Excel Export:** Implement SheetJS export for offline editing.  
 * [ ] **5.4 Circuit Breaker UI:** Create "System Cooling Down" overlay for Soft Locks.  
