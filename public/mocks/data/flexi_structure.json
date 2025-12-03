@@ -1,0 +1,65 @@
+{
+  "extraid": "73915",
+  "sectionid": "37458",
+  "name": "DofE Status",
+  "config": "[{\"id\":\"f_1\",\"name\":\"Gold\",\"width\":\"150\"},{\"id\":\"f_2\",\"name\":\"Silver\",\"width\":\"150\"},{\"id\":\"f_3\",\"name\":\"Bronze\",\"width\":\"150\"}]",
+  "total": "badge",
+  "extrafields": "[{\"name\":\"Age\",\"field\":\"age\",\"width\":\"70px\"}]",
+  "archived": "0",
+  "soft_deleted": "0",
+  "archived_at": null,
+  "structure": [
+    {
+      "rows": [
+        {
+          "name": "First Name",
+          "field": "firstname",
+          "width": "150px",
+          "formatter": "boldFormatter"
+        },
+        {
+          "name": "Last Name",
+          "field": "lastname",
+          "width": "150px"
+        },
+        {
+          "name": "Completed",
+          "field": "completed",
+          "width": "95px",
+          "formatter": "boldFormatter"
+        },
+        {
+          "name": "Age",
+          "field": "age",
+          "width": "70px"
+        }
+      ],
+      "noscroll": true
+    },
+    {
+      "rows": [
+        {
+          "name": "Gold",
+          "field": "f_1",
+          "width": "150px",
+          "formatter": "boldFormatter",
+          "editable": true
+        },
+        {
+          "name": "Silver",
+          "field": "f_2",
+          "width": "150px",
+          "formatter": "boldFormatter",
+          "editable": true
+        },
+        {
+          "name": "Bronze",
+          "field": "f_3",
+          "width": "150px",
+          "formatter": "boldFormatter",
+          "editable": true
+        }
+      ]
+    }
+  ]
+}

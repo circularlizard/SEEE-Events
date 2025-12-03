@@ -1,0 +1,357 @@
+{
+  "status": true,
+  "error": null,
+  "data": {
+    "list": {
+      "id": 11551,
+      "sectionid": 17624,
+      "name": "TENTS",
+      "read_only": false,
+      "lastupdated": "30/01/2020 21:56"
+    },
+    "rows": {
+      "1520602517_5aa28d95ee87a": {
+        "1": "ALPHA - Vango Halo 300 Tent",
+        "2": "Sleeps 2 big or 3 small. Two porch areas. ",
+        "3": "Church Store - Jan22",
+        "4": "Damage/faults - \nPeg bag missing\nClasps on the outer bag broken\nOne of the elastic cords in the poles is almost severed\n\nNo other damage",
+        "5": "Good",
+        "6": "1",
+        "8": "2015-06-12"
+      },
+      "1520602552_5aa28db824b9e": {
+        "1": "BRAVO - Vango Halo 300 Tent",
+        "2": "Sleeps 2 big or 3 small. Two porch areas. ",
+        "3": "Church Store - Jan22",
+        "4": "Damage/faults - \nMissing it\u2019s peg bag (pegs in plastic bag)\nHole in flysheet (repaired)\n\n8 pegs\n\nNo other damage\n\n",
+        "5": "Good",
+        "6": "1",
+        "8": "2015-06-12"
+      },
+      "1520602574_5aa28dce0bb4a": {
+        "1": "CHARLIE - Vango Halo 300 Tent",
+        "2": "Sleeps 2 big or 3 small. Two porch areas. ",
+        "3": "? - Jan22",
+        "4": "Damage/faults -\n2 holes in groundsheet\nOne of the poles has been badly bent at some time and although it has been straightened it will be weak (needs to be monitored/replaced)\nRequire repairs\n\n8 pegs",
+        "5": "Repair Required",
+        "6": "1",
+        "7": "1",
+        "8": "2015-06-12"
+      },
+      "1520602594_5aa28de2c6852": {
+        "1": "DELTA - Vango Halo 300 Tent",
+        "2": "Sleeps 2 big or 3 small. Two porch areas. ",
+        "3": "Church Store - Jan22",
+        "4": "Damage/faults -\n\nSlightly bent poles. \n8 pegs",
+        "5": "Good",
+        "6": "1",
+        "8": "2015-06-12"
+      },
+      "1520602607_5aa28defde08d": {
+        "1": "ECHO - Vango Mirage 300 Tent",
+        "2": "Sleeps 2 big or 3 small. Slightly smaller and less porch space than the Halo.",
+        "3": "? - Jan22",
+        "4": "Damage/faults -\nSmall repair in pole sleeve\nMinor repair on outer bag\n\nHas bent poles. Tried to straight by hand but could do with a vice to make true. \n8 pegs.\u00a0",
+        "5": "Good",
+        "6": "1",
+        "8": "2015-06-12"
+      },
+      "1520602624_5aa28e0063b21": {
+        "1": "FOXTROT - Vango Mirage 300 Tent",
+        "2": "Sleeps 2 big or 3 small. Slightly smaller and less porch space than the Halo.",
+        "3": "Church Store - Jan22",
+        "4": "Damage/faults -\n8 pegs\n\nFront (crooked pole) has cracked at a joint. Taped up but will need to be monitored.\n\nRip @ connector needs sewing.",
+        "5": "Repair Required",
+        "6": "1",
+        "7": "1",
+        "8": "2015-06-12"
+      },
+      "1520602639_5aa28e0fa97d6": {
+        "1": "GOLF - Vango Mirage 300 Tent",
+        "2": "Sleeps 2 big or 3 small. Slightly smaller and less porch space than the Halo.",
+        "3": "? - Jan22",
+        "4": "Damage/faults -\nOuter bag drawstring missing\nHole in flysheet (repaired)\n\n9 pegs. \nGaffer tape patch outer.\u00a0",
+        "5": "Good",
+        "6": "1",
+        "8": "2015-06-12"
+      },
+      "1520602649_5aa28e1991625": {
+        "1": "HOTEL - Vango Mirage 300 Tent",
+        "2": "Sleeps 2 big or 3 small. Slightly smaller and less porch space than the Halo.",
+        "3": "Church Store - Jan22",
+        "4": "Damage/faults -\nHole in flysheet - burn (repaired)\nHole in inner roof\nHole in outer bag (repaired)\n\nRequires repairs\n\n13 pegs",
+        "5": "Good",
+        "6": "1",
+        "7": "1",
+        "8": "2015-06-12"
+      },
+      "1520602664_5aa28e286e3c3": {
+        "1": "INDIA - Vango Halo Pro 300 Tent",
+        "2": "Sleeps 2 big or 3 small. Two porch areas. ",
+        "3": "Church Store - Jan22",
+        "4": "Damage/faults - \nMissing it\u2019s peg bag (pegs in plastic bag)\n9 pegs.\n\nNo other damage\n\n",
+        "5": "Good",
+        "6": "1",
+        "7": "1",
+        "8": "2015-06-12"
+      },
+      "1520602682_5aa28e3a829f3": {
+        "1": "JULIET - Vango Mirage 300 Tent",
+        "2": "Sleeps 2 big or 3 small. Slightly smaller and less porch space than the Halo.",
+        "3": "Church Store - Jan22",
+        "4": "Damage/faults -\nHole in flysheet (repaired)\nThe front crooked pole is repaired with tape in 2 locations (needs to be monitored/replaced)\n\nNo other damage",
+        "5": "Repair Required",
+        "6": "1",
+        "7": "1",
+        "8": "2015-06-12"
+      },
+      "1520602693_5aa28e45cc7e8": {
+        "1": "KILO - Vango Halo 300 Tent",
+        "2": "Sleeps 2 big or 3 small. Two porch areas. ",
+        "3": "Church Store - Jan22",
+        "4": "Damage/faults -\n8 pegs\n\nNo damage",
+        "5": "Good",
+        "6": "1",
+        "8": "2017-12-28"
+      },
+      "1520602707_5aa28e53a28b7": {
+        "1": "LIMA - Vango Halo 300 Tent",
+        "2": "Sleeps 2 big or 3 small. Two porch areas. ",
+        "3": "? - Jan22",
+        "4": "Damage/faults -\nNo peg bag (8 pegs in plastic bag) \nBadly bent poles - still goes up but needs vice to straighten.\n\nGaffer taped outer.\u00a0\n",
+        "5": "Fair",
+        "6": "1",
+        "8": "2017-12-28"
+      },
+      "1520602719_5aa28e5f1a856": {
+        "1": "MIKE - Vango Halo 300 Tent",
+        "2": "Sleeps 2 big or 3 small. Two porch areas. ",
+        "3": "Church Store - Jan22",
+        "4": "Damage/faults -\n\nNo damage",
+        "5": "Good",
+        "6": "1",
+        "8": "2017-12-28"
+      },
+      "1520602726_5aa28e661f6f3": {
+        "1": "NOVEMBER - Vango Halo 300 Tent",
+        "2": "Sleeps 2 big or 3 small. Two porch areas. ",
+        "3": "Church Store - Jan22",
+        "4": "Damage/faults -\nOne ground sheet clip a bit loose.\n\n8 pegs\n\nNo damage",
+        "5": "Good",
+        "6": "1",
+        "8": "2017-12-28"
+      },
+      "1561399778_5d1111e20b4e8": {
+        "1": "OSCAR - Vango Halo Pro 300 Tent",
+        "2": "Sleeps 2 big or 3 small. Two porch areas. ",
+        "3": "Church Store - Jan22",
+        "4": "New - Not named\n8 pegs. ",
+        "5": "Excellent",
+        "6": "1",
+        "8": "2019-05-20"
+      },
+      "1561399818_5d11120ae661d": {
+        "1": "PAPA - Vango Halo Pro 300 Tent",
+        "2": "Sleeps 2 big or 3 small. Two porch areas. ",
+        "3": "? - Jan22 (was Ian - Howling)",
+        "4": "New - Bag named.\n\n14 pegs",
+        "5": "Excellent",
+        "6": "1",
+        "8": "2019-05-20"
+      },
+      "1561399852_5d11122c4ea99": {
+        "1": "QUEBEC - Vango Halo Pro 300 Tent",
+        "2": "Sleeps 2 big or 3 small. Two porch areas. ",
+        "3": "Charlotte Home - Jan22",
+        "4": "New - Not named",
+        "5": "Excellent",
+        "6": "1",
+        "8": "2019-05-20"
+      },
+      "1561399941_5d1112857fc83": {
+        "1": "ROMEO - Vango Halo Pro 300 Tent",
+        "2": "Sleeps 2 big or 3 small. Two porch areas. ",
+        "3": "? - Jan22 (was Ian - Howling)",
+        "4": "New - Is now named.\n\nOne broken pole - has split, secured with gaffer tape. \n\n12 pegs.",
+        "5": "Good",
+        "6": "1",
+        "7": "1",
+        "8": "2019-05-20"
+      },
+      "1561494365_5d12835dbce15": {
+        "1": "WHISKEY 1 - Freedom Trail Sendero 5",
+        "2": "5 person family tent",
+        "3": "Church store",
+        "4": "Poor/low quality tent - DO NOT USE IN BAD WEATHER\n\nDoor seam damaged\nVarious holes in tent floor",
+        "5": "Fair",
+        "6": "1"
+      },
+      "1561494369_5d128361452e0": {
+        "1": "WHISKEY 2 - Freedom Trail Sendero 5",
+        "2": "5 person family tent",
+        "3": "Church store",
+        "4": "Poor/low quality tent - DO NOT USE IN BAD WEATHER\n\nIncomplete/broken pole set - SPARES ONLY",
+        "5": "Repair Required",
+        "6": "1"
+      },
+      "1561494372_5d12836430edd": {
+        "1": "WHISKEY 3 - Freedom Trail Sendero 5",
+        "2": "5 person family tent",
+        "3": "Church store",
+        "4": "Poor/low quality tent - DO NOT USE IN BAD WEATHER",
+        "5": "Fair",
+        "6": "1"
+      },
+      "1561494375_5d128367c72da": {
+        "1": "WHISKEY 4 - Freedom Trail Sendero 5",
+        "2": "5 person family tent",
+        "3": "Church store",
+        "4": "Poor/low quality tent - DO NOT USE IN BAD WEATHER",
+        "5": "Fair",
+        "6": "1",
+        "7": "1"
+      },
+      "1561494323_5d12833310718": {
+        "1": "WHISKEY 5 - Freedom Trail Sendero 5",
+        "2": "5 person family tent",
+        "3": "Church store",
+        "4": "Poor/low quality tent - DO NOT USE IN BAD WEATHER",
+        "5": "Fair",
+        "6": "1"
+      },
+      "1520602751_5aa28e7fe49e3": {
+        "1": "YANKEE - Patrol Tent",
+        "6": "2"
+      }
+    },
+    "columns": [
+      {
+        "columnid": 1,
+        "listid": 0,
+        "columnname": "Name",
+        "columntype": "text",
+        "columnconfig": {
+          "maxlength": 150,
+          "placeholder": "e.g. Vango Beta 450 Tent",
+          "width": 120
+        },
+        "columnorder": 1,
+        "required": "yes"
+      },
+      {
+        "columnid": 6,
+        "listid": 0,
+        "columnname": "Quantity",
+        "columntype": "integer",
+        "columnconfig": {
+          "min": 0,
+          "max": 99999,
+          "defaultValue": 1,
+          "width": 80,
+          "hint": "Significant items (e.g. tents) should be entered individually (with a quantity of 1) so you can keep track of condition/price on a per-item basis.  Less significant items (e.g. catering utensils) can be tracked in bulk for ease."
+        },
+        "columnorder": 2,
+        "required": "yes"
+      },
+      {
+        "columnid": 2,
+        "listid": 0,
+        "columnname": "Description",
+        "columntype": "textarea",
+        "columnconfig": {
+          "maxlength": 65535,
+          "width": 175
+        },
+        "columnorder": 3,
+        "required": "no"
+      },
+      {
+        "columnid": 5,
+        "listid": 0,
+        "columnname": "Condition",
+        "columntype": "select",
+        "columnconfig": {
+          "options": {
+            "Excellent": "Excellent",
+            "Good": "Good",
+            "Fair": "Fair",
+            "Cleaning Required": "Cleaning Required",
+            "Repair Required": "Repair Required"
+          },
+          "width": 80
+        },
+        "columnorder": 4,
+        "required": "no"
+      },
+      {
+        "columnid": 7,
+        "listid": 0,
+        "columnname": "Broken",
+        "columntype": "integer",
+        "columnconfig": {
+          "min": 0,
+          "max": 99999,
+          "width": 75,
+          "hint": "This is the number of broken or unavailable items."
+        },
+        "columnorder": 5,
+        "required": "no"
+      },
+      {
+        "columnid": 3,
+        "listid": 0,
+        "columnname": "Location",
+        "columntype": "text",
+        "columnconfig": {
+          "maxlength": 150,
+          "placeholder": "e.g. Outdoor store",
+          "width": 150
+        },
+        "columnorder": 6,
+        "required": "no"
+      },
+      {
+        "columnid": 8,
+        "listid": 0,
+        "columnname": "Purchase Date",
+        "columntype": "date",
+        "columnconfig": {
+          "width": 130
+        },
+        "columnorder": 7,
+        "required": "no"
+      },
+      {
+        "columnid": 9,
+        "listid": 0,
+        "columnname": "Renewal Price",
+        "columntype": "float",
+        "columnconfig": {
+          "min": 0,
+          "max": 99999,
+          "precision": 2,
+          "width": 100
+        },
+        "columnorder": 8,
+        "required": "no"
+      },
+      {
+        "columnid": 4,
+        "listid": 0,
+        "columnname": "Notes",
+        "columntype": "textarea",
+        "columnconfig": {
+          "maxlength": 65535,
+          "width": 150
+        },
+        "columnorder": 9,
+        "required": "no"
+      }
+    ]
+  },
+  "meta": {
+    "itemstore": {
+      "identifier": "id"
+    }
+  }
+}

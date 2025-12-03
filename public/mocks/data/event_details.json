@@ -1,0 +1,35 @@
+{
+  "status": true,
+  "error": null,
+  "data": {
+    "name": "Xtreme Karting - End of Term Outing",
+    "location": "Xtreme Karting, 2 Huly Hill Rd, Newbridge, EH28 8PH",
+    "start_date": "2025-12-11",
+    "start_time": "18:45:00",
+    "end_date": "2025-12-11",
+    "end_time": "20:45:00",
+    "cost": 22,
+    "attendance_limit": 36,
+    "attendance_limit_includes_leaders": true,
+    "extra": {
+      "at_home": {
+        "enabled": false,
+        "introduction": "",
+        "parent_uploads_enabled": false,
+        "chat_enabled": false,
+        "activities": []
+      },
+      "sharing": {
+        "sharee": false,
+        "deleted": false
+      }
+    }
+  },
+  "meta": {
+    "read_only": false,
+    "past_locked": false,
+    "shared_locked": false,
+    "maximum_attendance_limit": 0,
+    "has_parent_portal": true
+  }
+}

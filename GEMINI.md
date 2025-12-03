@@ -1,6 +1,8 @@
 # SEEE Expedition Dashboard: Architectural Context
 
-This document outlines the constraints and logic for the SEEE Expedition Dashboard. Use this context when reasoning about implementation strategy, debugging, or architectural decisions.
+This document outlines the constraints and logic for the SEEE Expedition Dashboard. Use this context when reasoning about implementation strategy, debugging, or architectural decisions. 
+
+**Gemini is to be used for planning only and should not attempt any implementation.**
 
 ## 1. The "Safety Shield" Philosophy
 The primary constraint is protecting the upstream OSM API. [cite_start]The application acts as a defensive shield[cite: 9].

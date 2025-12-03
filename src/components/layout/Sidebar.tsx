@@ -1,11 +1,32 @@
+import Link from 'next/link';
+
 export default function Sidebar() {
   return (
     <aside className="hidden md:block w-60 border-r bg-[var(--muted)] min-h-screen p-4">
       <nav className="space-y-2 text-sm">
-        <a className="block px-2 py-1 rounded hover:bg-white/50" href="#">Overview</a>
-        <a className="block px-2 py-1 rounded hover:bg-white/50" href="#">Events</a>
-        <a className="block px-2 py-1 rounded hover:bg-white/50" href="#">Patrols</a>
-        <a className="block px-2 py-1 rounded hover:bg-white/50" href="#">Readiness</a>
+        <Link className="block px-2 py-1 rounded hover:bg-white/50" href="/dashboard">
+          Overview
+        </Link>
+        <Link className="block px-2 py-1 rounded hover:bg-white/50" href="/dashboard/events">
+          Events
+        </Link>
+        <Link className="block px-2 py-1 rounded hover:bg-white/50" href="#">
+          Patrols
+        </Link>
+        <Link className="block px-2 py-1 rounded hover:bg-white/50" href="#">
+          Readiness
+        </Link>
+        <div className="border-t my-4 pt-4">
+          <p className="px-2 text-xs font-semibold text-muted-foreground uppercase mb-2">
+            Developer Tools
+          </p>
+          <Link
+            className="block px-2 py-1 rounded hover:bg-white/50 text-muted-foreground"
+            href="/dashboard/api-browser"
+          >
+            API Browser
+          </Link>
+        </div>
       </nav>
     </aside>
   );

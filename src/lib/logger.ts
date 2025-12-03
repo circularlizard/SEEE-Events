@@ -143,8 +143,10 @@ export function logValidationError(params: {
  * Log Redis connection events
  */
 export function logRedis(params: {
-  event: 'connected' | 'error' | 'disconnected'
+  event: 'connected' | 'error' | 'disconnected' | 'oauth_data_stored' | 'oauth_data_retrieved'
   error?: unknown
+  userId?: string
+  ttl?: number
 }) {
   if (params.event === 'error') {
     logger.error(
@@ -155,6 +157,17 @@ export function logRedis(params: {
         },
       },
       'Redis connection error'
+    )
+  } else if (params.event === 'oauth_data_stored' || params.event === 'oauth_data_retrieved') {
+    logger.debug(
+      {
+        redis: {
+          event: params.event,
+          userId: params.userId,
+          ttl: params.ttl,
+        },
+      },
+      `Redis: ${params.event}`
     )
   } else {
     logger.info({ redis: { event: params.event } }, `Redis: ${params.event}`)

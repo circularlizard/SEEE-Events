@@ -28,11 +28,15 @@ Before final implementation, the following strategic decisions must be resolved:
 * **Protocol:** The application will use **OSM OAuth 2.0 (Authorization Code Flow)**.  
   * *Rationale:* This is the mandatory standard for multi-user applications interfacing with OSM.  
 * **Login Method:** Users will authenticate using their existing **Personal OSM Credentials**.  
-* **Scopes:** The application must request the **lowest possible set of permissions** required to function. Based on current requirements, these are:  
-  * section:event:read (For expedition and participation data)  
-  * section:member:read (For basic member details and Patrol assignment)  
-  * section:badge:read (Conditional: if Training is sourced from badges)  
-  * section:flexirecord:read (Conditional: if Training is sourced from flexi-records)  
+* **Role Selection:** At the start of the login process, the user must select their intended role ("Administrator" or "Standard Viewer"). This selection determines the OAuth scopes requested.
+* **Scopes:** The application requests permissions based on the selected role:
+  * **Administrator:** Requires broader access to manage data and cache member structures.
+    * `section:event:read`
+    * `section:member:read`
+    * `section:programme:read`
+    * `section:flexirecord:read`
+  * **Standard Viewer (Unit/Expedition Leader):** Requires minimal access for viewing events.
+    * `section:event:read`
 * **Section Selection:** Upon successful login, if a user has access to multiple OSM sections (e.g., different Units or Regional levels), they must be presented with a choice to select which Section they wish to view.
 
 ### **3.2 Event Dashboard**
@@ -125,6 +129,9 @@ To support offline analysis and physical record-keeping during expeditions:
 
 * **Online Scout Manager (OSM)** is the single source of truth.  
 * **Read-Only Application:** The application is strictly read-only. Any corrections (e.g., changing a tent group or updating training) must be done by an administrator directly in OSM.  
+* **Patrol & Member Data Caching:**
+  * Because Standard Viewers (Unit Leaders) only have `section:event:read` permission, they cannot directly fetch member or patrol lists from OSM.
+  * **Strategy:** An **Administrator** must fetch the Patrol and Member structure. This data is cached for a long duration and served to Standard Viewers to allow them to see which Patrols participants belong to.
 * No external database will be used for persistent storage of personal data.
 
 ### **4.2 Custom Data Fields**
