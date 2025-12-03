@@ -52,11 +52,14 @@ This document defines the technical architecture for the SEEE Expedition Dashboa
   * **Factory Reset:** A "Reset to Defaults" action to restore the Business Rules to their original state if the configuration becomes corrupted.  
   * **Visual Feedback:** Toast notifications (via Sonner/shadcn) for successful updates.
 
-### **3.5 Section Selection Flow (Req 3.1)**
+### **3.5 Login & Section Selection Flow (Req 3.1)**
 
-* **Logic:** Upon login, if a user has access to multiple OSM Sections, a "Section Picker" modal must interrupt the flow.  
-* **Component:** A simple Card-based selection UI presented before the Dashboard loads.  
-* **Persistence:** The selected section\_id is stored in the **Zustand Session Store** (see 4.2) to persist across reloads.
+* **Login Flow:** At the start of the login process, the user is presented with a choice to select their intended role ("Administrator" or "Standard Viewer"). This selection dynamically determines the OAuth scopes requested during authentication.
+  * **Administrator Scopes:** `section:event:read`, `section:member:read`, `section:programme:read`, `section:flexirecord:read`.
+  * **Standard Viewer Scopes:** `section:event:read`.
+* **Section Selection:** Upon successful login and role determination, if a user has access to multiple OSM Sections, a "Section Picker" modal must interrupt the flow.
+* **Component:** A simple Card-based selection UI presented before the Dashboard loads.
+* **Persistence:** The selected `section_id` and the determined `userRole` are stored in the **Zustand Session Store** (see 4.2) to persist across reloads.
 
 ### **3.6 Mobile Responsiveness Strategy (Req 6\)**
 
@@ -120,7 +123,7 @@ graph TD
 
 * **Purpose:** Manages local user preferences and ephemeral configuration.  
 * **Specific Use Cases:**  
-  * **Session Context:** Stores sectionId and **userRole** (Admin/Standard) to toggle UI visibility of Admin controls.  
+  * **Session Context:** Stores `sectionId` and `userRole` (Admin/Standard). The `userRole` determined during login is critical for driving UI visibility of Admin controls and influencing data sourcing strategies (e.g., whether to fetch member/patrol data directly from OSM or from the server-side cache).
   * **Column Mapping (Section 3.3):** Stores the user's manual mapping of "Walking Grp" columns for the current session.  
   * **Readiness Filters (Section 3.5):** Remembers that the user wants to see "Patrol A" and "Bronze Events" so the view doesn't reset on refresh.  
 * **Persistence:** Configured to persist to localStorage so settings survive a page reload.
@@ -194,7 +197,21 @@ To balance "Fail Fast" with "Graceful Degradation":
 * **Tier 1: Strict Core Schema:** (Event ID, Member Name, Patrol). If these are invalid/missing, Zod throws an error and the UI displays a "Data Error" state. This satisfies Req 5.5.  
 * **Tier 2: Permissive Logistics Schema:** (Tent Group, Walking Group). These fields are marked optional() or nullable(). If data is missing or malformed, Zod returns null, and the UI simply hides that column. This satisfies Req 3.3.
 
-### **5.4 Security & Access Control**
+### **5.2 Security & Access Control**
+
+* **User Roles:** The system will distinguish between two classes of users:  
+  * **Administrator:** A user explicitly defined in the configuration who has authority to **set** access limits. Administrators have unrestricted view of all events and patrols by default. **Upon successful login, an Administrator will also trigger an automatic refresh of the cached Patrol and Member structure data (see Section 7).**
+  * **Standard Viewer:** A user whose view is restricted by the limits defined by an Administrator.  
+* **Access Control Strategies:** The configuration must support two distinct restriction models for Standard Viewers:  
+  * **Strategy A: Patrol-Based Restriction (Vertical Slicing):**  
+    * *Use Case:* Unit Leaders who need to see their own members across all events.  
+    * *Behavior:* The user can see **All Events**, but the participant list is permanently filtered to show **only members of specific Patrols** (e.g., "Borestane ESU").  
+  * **Strategy B: Event-Based Restriction (Horizontal Slicing):**  
+    * *Use Case:* An Expedition Leader running a specific trip who needs to see all attendees regardless of Unit.  
+    * *Behavior:* The user can see **All Patrols/Members**, but only for **specific Events** (e.g., "Bronze Practice 2025").  
+* **Configuration Mechanism:**  
+  * The mapping of User \-\> Strategy \-\> [Patrol IDs OR Event IDs] will be stored in the internal **User Configuration List** (JSON config/Environment Variable).  
+  * If a user is not listed in the configuration, they are denied access by default (Whitelist approach).
 
 * **Storage:** The **User Configuration List** is stored in **Vercel KV (Redis)**.  
 * **Role Propagation:** When the Access List is read, the backend returns the User's Role (admin or viewer). This is stored in Zustand to conditionally render the "Admin Settings" button in the UI.
@@ -259,8 +276,9 @@ To ensure speed for the user and protection for the API (Section 5.1), the appli
 | Data Type | TTL (Time-To-Live) | Rationale |
 | :---- | :---- | :---- |
 | **Access Control List** | **NO EXPIRY** | Configuration data must persist until manually changed. |
-| **Static Data** (Patrols, Member Lists) | **1 Hour** | Membership rarely changes during an event. |
-| **Volatile Data** (Invites, Kit Lists) | **5-10 Minutes** | Balances the need for updates with API protection. |
+| **Patrol and Member Structure** | **90 Days** | Critical for Standard Viewers (who cannot fetch directly), changes infrequently. Automatically refreshed when an Administrator logs in. |
+| **Static Data** (Events Lists, general non-critical Member Lists for Admins) | **1 Hour** | Membership rarely changes during an event. |
+| **Volatile Data** (Invites, Kit Lists, specific event details) | **5-10 Minutes** | Balances the need for updates with API protection. |
 | **OAuth Tokens** | **1 Hour** | Matches the OSM Token expiry lifecycle. |
 
 ## **8\. Reporting & Export**
