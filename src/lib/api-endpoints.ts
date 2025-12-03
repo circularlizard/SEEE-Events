@@ -5,9 +5,9 @@ export const API_ENDPOINTS: ApiEndpoint[] = [
   {
     id: 'get-events',
     name: 'Get Events',
-    path: '/ext/events/events/',
+    path: '/ext/events/summary/',
     method: 'GET',
-    action: 'getEvents',
+    action: 'get',
     description: 'Retrieve all events for a section',
     category: 'events',
     parameters: [
@@ -17,6 +17,13 @@ export const API_ENDPOINTS: ApiEndpoint[] = [
         required: true,
         description: 'Section ID to fetch events for',
         placeholder: '37458',
+      },
+      {
+        name: 'termid',
+        type: 'number',
+        required: true,
+        description: 'Term ID',
+        placeholder: '842886',
       },
       {
         name: 'showArchived',
@@ -32,9 +39,9 @@ export const API_ENDPOINTS: ApiEndpoint[] = [
   {
     id: 'get-event-details',
     name: 'Get Event Details',
-    path: '/ext/events/event/',
+    path: '/v3/events/event/{eventid}/basic_details',
     method: 'GET',
-    action: 'get',
+    action: null,
     description: 'Get detailed information about a specific event',
     category: 'events',
     parameters: [
@@ -44,13 +51,6 @@ export const API_ENDPOINTS: ApiEndpoint[] = [
         required: true,
         description: 'Event ID',
         placeholder: '1631576',
-      },
-      {
-        name: 'sectionid',
-        type: 'number',
-        required: true,
-        description: 'Section ID',
-        placeholder: '37458',
       },
     ],
     exampleResponse: 'event_details.json',
@@ -77,9 +77,9 @@ export const API_ENDPOINTS: ApiEndpoint[] = [
   {
     id: 'get-event-attendance',
     name: 'Get Event Attendance',
-    path: '/ext/events/event/',
+    path: '/v3/events/event/{eventid}/members/attendance',
     method: 'GET',
-    action: 'getAttendance',
+    action: null,
     description: 'Get attendance records for an event',
     category: 'events',
     parameters: [
@@ -132,9 +132,9 @@ export const API_ENDPOINTS: ApiEndpoint[] = [
   {
     id: 'get-patrols',
     name: 'Get Patrols',
-    path: '/ext/members/contact/',
+    path: '/ext/members/patrols/',
     method: 'GET',
-    action: 'getPatrols',
+    action: 'getPatrolsWithPeople',
     description: 'Get patrol structure for a section',
     category: 'members',
     parameters: [

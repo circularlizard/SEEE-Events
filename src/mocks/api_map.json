@@ -67,12 +67,12 @@
     "is_static_resource": false
   },
   {
-    "original_file": "getEvents_browser.txt",
+    "original_file": "getEvents.txt",
     "mock_data_file": "events.json",
-    "full_url": "https://www.onlinescoutmanager.co.uk/ext/events/events/?action=getEvents&sectionid=37458",
-    "path": "/ext/events/events/",
+    "full_url": "https://www.onlinescoutmanager.co.uk/ext/events/summary/?action=get",
+    "path": "/ext/events/summary/",
     "method": "GET",
-    "action": "getEvents",
+    "action": "get",
     "query_params": {
       "action": [
         "getEvents"
