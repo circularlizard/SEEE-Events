@@ -115,11 +115,14 @@ function getProviders(): Provider[] {
       clientId: process.env.OSM_CLIENT_ID,
       clientSecret: process.env.OSM_CLIENT_SECRET,
       profile(profile: any) {
+        console.log('[OAuth] Profile data from OSM /oauth/resource:', JSON.stringify(profile, null, 2))
+        // OSM returns { status, error, data: { user_id, full_name, email, sections, ... }, meta }
+        const data = profile.data || {}
         return {
-          id: String(profile.userid || profile.id || 'unknown'),
-          name: profile.name || profile.firstname && profile.lastname ? `${profile.firstname} ${profile.lastname}` : 'OSM User',
-          email: profile.email || null,
-          image: null,
+          id: String(data.user_id || 'unknown'),
+          name: data.full_name || 'OSM User',
+          email: data.email || null,
+          image: data.profile_picture_url || null,
         }
       },
     } as any,

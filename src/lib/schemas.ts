@@ -10,6 +10,72 @@ import { logValidationError } from './logger'
  */
 
 // ============================================================================
+// OAUTH RESOURCE SCHEMAS
+// ============================================================================
+
+/**
+ * OSM OAuth Resource Response Schema
+ * Used for /oauth/resource endpoint - contains user info, sections, terms, permissions
+ * This replaces the old getStartupData call
+ */
+export const OAuthTermSchema = z.object({
+  name: z.string(),
+  startdate: z.string(),
+  enddate: z.string(),
+  term_id: z.number(),
+})
+
+export const OAuthUpgradesSchema = z.object({
+  level: z.string(),
+  badges: z.boolean(),
+  campsiteexternalbookings: z.boolean(),
+  details: z.boolean(),
+  events: z.boolean(),
+  emailbolton: z.boolean(),
+  programme: z.boolean(),
+  accounts: z.boolean(),
+  filestorage: z.boolean(),
+  chat: z.boolean(),
+  ai: z.boolean(),
+  tasks: z.boolean(),
+  at_home: z.boolean(),
+})
+
+export const OAuthSectionSchema = z.object({
+  section_name: z.string(),
+  group_name: z.string(),
+  section_id: z.number(),
+  group_id: z.number(),
+  section_type: z.string(),
+  terms: z.array(OAuthTermSchema),
+  upgrades: OAuthUpgradesSchema,
+})
+
+export const OAuthResourceDataSchema = z.object({
+  user_id: z.number(),
+  full_name: z.string(),
+  email: z.string().email(),
+  profile_picture_url: z.string().url().nullable(),
+  scopes: z.array(z.string()),
+  sections: z.array(OAuthSectionSchema),
+  has_parent_access: z.boolean(),
+  has_section_access: z.boolean(),
+})
+
+export const OAuthResourceSchema = z.object({
+  status: z.boolean(),
+  error: z.any().nullable(),
+  data: OAuthResourceDataSchema,
+  meta: z.array(z.any()),
+})
+
+export type OAuthTerm = z.infer<typeof OAuthTermSchema>
+export type OAuthUpgrades = z.infer<typeof OAuthUpgradesSchema>
+export type OAuthSection = z.infer<typeof OAuthSectionSchema>
+export type OAuthResourceData = z.infer<typeof OAuthResourceDataSchema>
+export type OAuthResource = z.infer<typeof OAuthResourceSchema>
+
+// ============================================================================
 // TIER 1: STRICT SCHEMAS (Critical Data - Must Be Valid)
 // ============================================================================
 
