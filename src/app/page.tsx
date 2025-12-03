@@ -2,12 +2,17 @@
 import { signIn } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import Image from "next/image";
 
 export default function Home() {
   const mockEnabled = process.env.NEXT_PUBLIC_MOCK_AUTH_ENABLED === "true" || process.env.MOCK_AUTH_ENABLED === "true";
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 bg-background">
-      <Card className="w-full max-w-md">
+    <div className="relative min-h-screen">
+      {/* Hero background image (placeholder). Replace /hero.jpg later. */}
+      <Image src="/hero.jpg" alt="Expedition hero" fill priority className="object-cover" />
+      <div className="absolute inset-0 bg-black/40" />
+      <div className="relative z-10 min-h-screen flex items-center justify-center px-4">
+      <Card className="w-full max-w-md bg-background/95 backdrop-blur">
         <CardHeader>
           <CardTitle className="text-xl">SEEE Expedition Dashboard</CardTitle>
         </CardHeader>
@@ -27,6 +32,7 @@ export default function Home() {
           </div>
         </CardContent>
       </Card>
+      </div>
     </div>
   );
 }
