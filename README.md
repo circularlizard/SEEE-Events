@@ -92,8 +92,10 @@ Start Redis with `docker compose up -d redis` and reload the page.
 
 ## 🧪 Testing
 
+### Unit & Integration Tests
+
 ```bash
-# Run tests
+# Run Jest tests
 npm test
 
 # Watch mode
@@ -104,6 +106,41 @@ npm run validate:safety
 ```
 
 Tests use Mock Service Worker (MSW) to intercept network requests.
+
+### End-to-End (E2E) Tests
+
+E2E tests use Playwright to test the full application flow in a real browser:
+
+```bash
+# Run all E2E tests (headless)
+npm run test:e2e
+
+# Run with interactive UI
+npm run test:e2e:ui
+
+# Debug mode (step through tests)
+npm run test:e2e:debug
+
+# View HTML test report
+npm run test:e2e:report
+```
+
+**E2E Test Coverage:**
+- **Login Flow:** Unauthenticated redirect, OAuth trigger, post-auth navigation
+- **Section Picker:** Multi-section modal, selection persistence (skipped - requires multi-section mock data)
+- **Events List:** Loading states, desktop table view, mobile card view, responsive layout
+
+**Requirements:**
+- Dev server must be running (Playwright will start it automatically)
+- HTTPS certificates must be generated (`mkcert localhost`)
+- Redis must be running (`docker compose up -d redis`)
+- Mock Auth mode recommended for reliable testing
+
+**Browsers Tested:**
+- Chromium (Desktop Chrome)
+- Mobile Chrome (Pixel 5 emulation)
+
+**Note:** Some section picker tests are skipped pending multi-section mock data configuration.
 
 ## 🛠️ Development
 
