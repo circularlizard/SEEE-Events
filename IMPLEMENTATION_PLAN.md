@@ -97,7 +97,44 @@ All agents must adhere to this structure. Do not create new top-level directorie
 
 ---
 
-## **Phase 2.8: Role-Based Access Control ✅ PREREQUISITE FOR PHASE 3**
+## **Phase 2.8.0: Role Selection & Dynamic OAuth Scopes (NEW - PREREQUISITE)**
+
+**Goal:** Implement pre-OAuth role selection UI that determines which scopes are requested during OAuth flow.
+
+**Rationale:** Spec 3.1 requires role selection at login to drive scope requests. Different roles require different permissions:
+- **Administrator:** `section:event:read`, `section:member:read`, `section:programme:read`, `section:flexirecord:read`
+- **Standard Viewer:** `section:event:read` only
+
+Currently, scopes are hardcoded; they must be dynamic based on user's role selection.
+
+* [ ] **2.8.0.1 Role Selection UI (Pre-OAuth Modal):**
+  * [ ] Create modal component displayed on login page before OAuth redirect
+  * [ ] Two radio button options: "Administrator" and "Standard Viewer"
+  * [ ] Descriptive text explaining each role's permissions
+  * [ ] "Continue" button that stores role selection and redirects to OSM OAuth
+  * [ ] Persist role selection in session/URL state during OAuth callback
+
+* [ ] **2.8.0.2 Dynamic Scope Calculation:**
+  * [ ] Update src/lib/auth.ts to calculate OAuth scopes based on selected role
+  * [ ] Pass selected role through OAuth flow (URL param or session state)
+  * [ ] On callback, verify role selection and apply correct scopes in JWT
+  * [ ] Administrator role: Add `section:member:read`, `section:programme:read`, `section:flexirecord:read` to scope
+  * [ ] Standard Viewer role: Keep `section:event:read` only
+
+* [ ] **2.8.0.3 Mock Auth Support:**
+  * [ ] Update mock auth provider to support role selection
+  * [ ] Generate mock users with appropriate scopes based on selected role
+  * [ ] **TEST (Unit):** Verify mock auth returns correct scopes for each role
+
+* [ ] **2.8.0.4 E2E Verification:**
+  * [ ] **TEST (E2E):** Verify role selection modal displays on login
+  * [ ] **TEST (E2E):** Verify role selection persists through OAuth callback
+  * [ ] **TEST (E2E):** Verify admin role gets full scopes, standard gets minimal scopes
+  * [ ] **TEST (E2E):** Verify role selection shown in session/store after login
+
+---
+
+## **Phase 2.8.1: Access Control Selectors & Route Protection**
 
 **Goal:** Implement role-based access control selectors and route protection before building data visualization views.
 
@@ -107,7 +144,7 @@ All agents must adhere to this structure. Do not create new top-level directorie
 - Foundation for Admin routes (Phase 4)
 - Strategy A (Patrol-based) and Strategy B (Event-based) filtering implemented uniformly
 
-* [ ] **2.8.1 Access Control Selectors (Spec 5.2):**  
+* [ ] **2.8.1.1 Access Control Selectors (Spec 5.2):**  
   * [ ] Implement in Zustand store (use-store.ts):
     * `getFilteredMembers()` - Apply Strategy A/B filtering based on userRole and assignedPatrol/Event
     * `getFilteredEvents()` - Return only events user is assigned to (Strategy B)
@@ -116,13 +153,13 @@ All agents must adhere to this structure. Do not create new top-level directorie
   * [ ] Admin can view all data without restrictions
   * [ ] **TEST (Unit):** Verify selectors return empty lists for unauthorized data access
   
-* [ ] **2.8.2 Admin Route Protection:**  
+* [ ] **2.8.1.2 Admin Route Protection:**  
   * [ ] Create middleware check for `/dashboard/admin` routes (future Phase 4)
   * [ ] Implement higher-order component or route wrapper for admin-only pages
   * [ ] Return 403 Forbidden for unauthorized access
   * [ ] **TEST (Unit):** Verify non-admin users cannot access admin routes
 
-* [ ] **2.8.3 E2E Verification:**  
+* [ ] **2.8.1.3 E2E Verification:**  
   * [ ] **TEST (E2E):** Verify Standard Viewer sees only assigned Patrol members
   * [ ] **TEST (E2E):** Verify Leader sees all members in their Event
   * [ ] **TEST (E2E):** Verify Admin sees all data across all Events/Patrols
