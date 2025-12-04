@@ -215,13 +215,24 @@ All agents must adhere to this structure. Do not create new top-level directorie
     1. [x] Real Auth + Real Data (MOCK_AUTH_ENABLED=false, NEXT_PUBLIC_USE_MSW=false) — **Verified working via API Browser; upstream calls succeed**.  
     2. [x] Real Auth + Mock Data (MOCK_AUTH_ENABLED=false, NEXT_PUBLIC_USE_MSW=true) — **Verified working**.  
     3. [x] Mock Auth + Mock Data (MOCK_AUTH_ENABLED=true, NEXT_PUBLIC_USE_MSW=true).  
-* [ ] **2.5 Progressive Hydration (Events List):**  
-  * [ ] Create `/dashboard/events` route protected by auth.  
-  * [ ] Implement TanStack Query hook to fetch events via `/api/proxy/ext/events/events/?action=getEvents`.  
-  * [ ] Render loading skeletons during data fetch.  
-  * [ ] Display events in card grid or table layout (responsive).  
-  * [ ] Show event name, dates, attendance count (from event data).  
-  * [ ] Lazy-load event details on card click (defer Participants, Structure to detail view).  
+* [x] **2.5 Progressive Hydration (Events List):** ✅ COMPLETE  
+  * [x] Create `/dashboard/events` route protected by auth (middleware handles protection).  
+  * [x] Implement TanStack Query hook (`useEvents`) to fetch events via `/api/proxy/ext/events/summary/?action=get`.  
+    * [x] Uses `currentSection` from Zustand store for sectionid and termid.  
+    * [x] Query key includes sectionId and termId for proper cache invalidation.  
+    * [x] Query disabled when no section selected.  
+  * [x] Render loading skeletons during data fetch (EventsListSkeleton component).  
+    * [x] Mobile: 6 card skeletons with proper spacing.  
+    * [x] Desktop: 8 table row skeletons with column structure.  
+  * [x] Display events in responsive layout:  
+    * [x] Mobile: Card grid (EventCard component) with event name, dates, location, attendance.  
+    * [x] Desktop: Table (EventsTable component) with columns for name, dates, location, attendance.  
+    * [x] Proper breakpoints: cards visible below md, table visible md+.  
+  * [x] Show event name, dates (start/end), location, and attendance count (yes responses).  
+  * [x] Error state with AlertCircle icon and error message.  
+  * [x] Empty state for sections with no events.  
+  * [x] Events link already in sidebar navigation.  
+  * [ ] Lazy-load event details on card click (deferred to future phase - detail view not required for 2.5).  
 * [ ] **2.6 E2E Testing Setup:**  
   * [ ] Install Playwright and configure for HTTPS localhost.  
   * [ ] Create basic E2E test structure (tests/e2e/ directory).  
@@ -289,11 +300,21 @@ All agents must adhere to this structure. Do not create new top-level directorie
 - ✅ Settings relocated to sidebar; favicon configured
 
 **Remaining Phase 2 Tasks:**
-- [ ] Complete Mock Auth + Mock Data manual testing (2.4)
-- [ ] Build Events List with progressive hydration (2.5)
+- [x] Complete Mock Auth + Mock Data manual testing (2.4) ✅
+- [x] Build Events List with progressive hydration (2.5) ✅
 - [ ] Install Playwright and create E2E test structure (2.6)
 
-**Next:** Complete remaining Phase 2 tasks → Move to Phase 3 (Data Visualization).## **Pre-Phase 3: Real API Testing Readiness Assessment**
+**Phase 2.5 Completion Notes:**
+- Created useEvents TanStack Query hook with store integration
+- Built EventCard component for mobile with icons (Calendar, MapPin, Users)
+- Built EventsTable component for desktop with hover effects
+- Created EventsListSkeleton with proper mobile/desktop layouts
+- Added Skeleton UI component following shadcn pattern
+- Extended Section interface with optional termId
+- Full responsive layout (mobile cards, desktop table)
+- Loading, error, and empty states all implemented
+
+**Next:** Install Playwright and create E2E test structure (2.6) → Move to Phase 3 (Data Visualization).## **Pre-Phase 3: Real API Testing Readiness Assessment**
 
 **Goal:** Verify safety layer protection before enabling real OSM API calls.
 
