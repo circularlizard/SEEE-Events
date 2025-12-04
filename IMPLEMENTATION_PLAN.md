@@ -214,7 +214,7 @@ All agents must adhere to this structure. Do not create new top-level directorie
   * [x] **TEST (Manual):** Verify the 3 Operation Modes:  
     1. [x] Real Auth + Real Data (MOCK_AUTH_ENABLED=false, NEXT_PUBLIC_USE_MSW=false) — **Verified working via API Browser; upstream calls succeed**.  
     2. [x] Real Auth + Mock Data (MOCK_AUTH_ENABLED=false, NEXT_PUBLIC_USE_MSW=true) — **Verified working**.  
-    3. [ ] Mock Auth + Mock Data (MOCK_AUTH_ENABLED=true, NEXT_PUBLIC_USE_MSW=true).  
+    3. [x] Mock Auth + Mock Data (MOCK_AUTH_ENABLED=true, NEXT_PUBLIC_USE_MSW=true).  
 * [ ] **2.5 Progressive Hydration (Events List):**  
   * [ ] Create `/dashboard/events` route protected by auth.  
   * [ ] Implement TanStack Query hook to fetch events via `/api/proxy/ext/events/events/?action=getEvents`.  

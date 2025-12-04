@@ -21,6 +21,7 @@ export interface Section {
   sectionId: string
   sectionName: string
   sectionType: string
+  termId?: string
 }
 
 /**
