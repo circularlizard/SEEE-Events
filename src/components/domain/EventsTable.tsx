@@ -20,7 +20,7 @@ export function EventsTable({ events }: EventsTableProps) {
 
   return (
     <div className="border rounded-lg overflow-hidden">
-      <table className="w-full">
+      <table className="w-full text-sm">
         <thead className="bg-muted">
           <tr className="border-b">
             <th className="text-left p-4 font-semibold">Event Name</th>

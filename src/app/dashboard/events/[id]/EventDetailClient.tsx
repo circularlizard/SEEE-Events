@@ -28,12 +28,12 @@ export default function EventDetailClient({ eventId }: Props) {
     // - legacy/permissive: { participants: [...]} or { attendees: [...] }
     const summary: any = data?.summary || {}
 
-    // Extract list candidates
-    const v3Members: any[] = Array.isArray(summary?.data?.members) ? summary.data.members : []
+    // Extract list from meta.event.members (authoritative for event signups)
+    const metaMembers: any[] = Array.isArray(summary?.meta?.event?.members) ? summary.meta.event.members : []
     const legacyParticipants: any[] = Array.isArray(summary?.participants) ? summary.participants : []
     const legacyAttendees: any[] = Array.isArray(summary?.attendees) ? summary.attendees : []
 
-    const list: any[] = v3Members.length ? v3Members : (legacyParticipants.length ? legacyParticipants : legacyAttendees)
+    const list: any[] = metaMembers.length ? metaMembers : (legacyParticipants.length ? legacyParticipants : legacyAttendees)
 
     // Build config title map from summary meta.event.config
     const configMap: Record<string, string> = {}
@@ -42,18 +42,30 @@ export default function EventDetailClient({ eventId }: Props) {
       if (c?.id && c?.name) configMap[String(c.id)] = String(c.name)
     })
 
+    // Build patrol lookup from v3 summary data.members where available
+    const patrolMap: Record<string, number> = {}
+    const v3Members: any[] = Array.isArray(summary?.data?.members) ? summary.data.members : []
+    v3Members.forEach((m) => {
+      const key = String(m.member_id ?? '')
+      if (key) patrolMap[key] = Number(m.patrol_id ?? NaN)
+    })
+
     const mapped = list.map((a) => ({
-      id: String(a.member_id ?? a.scoutid ?? a.id ?? ''),
+      id: String(a.member?.scoutid ?? a.scoutid ?? a.member_id ?? a.id ?? ''),
       name:
-        (a.full_name as string) ||
-        [a.firstname ?? a.first_name, a.lastname ?? a.last_name].filter(Boolean).join(' ').trim() ||
-        (a.name as string) ||
-        '',
-      patrol: a.patrol ?? a.group ?? a.patrol_id ?? undefined,
+        [a.member?.firstname ?? a.firstname ?? a.first_name, a.member?.lastname ?? a.lastname ?? a.last_name]
+          .filter(Boolean)
+          .join(' ')
+          .trim() || (a.full_name as string) || (a.name as string) || '',
+      patrol: (() => {
+        const scoutId = String(a.member?.scoutid ?? a.scoutid ?? '')
+        const fromLookup = scoutId ? patrolMap[scoutId] : undefined
+        return fromLookup ?? (a.patrol ?? a.group ?? a.patrol_id ?? undefined)
+      })(),
       role: a.role ?? undefined,
-      status: a.status ?? a.attending ?? undefined,
+      status: a.attending ?? a.status ?? undefined,
       contact: a.contact ?? a.email ?? undefined,
-      dob: a.dob ?? a.member?.dob ?? undefined,
+      dob: a.member?.dob ?? a.dob ?? undefined,
       custom: (() => {
         const details = a.details ?? a.member?.details ?? {}
         const out: Record<string, string> = {}
@@ -83,6 +95,19 @@ export default function EventDetailClient({ eventId }: Props) {
 
     return filtered.sort(compare)
   }, [data?.summary, unitFilter, statusFilter, sortKey, sortDir])
+
+  // Determine which custom fields should be shown as individual columns
+  const customColumnKeys = useMemo(() => {
+    const summary: any = data?.summary || {}
+    const configs: any[] = Array.isArray(summary?.meta?.event?.config) ? summary.meta.event.config : []
+    const titles: string[] = configs
+      .map((c) => (c?.id && c?.name ? String(c.name) : null))
+      .filter(Boolean) as string[]
+    // Only include titles where at least one participant has a non-empty value
+    const hasValue = (title: string) =>
+      participants.some((p: any) => p.custom && p.custom[title] && String(p.custom[title]).trim() !== '')
+    return titles.filter(hasValue)
+  }, [data?.summary, participants])
 
   const computeAge = (dob?: string) => {
     if (!dob) return '—'
@@ -122,9 +147,9 @@ export default function EventDetailClient({ eventId }: Props) {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="p-4 md:p-6 space-y-6">
       {/* Back link at very top with comfortable spacing */}
-      <div className="container mx-auto flex items-center px-4 md:px-6">
+      <div className="flex items-center">
         <Link href="/dashboard/events">
           <Button variant="ghost" className="pl-0">← Back to Events</Button>
         </Link>
@@ -163,35 +188,31 @@ export default function EventDetailClient({ eventId }: Props) {
         </div>
       </Card>
 
-      {/* Desktop table */}
+      {/* Desktop table styled like Events list */}
       <div className="hidden md:block">
-        <div className="overflow-x-auto">
+        <div className="border rounded-lg overflow-hidden">
           <table className="w-full text-sm">
-            <thead>
-              <tr className="text-left">
-                <th className="py-2 px-3 cursor-pointer" onClick={() => setSortKey('name')}>Name</th>
-                <th className="py-2 px-3 cursor-pointer" onClick={() => setSortKey('patrol')}>Patrol ID</th>
-                <th className="py-2 px-3 cursor-pointer" onClick={() => setSortKey('status')}>Status</th>
-                <th className="py-2 px-3">Age</th>
-                <th className="py-2 px-3">Custom Fields</th>
+            <thead className="bg-muted">
+              <tr className="border-b">
+                <th className="text-left p-4 font-semibold cursor-pointer" onClick={() => setSortKey('name')}>Name</th>
+                <th className="text-left p-4 font-semibold cursor-pointer" onClick={() => setSortKey('patrol')}>Patrol ID</th>
+                <th className="text-left p-4 font-semibold cursor-pointer" onClick={() => setSortKey('status')}>Attendance</th>
+                <th className="text-left p-4 font-semibold">Age</th>
+                {customColumnKeys.map((title) => (
+                  <th key={title} className="text-left p-4 font-semibold">{title}</th>
+                ))}
               </tr>
             </thead>
             <tbody>
               {participants.map((p) => (
-                <tr key={p.id} className="border-t">
-                  <td className="py-2 px-3">{p.name}</td>
-                  <td className="py-2 px-3">{p.patrol ?? '—'}</td>
-                  <td className="py-2 px-3">{p.status ?? '—'}</td>
-                  <td className="py-2 px-3">{computeAge(p.dob)}</td>
-                  <td className="py-2 px-3">
-                    {p.custom && Object.keys(p.custom).length > 0 ? (
-                      <div className="space-y-1">
-                        {Object.entries(p.custom).map(([k, v]) => (
-                          <div key={k} className="text-xs"><span className="text-muted-foreground">{k}:</span> {v || '—'}</div>
-                        ))}
-                      </div>
-                    ) : '—'}
-                  </td>
+                <tr key={p.id} className="border-b last:border-b-0 hover:bg-muted/50 transition-colors">
+                  <td className="p-4 font-medium">{p.name}</td>
+                  <td className="p-4 text-muted-foreground">{p.patrol ?? '—'}</td>
+                  <td className="p-4 text-muted-foreground">{p.status ?? '—'}</td>
+                  <td className="p-4 text-muted-foreground">{computeAge(p.dob)}</td>
+                  {customColumnKeys.map((title) => (
+                    <td key={title} className="p-4 text-muted-foreground">{p.custom?.[title] || '—'}</td>
+                  ))}
                 </tr>
               ))}
             </tbody>
