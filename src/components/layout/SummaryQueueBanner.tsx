@@ -17,15 +17,36 @@ export default function SummaryQueueBanner() {
     const eventIds = events.map((e) => Number(e?.eventid)).filter(Boolean)
 
     const summaries = qc.getQueryCache().findAll({ queryKey: ['event-summary'] })
+    
     const completedIds = new Set(
       summaries
-        .map((q) => (q.state.data as any)?.meta?.event?.id)
-        .filter((id) => typeof id === 'number')
+        .filter(q => q.state.status === 'success' && q.state.data) // Only count successful queries with data
+        .map((q) => {
+          const fromData = (q.state.data as any)?.meta?.event?.id
+          const fromKey = Array.isArray(q.queryKey) ? q.queryKey[1] : undefined
+          // Convert to number if it's a string
+          const idFromData = typeof fromData === 'number' ? fromData : undefined
+          const idFromKey = typeof fromKey === 'number' ? fromKey : 
+                           (typeof fromKey === 'string' ? parseInt(fromKey, 10) : undefined)
+          return idFromData ?? idFromKey
+        })
+        .filter((id): id is number => typeof id === 'number' && !isNaN(id))
     )
+    
+    console.log('[Banner] Completed IDs:', Array.from(completedIds), 'from', summaries.length, 'queries')
 
     const completed = eventIds.filter((id) => completedIds.has(id)).length
     const total = eventIds.length
     const pending = Math.max(total - completed, 0)
+    if (process.env.NODE_ENV !== 'production') {
+      const loadingIds = qc.getQueryCache()
+        .findAll({ queryKey: ['event-summary'] })
+        .filter((q) => q.state.status === 'loading')
+        .map((q) => (q.queryKey?.[1] as number))
+        .filter(Boolean)
+      console.debug('[SummaryQueueBanner] Totals -> total:', total, 'completed:', completed, 'pending:', pending, 'eventIds:', eventIds)
+      console.debug('[SummaryQueueBanner] Loading IDs:', loadingIds)
+    }
     return { total, completed, pending }
   }, [qc, data])
 

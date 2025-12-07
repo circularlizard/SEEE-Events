@@ -29,6 +29,18 @@ export default function Sidebar() {
           >
             API Browser
           </Link>
+          <Link
+            className="block px-2 py-1 rounded-md hover:bg-accent hover:text-accent-foreground text-muted-foreground"
+            href="/dashboard/debug/queue"
+          >
+            Queue Debug
+          </Link>
+          <Link
+            className="block px-2 py-1 rounded-md hover:bg-accent hover:text-accent-foreground text-muted-foreground"
+            href="/dashboard/debug/oauth"
+          >
+            OAuth Resource
+          </Link>
           <div className="mt-4">
             <p className="px-2 text-xs font-semibold text-muted-foreground uppercase mb-2">
               Settings

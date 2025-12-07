@@ -68,11 +68,17 @@ export default function StartupInitializer() {
         setUserRole(role)
 
         // Transform OAuth sections to store format
-        const storeSections = sections.map((s: any) => ({
-          sectionId: String(s.section_id),
-          sectionName: s.section_name,
-          sectionType: s.section_type,
-        }))
+        const storeSections = sections.map((s: any) => {
+          const terms = Array.isArray(s.terms) ? s.terms : []
+          const latestTerm = terms.length > 0 ? terms[terms.length - 1] : null
+          const termId = latestTerm?.term_id ? String(latestTerm.term_id) : undefined
+          return {
+            sectionId: String(s.section_id),
+            sectionName: s.section_name,
+            sectionType: s.section_type,
+            termId,
+          }
+        })
         setAvailableSections(storeSections)
 
         // Auto-select when exactly one section is available and none selected yet
@@ -81,14 +87,19 @@ export default function StartupInitializer() {
             sectionId: storeSections[0].sectionId,
             sectionName: storeSections[0].sectionName,
             sectionType: storeSections[0].sectionType,
+            termId: storeSections[0].termId,
           })
         }
 
         // Force-open the Section Picker if there are sections and none are selected yet,
         // even if something is cached from a previous session.
-        const noneSelected = !currentSection && (!selectedSections || selectedSections.length === 0)
-        if (storeSections.length > 0 && noneSelected && !sectionPickerOpen) {
+        const state = useStore.getState()
+        const noneSelected = !state.currentSection && (!state.selectedSections || state.selectedSections.length === 0)
+        if (storeSections.length > 0 && noneSelected && !state.sectionPickerOpen) {
           setSectionPickerOpen(true)
+          if (process.env.NODE_ENV !== 'production') {
+            console.debug('[StartupInitializer] Forcing Section Picker open on login (sections available, none selected)')
+          }
         }
 
         // Fetch access control config (placeholder values for now)
@@ -110,7 +121,7 @@ export default function StartupInitializer() {
     }
 
     fetchSections()
-  }, [status, session, setUserRole, setAvailableSections])
+  }, [status, session, setUserRole, setAvailableSections, setCurrentSection, setSectionPickerOpen])
 
   return null
 }

@@ -96,9 +96,29 @@ interface ThemeState {
 }
 
 /**
+ * Queue State
+ * Manages event summary prefetch queue
+ */
+interface QueueState {
+  // Queue items (event IDs to fetch)
+  queueItems: number[]
+  // Currently running fetch count
+  queueRunning: number
+  // Timer active flag
+  queueTimerActive: boolean
+  
+  // Actions
+  enqueueItems: (ids: number[]) => void
+  dequeueItem: () => number | null
+  setQueueRunning: (count: number) => void
+  setQueueTimerActive: (active: boolean) => void
+  clearQueue: () => void
+}
+
+/**
  * Combined Store State
  */
-type StoreState = SessionState & ConfigState & ThemeState
+type StoreState = SessionState & ConfigState & ThemeState & QueueState
 
 /**
  * Main Application Store
@@ -176,6 +196,28 @@ export const useStore = create<StoreState>()(
       // Theme State
       theme: 'system',
       setTheme: (theme) => set({ theme }),
+
+      // Queue State
+      queueItems: [],
+      queueRunning: 0,
+      queueTimerActive: false,
+      enqueueItems: (ids) => set((state) => {
+        const existing = new Set(state.queueItems)
+        const newItems = ids.filter(id => !existing.has(id))
+        if (newItems.length === 0) return state
+        return { queueItems: [...state.queueItems, ...newItems] }
+      }),
+      dequeueItem: () => {
+        const item = useStore.getState().queueItems[0]
+        if (item !== undefined) {
+          set((state) => ({ queueItems: state.queueItems.slice(1) }))
+          return item
+        }
+        return null
+      },
+      setQueueRunning: (count) => set({ queueRunning: count }),
+      setQueueTimerActive: (active) => set({ queueTimerActive: active }),
+      clearQueue: () => set({ queueItems: [], queueRunning: 0, queueTimerActive: false }),
     }),
     {
       name: 'seee-storage',

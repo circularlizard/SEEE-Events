@@ -94,6 +94,37 @@ All agents must adhere to this structure. Do not create new top-level directorie
 ---
 
 ## **Active & Future Work
+## **Active & Future Work**
+
+---
+
+## **Immediate Next Priorities**
+
+### 1. Code Cleanup
+- [ ] Remove debugging console.log statements from:
+  - `src/hooks/useQueueProcessor.ts` (unconditional logs with emojis)
+  - `src/components/layout/ClientShell.tsx` (processor state logs)
+  - `src/components/layout/SummaryQueueBanner.tsx` (banner query logs)
+  - Other components with dev-only logging
+- [ ] Consider: Keep dev-only logs wrapped in `if (process.env.NODE_ENV !== 'production')` checks
+- [ ] Delete unused file: `src/hooks/useEventSummaryQueue.ts` (superseded by `useQueueProcessor`)
+
+### 2. Section Picker Modal Issue
+- [ ] Diagnose why `SectionPickerModal` does not display on login
+- [ ] Add diagnostic logs to verify mount and `sectionPickerOpen` state sync
+- [ ] Check open conditions in `StartupInitializer.tsx` and modal component
+- [ ] Ensure modal displays when user has multiple available sections
+- [ ] Test with both single-section and multi-section OAuth responses
+
+### 3. Per-Person Attendance View (Phase 3.2)
+- [ ] Complete `/dashboard/people/attendance` route implementation
+- [ ] Aggregate "Yes" attendance across all events per person using hydrated summaries
+- [ ] Implement toggle: Single List vs Group by Patrol
+- [ ] Apply mobile-first responsive design (cards on mobile, table on desktop)
+- [ ] Respect access control selectors from Phase 2.8.1
+- [ ] Add E2E test coverage for attendance aggregation and grouping
+
+### Pending Investigation: Section Picker Visibility (MOVED TO PRIORITY #2 ABOVE)
 
 ---
 
@@ -184,14 +215,20 @@ Due to NextAuth v4 limitations (static provider configuration), we implemented a
 
 **Goal:** Render event dashboards with event details, participant lists, logistics, and First Aid readiness summary.
 
-* [ ] **3.0 Data Model Hydration (Progressive Summaries):**
+* [x] **3.0 Data Model Hydration (Progressive Summaries):**
   * [x] Hover-based prefetch: prefetch event summary on link hover using `usePrefetchEventSummary`
-  * [x] Queue-based hydration: enqueue visible event IDs and process with limited concurrency/backoff via `useEventSummaryQueue`
+  * [x] Queue-based hydration: enqueue visible event IDs and process with limited concurrency/backoff
+  * [x] **REFACTORED:** Migrated queue from hook-local state to Zustand global store for persistence across re-renders
+  * [x] **IMPLEMENTED:** Centralized `useQueueProcessor` hook with timer management, concurrency control (default 2), and retry logic
+  * [x] **FIXED:** Timer lifecycle issues - separated mount/unmount cleanup from queue state effects
+  * [x] **FIXED:** Banner completion detection - added string-to-number ID conversion for query key extraction
   * [x] Viewport prefetch: prefetch summaries for visible events via IntersectionObserver (`useViewportPrefetchSummary`)
   * [x] Store summary-derived metadata in lightweight cache (TanStack Query) and expose access via `useEventSummaryCache`
   * [x] Respect rate limits: rely on proxy safety layer; limit client concurrency and use conservative `staleTime/gcTime`
   * [x] Ensure model supports future pivot reports (per person and per patrol) via `useEventSummaryCache`
   * [x] E2E: Hydration test added and suite passing (skips gracefully if empty)
+  * [x] Queue Debug UI: Created `/dashboard/debug/queue` with live state display and manual controls
+  * [x] OAuth Debug UI: Created `/dashboard/debug/oauth` to inspect cached resource data and term resolution
 
 * [ ] **3.1 Event Detail Route & View (Spec 3.2):**  
   * [x] Create `/dashboard/events/[id]` route with auth protection  

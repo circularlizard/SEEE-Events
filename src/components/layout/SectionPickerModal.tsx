@@ -20,8 +20,17 @@ export default function SectionPickerModal() {
     const multiple = sections && sections.length > 1;
     const hasSingleSelection = !!currentSection;
     const hasMultiSelection = selectedSections && selectedSections.length > 0;
-    setOpen((multiple && !(hasSingleSelection || hasMultiSelection)) || forcedOpen);
+    const shouldOpen = (multiple && !(hasSingleSelection || hasMultiSelection)) || forcedOpen;
+    setOpen(shouldOpen);
+    if (process.env.NODE_ENV !== 'production') {
+      console.debug('[SectionPickerModal] sections:', sections?.length ?? 0, 'currentSection:', currentSection, 'selectedSections:', selectedSections?.length ?? 0, 'forcedOpen:', forcedOpen, 'shouldOpen:', shouldOpen)
+    }
   }, [sections, currentSection, selectedSections, forcedOpen]);
+
+  useEffect(() => {
+    // Keep picked in sync when selectedSections or sections list changes
+    setPicked(selectedSections.map(s => s.sectionId));
+  }, [selectedSections, sections]);
 
   const [picked, setPicked] = useState<string[]>(selectedSections.map(s => s.sectionId));
   const handleSave = () => {
@@ -36,7 +45,7 @@ export default function SectionPickerModal() {
   }
 
   return (
-    <Dialog open={open} onOpenChange={(o) => setSectionPickerOpen(o)}>
+    <Dialog open={open} onOpenChange={(o) => { setOpen(o); setSectionPickerOpen(o); }}>
       <DialogContent aria-describedby="section-picker-description">
         <DialogHeader>
           <DialogTitle>Select a Section</DialogTitle>
