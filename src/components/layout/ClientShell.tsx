@@ -2,6 +2,7 @@
 import { useSession } from "next-auth/react";
 import Header from "./Header";
 import Sidebar from "./Sidebar";
+import SummaryQueueBanner from "./SummaryQueueBanner";
 
 export default function ClientShell({ children }: { children: React.ReactNode }) {
   const { status } = useSession();
@@ -13,6 +14,7 @@ export default function ClientShell({ children }: { children: React.ReactNode })
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
+      <SummaryQueueBanner />
       <div className="flex flex-1">
         <Sidebar />
         <main className="flex-1">{children}</main>

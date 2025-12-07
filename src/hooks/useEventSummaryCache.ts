@@ -11,5 +11,11 @@ export function useEventSummaryCache() {
     (eventId: number) => qc.getQueryData<any>(['event-summary', eventId]) ?? null,
     [qc]
   )
-  return { getSummaryById }
+  const getAllSummaries = useCallback(() => {
+    const queries = qc.getQueryCache().findAll({ queryKey: ['event-summary'] })
+    return queries
+      .map((q) => q.state.data as any)
+      .filter(Boolean)
+  }, [qc])
+  return { getSummaryById, getAllSummaries }
 }
