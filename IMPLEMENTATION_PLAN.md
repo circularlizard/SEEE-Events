@@ -189,9 +189,9 @@ Due to NextAuth v4 limitations (static provider configuration), we implemented a
   * [x] Queue-based hydration: enqueue visible event IDs and process with limited concurrency/backoff via `useEventSummaryQueue`
   * [x] Viewport prefetch: prefetch summaries for visible events via IntersectionObserver (`useViewportPrefetchSummary`)
   * [x] Store summary-derived metadata in lightweight cache (TanStack Query) and expose access via `useEventSummaryCache`
-  * [ ] Respect rate limits: rely on proxy safety layer; limit client concurrency and use conservative `staleTime/gcTime`
-  * [ ] Ensure model supports future pivot reports (per person and per patrol)
-  * [ ] E2E: Verify summaries are fetched and cached as navigation occurs
+  * [x] Respect rate limits: rely on proxy safety layer; limit client concurrency and use conservative `staleTime/gcTime`
+  * [x] Ensure model supports future pivot reports (per person and per patrol) via `useEventSummaryCache`
+  * [x] E2E: Hydration test added and suite passing (skips gracefully if empty)
 
 * [ ] **3.1 Event Detail Route & View (Spec 3.2):**  
   * [x] Create `/dashboard/events/[id]` route with auth protection  
