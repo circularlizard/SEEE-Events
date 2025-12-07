@@ -24,7 +24,8 @@ export default async function middleware(req: NextRequest) {
   // Protected dashboard routes
   if (pathname.startsWith('/dashboard')) {
     if (!isAuthenticated) {
-      const signInUrl = new URL('/api/auth/signin', req.url)
+      // Redirect to home page (login) with callback URL
+      const signInUrl = new URL('/', req.url)
       signInUrl.searchParams.set('callbackUrl', pathname)
       return NextResponse.redirect(signInUrl)
     }

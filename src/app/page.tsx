@@ -1,6 +1,6 @@
 "use client";
 import { signIn, useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -15,15 +15,19 @@ type UserRoleSelection = "admin" | "standard";
 export default function Home() {
   const { status } = useSession();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const mockEnabled = process.env.NEXT_PUBLIC_MOCK_AUTH_ENABLED === "true" || process.env.MOCK_AUTH_ENABLED === "true";
   const [selectedRole, setSelectedRole] = useState<UserRoleSelection>("standard");
   const [infoOpen, setInfoOpen] = useState(false);
   
+  // Get callback URL from query params or default to dashboard
+  const callbackUrl = searchParams?.get('callbackUrl') || '/dashboard';
+  
   useEffect(() => {
     if (status === "authenticated") {
-      router.push("/dashboard");
+      router.push(callbackUrl);
     }
-  }, [status, router]);
+  }, [status, router, callbackUrl]);
   
   if (status === "loading" || status === "authenticated") {
     return null;
@@ -35,7 +39,7 @@ export default function Home() {
     const provider = selectedRole === 'admin' ? 'osm-admin' : 'osm-standard';
     console.log('[Login] Signing in with provider:', provider);
     
-    signIn(provider, { callbackUrl: "/dashboard" });
+    signIn(provider, { callbackUrl });
   };
 
   return (
@@ -116,7 +120,7 @@ export default function Home() {
                 Sign in with OSM
               </Button>
               {mockEnabled && (
-                <Button variant="secondary" onClick={() => signIn("credentials", { callbackUrl: "/dashboard" })}>
+                <Button variant="secondary" onClick={() => signIn("credentials", { callbackUrl })}>
                   Dev: Mock Login
                 </Button>
               )}
