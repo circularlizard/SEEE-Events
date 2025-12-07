@@ -2,7 +2,8 @@
 
 import { useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
+import { Label } from '@/components/ui/label'
 import { cn } from '@/lib/utils'
 import { usePerPersonAttendance } from '@/hooks/usePerPersonAttendance'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -18,12 +19,16 @@ export default function AttendanceByPersonPage() {
           <CardTitle className={cn('text-2xl md:text-3xl font-semibold')}>Attendance by Person</CardTitle>
         </CardHeader>
         <CardContent>
-          <Tabs value={groupMode} onValueChange={(v) => setGroupMode(v as 'single' | 'patrol')}>
-            <TabsList>
-              <TabsTrigger value="single">Single List</TabsTrigger>
-              <TabsTrigger value="patrol">Group by Patrol</TabsTrigger>
-            </TabsList>
-          </Tabs>
+          <RadioGroup value={groupMode} onValueChange={(v) => setGroupMode(v as 'single' | 'patrol')} className="flex gap-4">
+            <div className="flex items-center space-x-2">
+              <RadioGroupItem value="single" id="group-single" />
+              <Label htmlFor="group-single">Single List</Label>
+            </div>
+            <div className="flex items-center space-x-2">
+              <RadioGroupItem value="patrol" id="group-patrol" />
+              <Label htmlFor="group-patrol">Group by Patrol</Label>
+            </div>
+          </RadioGroup>
           <div className="mt-4">
             {data.length === 0 ? (
               <div className="space-y-3">
@@ -33,6 +38,7 @@ export default function AttendanceByPersonPage() {
                 <div className="text-sm text-muted-foreground">No aggregated attendance yet. Once summaries hydrate, people with “Yes” responses will appear here.</div>
               </div>
             ) : (
+            <>
             {/* Desktop table */}
             <div className="hidden md:table w-full border rounded-lg overflow-hidden text-sm">
               <div className="table-header-group bg-muted">
@@ -172,6 +178,7 @@ export default function AttendanceByPersonPage() {
                     </div>
                   ))}
             </div>
+            </>
             )}
           </div>
         </CardContent>
