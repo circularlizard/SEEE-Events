@@ -20,6 +20,14 @@ export default function EventDetailClient({ eventId }: Props) {
   const [sortKey, setSortKey] = useState<string>('name')
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc')
   const { getSummaryById } = useEventSummaryCache()
+  const handleSort = (key: string) => {
+    if (sortKey === key) {
+      setSortDir((d) => (d === 'asc' ? 'desc' : 'asc'))
+    } else {
+      setSortKey(key)
+      setSortDir('asc')
+    }
+  }
   
 
   const participants = useMemo(() => {
@@ -86,6 +94,35 @@ export default function EventDetailClient({ eventId }: Props) {
     })
 
     const compare = (a: any, b: any) => {
+      if (sortKey === 'age') {
+        const ageVal = (dob?: string) => {
+          if (!dob) return Number.POSITIVE_INFINITY
+          const d = new Date(dob)
+          if (isNaN(d.getTime())) return Number.POSITIVE_INFINITY
+          const now = new Date()
+          let years = now.getFullYear() - d.getFullYear()
+          let months = now.getMonth() - d.getMonth()
+          if (now.getDate() < d.getDate()) months -= 1
+          if (months < 0) {
+            years -= 1
+            months += 12
+          }
+          return years * 12 + months
+        }
+        const va = ageVal(a.dob)
+        const vb = ageVal(b.dob)
+        if (va < vb) return sortDir === 'asc' ? -1 : 1
+        if (va > vb) return sortDir === 'asc' ? 1 : -1
+        return 0
+      }
+      if (sortKey.startsWith('custom:')) {
+        const title = sortKey.slice('custom:'.length)
+        const va = String(a.custom?.[title] ?? '').toLowerCase()
+        const vb = String(b.custom?.[title] ?? '').toLowerCase()
+        if (va < vb) return sortDir === 'asc' ? -1 : 1
+        if (va > vb) return sortDir === 'asc' ? 1 : -1
+        return 0
+      }
       const va = String(a[sortKey] ?? '').toLowerCase()
       const vb = String(b[sortKey] ?? '').toLowerCase()
       if (va < vb) return sortDir === 'asc' ? -1 : 1
@@ -194,12 +231,22 @@ export default function EventDetailClient({ eventId }: Props) {
           <table className="w-full text-sm">
             <thead className="bg-muted">
               <tr className="border-b">
-                <th className="text-left p-4 font-semibold cursor-pointer" onClick={() => setSortKey('name')}>Name</th>
-                <th className="text-left p-4 font-semibold cursor-pointer" onClick={() => setSortKey('patrol')}>Patrol ID</th>
-                <th className="text-left p-4 font-semibold cursor-pointer" onClick={() => setSortKey('status')}>Attendance</th>
-                <th className="text-left p-4 font-semibold">Age</th>
+                <th className="text-left p-4 font-semibold cursor-pointer" onClick={() => handleSort('name')}>
+                  <span className="inline-flex items-center gap-2">Name <span className="text-xs text-muted-foreground">{sortKey==='name' ? (sortDir==='asc'?'↑':'↓') : ''}</span></span>
+                </th>
+                <th className="text-left p-4 font-semibold cursor-pointer" onClick={() => handleSort('patrol')}>
+                  <span className="inline-flex items-center gap-2">Patrol ID <span className="text-xs text-muted-foreground">{sortKey==='patrol' ? (sortDir==='asc'?'↑':'↓') : ''}</span></span>
+                </th>
+                <th className="text-left p-4 font-semibold cursor-pointer" onClick={() => handleSort('status')}>
+                  <span className="inline-flex items-center gap-2">Attendance <span className="text-xs text-muted-foreground">{sortKey==='status' ? (sortDir==='asc'?'↑':'↓') : ''}</span></span>
+                </th>
+                <th className="text-left p-4 font-semibold cursor-pointer" onClick={() => handleSort('age')}>
+                  <span className="inline-flex items-center gap-2">Age <span className="text-xs text-muted-foreground">{sortKey==='age' ? (sortDir==='asc'?'↑':'↓') : ''}</span></span>
+                </th>
                 {customColumnKeys.map((title) => (
-                  <th key={title} className="text-left p-4 font-semibold">{title}</th>
+                  <th key={title} className="text-left p-4 font-semibold cursor-pointer" onClick={() => handleSort(`custom:${title}`)}>
+                    <span className="inline-flex items-center gap-2">{title} <span className="text-xs text-muted-foreground">{sortKey===`custom:${title}` ? (sortDir==='asc'?'↑':'↓') : ''}</span></span>
+                  </th>
                 ))}
               </tr>
             </thead>
