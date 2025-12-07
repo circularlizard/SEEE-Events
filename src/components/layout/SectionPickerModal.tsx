@@ -57,9 +57,27 @@ export default function SectionPickerModal() {
             </label>
           ))}
         </div>
-        <div className="flex justify-end gap-2 mt-4">
-          <Button variant="secondary" onClick={() => setSectionPickerOpen(false)}>Cancel</Button>
-          <Button onClick={handleSave} disabled={picked.length === 0}>Save</Button>
+        <div className="flex items-center justify-between mt-4">
+          <div className="flex gap-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setPicked(sections.map(s => s.sectionId))}
+            >
+              Select All
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setPicked([])}
+            >
+              Clear
+            </Button>
+          </div>
+          <div className="flex gap-2">
+            <Button variant="secondary" onClick={() => setSectionPickerOpen(false)}>Cancel</Button>
+            <Button onClick={handleSave} disabled={picked.length === 0}>Save</Button>
+          </div>
         </div>
       </DialogContent>
     </Dialog>

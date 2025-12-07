@@ -23,6 +23,9 @@ export default function ClientShell({ children }: { children: React.ReactNode })
     const items = data?.items ?? [];
     if (items.length) {
       const ids = Array.from(new Set(items.map((e: any) => e.eventid)));
+      if (process.env.NODE_ENV !== 'production') {
+        console.debug('[ClientShell] Enqueue event summary IDs:', ids);
+      }
       enqueue(ids);
       enqueuedRef.current = true;
     }

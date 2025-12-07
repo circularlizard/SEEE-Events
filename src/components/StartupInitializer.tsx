@@ -23,6 +23,10 @@ export default function StartupInitializer() {
   const setAccessControlStrategy = useStore((s) => s.setAccessControlStrategy)
   const setAllowedPatrolIds = useStore((s) => s.setAllowedPatrolIds)
   const setAllowedEventIds = useStore((s) => s.setAllowedEventIds)
+  const sectionPickerOpen = useStore((s) => s.sectionPickerOpen)
+  const setSectionPickerOpen = useStore((s) => s.setSectionPickerOpen)
+  const currentSection = useStore((s) => s.currentSection)
+  const selectedSections = useStore((s) => s.selectedSections)
   const hasInitialized = useRef(false)
 
   useEffect(() => {
@@ -78,6 +82,13 @@ export default function StartupInitializer() {
             sectionName: storeSections[0].sectionName,
             sectionType: storeSections[0].sectionType,
           })
+        }
+
+        // Force-open the Section Picker if there are sections and none are selected yet,
+        // even if something is cached from a previous session.
+        const noneSelected = !currentSection && (!selectedSections || selectedSections.length === 0)
+        if (storeSections.length > 0 && noneSelected && !sectionPickerOpen) {
+          setSectionPickerOpen(true)
         }
 
         // Fetch access control config (placeholder values for now)

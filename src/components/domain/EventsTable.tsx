@@ -2,6 +2,7 @@ import type { Event } from '@/lib/schemas'
 import Link from 'next/link'
 import { usePrefetchEventSummary } from '@/hooks/usePrefetchEventSummary'
 import { useViewportPrefetchSummary } from '@/hooks/useViewportPrefetchSummary'
+import { useStore } from '@/store/use-store'
 
 interface EventsTableProps {
   events: Event[]
@@ -17,6 +18,12 @@ export function EventsTable({ events }: EventsTableProps) {
   }
 
   const prefetchSummary = usePrefetchEventSummary()
+  const selectedSections = useStore((s) => s.selectedSections)
+  const currentSection = useStore((s) => s.currentSection)
+  const sectionNameById = new Map<string, string>([
+    ...selectedSections.map(s => [s.sectionId, s.sectionName] as const),
+    ...(currentSection ? [[currentSection.sectionId, currentSection.sectionName] as const] : [])
+  ])
 
   return (
     <div className="border rounded-lg overflow-hidden">
@@ -26,6 +33,7 @@ export function EventsTable({ events }: EventsTableProps) {
             <th className="text-left p-4 font-semibold">Event Name</th>
             <th className="text-left p-4 font-semibold">Start Date</th>
             <th className="text-left p-4 font-semibold">End Date</th>
+            <th className="text-left p-4 font-semibold">Section</th>
             <th className="text-left p-4 font-semibold">Location</th>
             <th className="text-left p-4 font-semibold">Attending</th>
           </tr>
@@ -49,6 +57,9 @@ export function EventsTable({ events }: EventsTableProps) {
               </td>
               <td className="p-4 text-muted-foreground">{formatDate(event.startdate)}</td>
               <td className="p-4 text-muted-foreground">{formatDate(event.enddate)}</td>
+              <td className="p-4 text-muted-foreground">
+                {sectionNameById.get(String((event as any).sectionid)) ?? '—'}
+              </td>
               <td className="p-4 text-muted-foreground">{event.location || '—'}</td>
               <td className="p-4 text-muted-foreground">{event.yes}</td>
             </tr>

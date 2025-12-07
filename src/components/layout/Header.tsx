@@ -3,6 +3,7 @@ import { useStore } from "@/store/use-store";
 import { useSession } from "next-auth/react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,7 +16,9 @@ import { signOut } from "next-auth/react";
 export default function Header() {
   const currentSection = useStore((s) => s.currentSection);
   const setSectionPickerOpen = useStore((s) => s.setSectionPickerOpen);
+  const selectedSections = useStore((s) => s.selectedSections);
   const selectedSectionName = currentSection?.sectionName ?? null;
+  const multiNames = selectedSections.length > 0 ? selectedSections.map(s => s.sectionName) : [];
   const { data: session } = useSession();
   const initials = (() => {
     const name = session?.user?.name || '';
@@ -32,7 +35,18 @@ export default function Header() {
         <div className="flex items-center gap-2">
           <TentTree className="h-6 w-6 text-primary" aria-hidden />
           <span className="font-semibold tracking-tight text-lg">SEEE Expedition Dashboard</span>
-          {selectedSectionName && (
+          {(multiNames.length > 0) ? (
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <span className="text-sm text-muted-foreground truncate max-w-[240px]">• {multiNames.join(', ')}</span>
+                </TooltipTrigger>
+                <TooltipContent>
+                  {multiNames.join(', ')}
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          ) : selectedSectionName && (
             <span className="text-sm text-muted-foreground">• {selectedSectionName}</span>
           )}
           <Button

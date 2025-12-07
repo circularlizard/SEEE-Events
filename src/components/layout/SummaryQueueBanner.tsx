@@ -4,11 +4,12 @@ import { useMemo } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 import { cn } from '@/lib/utils'
 import { useEvents } from '@/hooks/useEvents'
-import { useCurrentSection } from '@/store/use-store'
+import { useStore } from '@/store/use-store'
 
 export default function SummaryQueueBanner() {
   const qc = useQueryClient()
-  const currentSection = useCurrentSection()
+  const currentSection = useStore((s) => s.currentSection)
+  const selectedSections = useStore((s) => s.selectedSections)
   const { data } = useEvents()
 
   const { total, completed, pending } = useMemo(() => {
@@ -49,7 +50,7 @@ export default function SummaryQueueBanner() {
           <span className="inline-block h-4 w-4 border-2 border-current border-t-transparent rounded-full animate-spin" aria-label="Loading" />
         )}
         <span>
-          {currentSection?.sectionName ? (
+          {(currentSection?.sectionName || (selectedSections && selectedSections.length > 0)) ? (
             <>Event summaries: {completed}/{total} completed</>
           ) : (
             <>Select a section to start hydration</>
@@ -59,6 +60,7 @@ export default function SummaryQueueBanner() {
       <div className="flex items-center gap-4">
         <span>Pending: {pending}</span>
         {loadingCount > 0 && <span>Fetching: {loadingCount}</span>}
+        <span className="text-muted-foreground">Events: {data?.items?.length ?? 0}</span>
       </div>
     </div>
   )
