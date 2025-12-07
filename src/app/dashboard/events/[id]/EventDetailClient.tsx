@@ -17,25 +17,32 @@ export default function EventDetailClient({ eventId }: Props) {
   const { getSummaryById } = useEventSummaryCache()
 
   const participants = useMemo(() => {
-    // The event summary includes custom fields and often a list of attendees with names
-    // Since summary shape is permissive/unknown, access safely
+    // Support multiple shapes:
+    // - v3 summary: { status, error, data: { members: [{ member_id, full_name, patrol_id }] } }
+    // - legacy/permissive: { participants: [...]} or { attendees: [...] }
     const summary: any = data?.summary || {}
-    const list: any[] = Array.isArray(summary?.participants)
-      ? summary.participants
-      : Array.isArray(summary?.attendees)
-      ? summary.attendees
-      : []
+
+    // Extract list candidates
+    const v3Members: any[] = Array.isArray(summary?.data?.members) ? summary.data.members : []
+    const legacyParticipants: any[] = Array.isArray(summary?.participants) ? summary.participants : []
+    const legacyAttendees: any[] = Array.isArray(summary?.attendees) ? summary.attendees : []
+
+    const list: any[] = v3Members.length ? v3Members : (legacyParticipants.length ? legacyParticipants : legacyAttendees)
 
     const mapped = list.map((a) => ({
-      id: String(a.scoutid ?? a.id ?? ''),
-      name: [a.firstname ?? a.first_name, a.lastname ?? a.last_name].filter(Boolean).join(' ').trim() || a.name || '',
-      patrol: a.patrol ?? a.group ?? undefined,
+      id: String(a.member_id ?? a.scoutid ?? a.id ?? ''),
+      name:
+        (a.full_name as string) ||
+        [a.firstname ?? a.first_name, a.lastname ?? a.last_name].filter(Boolean).join(' ').trim() ||
+        (a.name as string) ||
+        '',
+      patrol: a.patrol ?? a.group ?? a.patrol_id ?? undefined,
       role: a.role ?? undefined,
       status: a.status ?? a.attending ?? undefined,
       contact: a.contact ?? a.email ?? undefined,
     }))
 
-    return mapped.filter((p) => (unitFilter ? (p.patrol || '').toLowerCase().includes(unitFilter.toLowerCase()) : true))
+    return mapped.filter((p) => (unitFilter ? String(p.patrol ?? '').toLowerCase().includes(unitFilter.toLowerCase()) : true))
   }, [data?.summary, unitFilter])
 
   if (isLoading) {
