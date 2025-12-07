@@ -7,6 +7,7 @@ import { EventsTable } from '@/components/domain/EventsTable'
 import { AlertCircle } from 'lucide-react'
 import type { Event } from '@/lib/schemas'
 import { getFilteredEvents } from '@/store/use-store'
+import { useEventSummaryQueue } from '@/hooks/useEventSummaryQueue'
 
 /**
  * Events List Page
@@ -14,6 +15,7 @@ import { getFilteredEvents } from '@/store/use-store'
  */
 export default function EventsPage() {
   const { data, isLoading, error } = useEvents()
+  const { enqueue } = useEventSummaryQueue({ concurrency: 2, delayMs: 800, retryBackoffMs: 5000 })
 
   if (isLoading) {
     return (
@@ -55,6 +57,11 @@ export default function EventsPage() {
     ).map((e) => e.eventId)
   )
   const visibleEvents = events.filter((e) => filteredIds.has(String(e.eventid)))
+
+  // Enqueue summaries for all visible events when list loads
+  if (visibleEvents.length) {
+    enqueue(visibleEvents.map((e) => e.eventid))
+  }
 
   return (
     <div className="p-4 md:p-6">

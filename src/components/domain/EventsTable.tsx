@@ -1,4 +1,6 @@
 import type { Event } from '@/lib/schemas'
+import Link from 'next/link'
+import { usePrefetchEventSummary } from '@/hooks/usePrefetchEventSummary'
 
 interface EventsTableProps {
   events: Event[]
@@ -12,6 +14,8 @@ export function EventsTable({ events }: EventsTableProps) {
   const formatDate = (date: string) => {
     return date // OSM already provides DD/MM/YYYY format
   }
+
+  const prefetchSummary = usePrefetchEventSummary()
 
   return (
     <div className="border rounded-lg overflow-hidden">
@@ -29,9 +33,18 @@ export function EventsTable({ events }: EventsTableProps) {
           {events.map((event) => (
             <tr
               key={event.eventid}
-              className="border-b last:border-b-0 hover:bg-muted/50 cursor-pointer transition-colors"
+              className="border-b last:border-b-0 hover:bg-muted/50 transition-colors"
             >
-              <td className="p-4 font-medium">{event.name}</td>
+              <td className="p-4 font-medium">
+                <Link
+                  href={`/dashboard/events/${event.eventid}`}
+                  className="text-primary hover:underline"
+                  prefetch
+                  onMouseEnter={() => prefetchSummary(event.eventid)}
+                >
+                  {event.name}
+                </Link>
+              </td>
               <td className="p-4 text-muted-foreground">{formatDate(event.startdate)}</td>
               <td className="p-4 text-muted-foreground">{formatDate(event.enddate)}</td>
               <td className="p-4 text-muted-foreground">{event.location || '—'}</td>
