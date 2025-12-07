@@ -6,9 +6,6 @@ A read-only dashboard for managing Scout expedition events, built with Next.js 1
 
 ### Prerequisites
 
-- Node.js 20+ and npm
-- Docker (for local Redis)
-- mkcert (for HTTPS in development)
 
 ### Installation
 
@@ -42,6 +39,29 @@ npm run dev:http
 ```
 
 Visit [https://localhost:3000](https://localhost:3000) to see the app.
+
+## UI Standards
+
+The SEEE Expedition Dashboard follows consistent UI patterns across the Events List and Event Detail pages:
+
+- Page padding: use `p-4 md:p-6` for top-level wrappers.
+- Table typography: apply `text-sm` to desktop tables for consistent sizing.
+- Table frame: wrap tables in a `div` with `border rounded-lg overflow-hidden`.
+- Table header: use `thead.bg-muted`; header cells `text-left p-4 font-semibold` and `cursor-pointer` when sortable.
+- Table rows: `border-b last:border-b-0 hover:bg-muted/50 transition-colors`.
+- Table cells: `p-4` with `text-muted-foreground` for secondary values.
+- Back link: on Event Detail, place “Back to Events” at the very top using a shadcn Button (`variant="ghost"`).
+- Event header: large `CardTitle` for the title; `CardDescription` shows date range, times, location, and cost separated by `•`. Only show `approval_status` if present—do not show API `status: true`.
+- Public notes: render `meta.event.publicnotes` inside a default-collapsed native `<details><summary>Event Description</summary></details>` within `CardContent`.
+- Participants (Event Detail):
+  - Source rows from `summary.meta.event.members`.
+  - Attendance status from `attending`.
+  - Age computed from `member.dob`.
+  - Custom field values from `details`; titles from `summary.meta.event.config`.
+  - Render custom fields as individual dynamic columns; only include columns with at least one non-empty value.
+  - Patrol ID: cross-reference `summary.data.members` (`member_id → patrol_id`) when available.
+
+These conventions are also documented in `/.github/copilot-instructions.md` and should be followed for new views and components.
 
 ### OAuth Callback URLs
 
