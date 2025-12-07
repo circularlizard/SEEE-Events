@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { cn } from '@/lib/utils'
 import { usePerPersonAttendance } from '@/hooks/usePerPersonAttendance'
+import { Skeleton } from '@/components/ui/skeleton'
 
 export default function AttendanceByPersonPage() {
   const [groupMode, setGroupMode] = useState<'single' | 'patrol'>('single')
@@ -24,6 +25,14 @@ export default function AttendanceByPersonPage() {
             </TabsList>
           </Tabs>
           <div className="mt-4">
+            {data.length === 0 ? (
+              <div className="space-y-3">
+                <Skeleton className="h-8 w-1/3" />
+                <Skeleton className="h-6 w-full" />
+                <Skeleton className="h-6 w-5/6" />
+                <div className="text-sm text-muted-foreground">No aggregated attendance yet. Once summaries hydrate, people with “Yes” responses will appear here.</div>
+              </div>
+            ) : (
             {/* Desktop table */}
             <div className="hidden md:table w-full border rounded-lg overflow-hidden text-sm">
               <div className="table-header-group bg-muted">
@@ -123,6 +132,7 @@ export default function AttendanceByPersonPage() {
                     </div>
                   ))}
             </div>
+            )}
           </div>
         </CardContent>
       </Card>
