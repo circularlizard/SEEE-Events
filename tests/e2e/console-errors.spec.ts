@@ -92,6 +92,7 @@ test.describe('Console Error Detection', () => {
   })
 
   test('protected pages render without console errors after mock login', async ({ page }) => {
+    test.setTimeout(60000) // 60s timeout for visiting multiple pages
     // Authenticate first
     const loggedIn = await mockLogin(page)
     

@@ -69,5 +69,12 @@ export default defineConfig({
     reuseExistingServer: !process.env.CI,
     ignoreHTTPSErrors: true,
     timeout: 120 * 1000,
+    env: {
+      // Enable mock authentication for E2E tests
+      MOCK_AUTH_ENABLED: 'true',
+      NEXT_PUBLIC_MOCK_AUTH_ENABLED: 'true',
+      // Enable MSW for mock API responses
+      NEXT_PUBLIC_USE_MSW: 'true',
+    },
   },
 })
