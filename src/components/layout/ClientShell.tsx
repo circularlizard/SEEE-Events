@@ -20,7 +20,10 @@ export default function ClientShell({ children }: { children: React.ReactNode })
   const processorState = useQueueProcessor({ concurrency: 2, delayMs: 800, retryBackoffMs: 5000 });
   
   useEffect(() => {
-    console.log('[ClientShell] Queue processor mounted. State:', processorState);
+    if (process.env.NODE_ENV !== 'production') {
+      console.log('[ClientShell] Queue processor mounted. State:', processorState);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- we intentionally track individual properties
   }, [processorState.queueLength, processorState.running, processorState.timerActive]);
   
   const enqueuedRef = useRef<{ sectionKey?: string; ids?: number[]; done: boolean }>({ done: false });
@@ -51,6 +54,7 @@ export default function ClientShell({ children }: { children: React.ReactNode })
         enqueuedRef.current = { sectionKey, ids, done: true };
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- sectionName is only for logging, not logic
   }, [currentSection?.sectionId, selectedSections, data, enqueueItems]);
   // Only render the full application chrome when authenticated.
   // Hide during loading state to prevent flash of navigation on login page

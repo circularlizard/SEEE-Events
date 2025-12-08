@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useCallback } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 import { useStore } from '@/store/use-store'
 import { getEventSummary, APIError } from '@/lib/api'
@@ -80,7 +80,7 @@ export function useQueueProcessor(options?: {
     }
   }
 
-  const tick = () => {
+  const tick = useCallback(() => {
     const currentState = useStore.getState()
     console.log('[QueueProcessor] ⏱️ Tick - Queue:', currentState.queueItems.length, 'Running:', runningCountRef.current, 'Capacity:', concurrency)
     
@@ -111,7 +111,8 @@ export function useQueueProcessor(options?: {
         }
       }
     }
-  }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- processItem uses refs and stable store functions
+  }, [concurrency, dequeueItem, setQueueTimerActive])
 
   // Effect: Start timer when queue gets items
   useEffect(() => {
@@ -132,7 +133,7 @@ export function useQueueProcessor(options?: {
     }
     // Note: We do NOT clear the timer here on re-render
     // The timer manages its own lifecycle in the tick() function
-  }, [queueItems.length, concurrency, delayMs])
+  }, [queueItems.length, concurrency, delayMs, setQueueTimerActive, tick])
 
   // Cleanup only on unmount
   useEffect(() => {
@@ -144,6 +145,7 @@ export function useQueueProcessor(options?: {
         setQueueTimerActive(false)
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- setQueueTimerActive is stable from Zustand
   }, [])
 
   // Return queue state for debugging
