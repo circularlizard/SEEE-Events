@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { Fragment, useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Label } from '@/components/ui/label'
@@ -81,7 +81,7 @@ export default function AttendanceByPersonPage() {
                         return acc
                       }, {})
                     ).map(([patrolKey, persons]) => (
-                      <>
+                      <Fragment key={`patrol-${patrolKey}`}>
                         <div className="table-row bg-muted/50">
                           <div className="table-cell p-4 font-semibold col-span-full">Patrol: {patrolKey}</div>
                           <div className="table-cell" />
@@ -110,7 +110,7 @@ export default function AttendanceByPersonPage() {
                             </div>
                           </div>
                         ))}
-                      </>
+                      </Fragment>
                     ))}
               </div>
             </div>

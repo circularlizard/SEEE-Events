@@ -46,4 +46,8 @@ next-env.d.ts
 
 # Keep sanitized mock data - these are safe to commit
 !src/mocks/data/*.json
-!src/mocks/api_map.jsontest-results/
+!src/mocks/api_map.json
+
+# Playwright test results
+test-results/
+playwright-report/
