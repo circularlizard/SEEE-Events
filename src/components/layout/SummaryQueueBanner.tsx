@@ -35,7 +35,9 @@ export default function SummaryQueueBanner() {
         .filter((id): id is number => typeof id === 'number' && !isNaN(id))
     )
     
-    console.log('[Banner] Completed IDs:', Array.from(completedIds), 'from', summaries.length, 'queries')
+    if (process.env.NODE_ENV !== 'production') {
+      console.log('[Banner] Completed IDs:', Array.from(completedIds), 'from', summaries.length, 'queries')
+    }
 
     const completed = eventIds.filter((id) => completedIds.has(id)).length
     const total = eventIds.length

@@ -40,7 +40,9 @@ export function useQueueProcessor(options?: {
     runningCountRef.current += 1
     setQueueRunning(runningCountRef.current)
 
-    console.log('[QueueProcessor] 🔄 Starting fetch for event ID:', id, 'Running:', runningCountRef.current)
+    if (process.env.NODE_ENV !== 'production') {
+      console.log('[QueueProcessor] Starting fetch for event ID:', id, 'Running:', runningCountRef.current)
+    }
 
     try {
       await queryClient.prefetchQuery({
@@ -82,7 +84,9 @@ export function useQueueProcessor(options?: {
 
   const tick = useCallback(() => {
     const currentState = useStore.getState()
-    console.log('[QueueProcessor] ⏱️ Tick - Queue:', currentState.queueItems.length, 'Running:', runningCountRef.current, 'Capacity:', concurrency)
+    if (process.env.NODE_ENV !== 'production') {
+      console.log('[QueueProcessor] Tick - Queue:', currentState.queueItems.length, 'Running:', runningCountRef.current, 'Capacity:', concurrency)
+    }
     
     // Start new items up to concurrency limit
     while (runningCountRef.current < concurrency) {
@@ -92,7 +96,9 @@ export function useQueueProcessor(options?: {
       const id = dequeueItem()
       if (id === null) break
       
-      console.log('[QueueProcessor] ✅ Dequeued ID:', id, 'Now starting fetch')
+      if (process.env.NODE_ENV !== 'production') {
+        console.log('[QueueProcessor] Dequeued ID:', id, 'Now starting fetch')
+      }
       
       // Fire and forget
       processItem(id)
@@ -119,11 +125,15 @@ export function useQueueProcessor(options?: {
     const hasItems = queueItems.length > 0
     const hasTimer = !!timerRef.current
 
-    console.log('[QueueProcessor] Effect triggered. Queue:', queueItems.length, 'Timer active:', hasTimer)
+    if (process.env.NODE_ENV !== 'production') {
+      console.log('[QueueProcessor] Effect triggered. Queue:', queueItems.length, 'Timer active:', hasTimer)
+    }
 
     // Only start timer if we have items and no timer running
     if (hasItems && !hasTimer) {
-      console.log('[QueueProcessor] 🚀 STARTING TIMER. Queue length:', queueItems.length, 'Delay(ms):', delayMs, 'Concurrency:', concurrency)
+      if (process.env.NODE_ENV !== 'production') {
+        console.log('[QueueProcessor] Starting timer. Queue length:', queueItems.length, 'Delay(ms):', delayMs, 'Concurrency:', concurrency)
+      }
 
       timerRef.current = setInterval(tick, delayMs)
       setQueueTimerActive(true)
@@ -138,7 +148,9 @@ export function useQueueProcessor(options?: {
   // Cleanup only on unmount
   useEffect(() => {
     return () => {
-      console.log('[QueueProcessor] Component unmounting, cleaning up timer')
+      if (process.env.NODE_ENV !== 'production') {
+        console.log('[QueueProcessor] Component unmounting, cleaning up timer')
+      }
       if (timerRef.current) {
         clearInterval(timerRef.current)
         timerRef.current = null
