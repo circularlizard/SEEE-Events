@@ -1,0 +1,89 @@
+name: PR Safety and Checklist
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Typecheck
+        run: npm run tscheck
+
+      - name: Lint (standard)
+        run: npm run lint
+
+      - name: Lint (architecture rules)
+        run: npm run lint:arch
+
+      - name: Unit and integration tests
+        run: npm test
+
+      - name: Ensure PR checklist is fully checked
+        run: |
+          body="${{ github.event.pull_request.body }}"
+          if echo "$body" | grep '\- \[ \]'; then
+            echo "❌ PR checklist has unchecked items ('- [ ]'). Please review and tick all relevant boxes."
+            exit 1
+          fi
+        shell: bash
+
+      - name: Guard against direct OSM API usage outside proxy
+        run: |
+          # Allow references in the proxy route itself, but not elsewhere.
+          if git grep -n "onlinescoutmanager" -- ':!src/app/api/proxy/[...path]/route.ts' || \
+             git grep -n "OSM_API_URL" -- 'src' ':!src/app/api/proxy/[...path]/route.ts'; then
+            echo "❌ Direct OSM API usage detected outside proxy route. All OSM access must go via /api/proxy."
+            exit 1
+          fi
+        shell: bash
+
+      - name: Guard against DB client usage
+        run: |
+          if git grep -n "from 'pg'" -- ':!node_modules' || \
+             git grep -n 'from "pg"' -- ':!node_modules' || \
+             git grep -n "from 'mongoose'" -- ':!node_modules' || \
+             git grep -n 'from "mongoose"' -- ':!node_modules' || \
+             git grep -n "from '@prisma/client'" -- ':!node_modules' || \
+             git grep -n 'from "@prisma/client"' -- ':!node_modules' || \
+             git grep -n "from 'mysql2'" -- ':!node_modules' || \
+             git grep -n 'from "mysql2"' -- ':!node_modules'; then
+            echo "❌ Disallowed DB client import detected. This project uses Redis/KV only."
+            exit 1
+          fi
+        shell: bash
+
+  e2e:
+    runs-on: ubuntu-latest
+    needs: validate
+    if: contains(github.event.pull_request.labels.*.name, 'run-e2e')
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run Playwright E2E tests
+        run: npm run test:e2e

@@ -8,6 +8,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
+    "lint:arch": "next lint",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:e2e": "playwright test",
