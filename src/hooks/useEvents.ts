@@ -1,4 +1,5 @@
 import { useQueries, useQuery } from '@tanstack/react-query'
+import { useSession } from 'next-auth/react'
 import { getEvents } from '@/lib/api'
 import { useStore } from '@/store/use-store'
 import type { EventsResponse } from '@/lib/schemas'
@@ -11,6 +12,9 @@ import type { EventsResponse } from '@/lib/schemas'
  * Uses the latest term (or falls back to a default termid).
  */
 export function useEvents() {
+  const { status } = useSession()
+  const isAuthenticated = status === 'authenticated'
+  
   const currentSection = useStore((state) => state.currentSection)
   const selectedSections = useStore((state) => state.selectedSections)
   const availableSections = useStore((state) => state.availableSections)
@@ -23,7 +27,8 @@ export function useEvents() {
       ? [currentSection]
       : []
 
-  const multiEnabled = targets.length > 0
+  // Only enable queries if user is authenticated AND has sections selected
+  const multiEnabled = isAuthenticated && targets.length > 0
 
   const queries = useQueries({
     queries: targets.map((sec) => {
@@ -65,7 +70,7 @@ export function useEvents() {
       const termId = currentSection.termId || '0'
       return getEvents({ sectionid: Number(currentSection.sectionId), termid: Number(termId) })
     },
-    enabled: !!currentSection?.sectionId && !(selectedSections && selectedSections.length > 0),
+    enabled: isAuthenticated && !!currentSection?.sectionId && !(selectedSections && selectedSections.length > 0),
   })
 
   // Unified return shape
