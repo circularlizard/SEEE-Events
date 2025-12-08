@@ -33,7 +33,17 @@ interface EventSummaryMember {
   }
 }
 
+/** Member info from data.members (contains patrol_id) */
+interface DataMember {
+  member_id?: number
+  patrol_id?: number | null
+  full_name?: string
+}
+
 interface EventSummary {
+  data?: {
+    members?: DataMember[]
+  }
   meta?: {
     event?: {
       eventid?: number
@@ -89,6 +99,14 @@ export function usePerPersonAttendance() {
         location: summary?.meta?.event?.location,
       }
 
+      // Build a lookup map for patrol_id from data.members (keyed by member_id)
+      const patrolLookup = new Map<number, number | null>()
+      for (const dm of summary?.data?.members ?? []) {
+        if (dm.member_id) {
+          patrolLookup.set(dm.member_id, dm.patrol_id ?? null)
+        }
+      }
+
       const members = summary?.meta?.event?.members ?? []
 
       for (const m of members) {
@@ -105,12 +123,18 @@ export function usePerPersonAttendance() {
         const firstName = m?.member?.firstname ?? m?.member?.forename ?? ''
         const lastName = m?.member?.lastname ?? m?.member?.surname ?? ''
         const name = [firstName, lastName].filter(Boolean).join(' ') || `Member ${memberId}`
-        const patrolId = m?.patrol_id ?? null
+        
+        // Look up patrol_id from data.members, fallback to meta.event.members.patrol_id
+        const patrolId = patrolLookup.get(memberId) ?? m?.patrol_id ?? null
 
         if (existing) {
           // Avoid duplicate event entries
           if (!existing.events.some((e) => e.id === evMeta.id)) {
             existing.events.push(evMeta)
+          }
+          // Update patrolId if we found one and existing doesn't have it
+          if (patrolId !== null && existing.patrolId === null) {
+            existing.patrolId = patrolId
           }
         } else {
           personMap.set(memberId, {
