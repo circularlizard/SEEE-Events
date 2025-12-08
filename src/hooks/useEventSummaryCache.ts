@@ -8,13 +8,13 @@ import { useCallback } from 'react'
 export function useEventSummaryCache() {
   const qc = useQueryClient()
   const getSummaryById = useCallback(
-    (eventId: number) => qc.getQueryData<any>(['event-summary', eventId]) ?? null,
+    (eventId: number) => qc.getQueryData<unknown>(['event-summary', eventId]) ?? null,
     [qc]
   )
   const getAllSummaries = useCallback(() => {
     const queries = qc.getQueryCache().findAll({ queryKey: ['event-summary'] })
     return queries
-      .map((q) => q.state.data as any)
+      .map((q) => q.state.data as unknown)
       .filter(Boolean)
   }, [qc])
   return { getSummaryById, getAllSummaries }

@@ -5,6 +5,7 @@ import { useQueryClient } from '@tanstack/react-query'
 import { cn } from '@/lib/utils'
 import { useEvents } from '@/hooks/useEvents'
 import { useStore } from '@/store/use-store'
+import type { Event } from '@/lib/schemas'
 
 export default function SummaryQueueBanner() {
   const qc = useQueryClient()
@@ -13,7 +14,7 @@ export default function SummaryQueueBanner() {
   const { data } = useEvents()
 
   const { total, completed, pending } = useMemo(() => {
-    const events = (data?.items as any[]) ?? []
+    const events: Event[] = data?.items ?? []
     const eventIds = events.map((e) => Number(e?.eventid)).filter(Boolean)
 
     const summaries = qc.getQueryCache().findAll({ queryKey: ['event-summary'] })
@@ -22,7 +23,8 @@ export default function SummaryQueueBanner() {
       summaries
         .filter(q => q.state.status === 'success' && q.state.data) // Only count successful queries with data
         .map((q) => {
-          const fromData = (q.state.data as any)?.meta?.event?.id
+          const stateData = q.state.data as { meta?: { event?: { id?: number } } } | undefined
+          const fromData = stateData?.meta?.event?.id
           const fromKey = Array.isArray(q.queryKey) ? q.queryKey[1] : undefined
           // Convert to number if it's a string
           const idFromData = typeof fromData === 'number' ? fromData : undefined
@@ -41,7 +43,7 @@ export default function SummaryQueueBanner() {
     if (process.env.NODE_ENV !== 'production') {
       const loadingIds = qc.getQueryCache()
         .findAll({ queryKey: ['event-summary'] })
-        .filter((q) => q.state.status === 'loading')
+        .filter((q) => q.state.status === 'pending')
         .map((q) => (q.queryKey?.[1] as number))
         .filter(Boolean)
       console.debug('[SummaryQueueBanner] Totals -> total:', total, 'completed:', completed, 'pending:', pending, 'eventIds:', eventIds)
@@ -53,7 +55,7 @@ export default function SummaryQueueBanner() {
   const loadingCount = useMemo(() => {
     const loading = qc.getQueryCache()
       .findAll({ queryKey: ['event-summary'] })
-      .filter((q) => q.state.status === 'loading').length
+      .filter((q) => q.state.status === 'pending').length
     return loading
   }, [qc])
 

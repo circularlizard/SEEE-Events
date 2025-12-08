@@ -6,7 +6,8 @@ import SummaryQueueBanner from "./SummaryQueueBanner";
 import { useEvents } from "@/hooks/useEvents";
 import { useEffect, useRef } from "react";
 import { useQueueProcessor } from "@/hooks/useQueueProcessor";
-import { useStore } from "@/store/use-store";
+import { useStore, type Section } from "@/store/use-store";
+import type { Event } from "@/lib/schemas";
 
 export default function ClientShell({ children }: { children: React.ReactNode }) {
   const { status } = useSession();
@@ -29,11 +30,11 @@ export default function ClientShell({ children }: { children: React.ReactNode })
     const hasSection = !!currentSection?.sectionId || (selectedSections && selectedSections.length > 0);
     if (!hasSection) return;
     
-    const sectionKey = currentSection?.sectionId || (selectedSections?.map((s:any)=>s.sectionId).sort().join(',')) || 'none';
+    const sectionKey = currentSection?.sectionId || (selectedSections?.map((s: Section) => s.sectionId).sort().join(',')) || 'none';
     const items = data?.items ?? [];
     
     if (items.length) {
-      const ids = Array.from(new Set(items.map((e: any) => e.eventid)));
+      const ids = Array.from(new Set(items.map((e: Event) => Number(e.eventid))));
       
       if (process.env.NODE_ENV !== 'production') {
         const sectionCtx = currentSection?.sectionName || (selectedSections?.length ? `${selectedSections.length} sections` : 'unknown section');

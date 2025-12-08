@@ -57,7 +57,7 @@ export function useQueueProcessor(options?: {
       const apiErr = err as APIError
 
       if (process.env.NODE_ENV !== 'production') {
-        console.warn('[QueueProcessor] Error for event ID:', id, 'Status:', apiErr?.status, 'Message:', (apiErr as any)?.message ?? apiErr)
+        console.warn('[QueueProcessor] Error for event ID:', id, 'Status:', apiErr?.status, 'Message:', apiErr?.message ?? String(apiErr))
       }
 
       if (apiErr?.status === 429) {
