@@ -1,6 +1,5 @@
 import { useMemo } from 'react'
 import { useEventSummaryCache } from '@/hooks/useEventSummaryCache'
-import { useStore } from '@/store/use-store'
 
 interface EventMeta {
   id: number
@@ -17,16 +16,35 @@ interface PersonAttendance {
   events: EventMeta[]
 }
 
+/** Summary shape from event-summary cache */
+interface EventSummary {
+  meta?: {
+    event?: {
+      id?: number
+      name?: string
+      startdate?: string
+      enddate?: string
+      location?: string
+      members?: Array<{
+        member_id?: number
+        attending?: string
+        patrol_id?: number | null
+        member?: { forename?: string; surname?: string }
+      }>
+    }
+  }
+}
+
 export function usePerPersonAttendance() {
   const { getAllSummaries } = useEventSummaryCache()
-  const getFilteredMembers = useStore((s) => s.getFilteredMembers)
 
   const data: PersonAttendance[] = useMemo(() => {
-    const summaries = getAllSummaries?.() ?? []
+    const summaries = (getAllSummaries?.() ?? []) as EventSummary[]
     const personMap = new Map<number, PersonAttendance>()
 
     for (const summary of summaries) {
       const evId = summary?.meta?.event?.id
+      if (evId === undefined) continue
       const evMeta: EventMeta = {
         id: evId,
         name: summary?.meta?.event?.name ?? 'Unknown Event',
@@ -36,10 +54,8 @@ export function usePerPersonAttendance() {
       }
 
       const members = summary?.meta?.event?.members ?? []
-      // Apply access control filter if available
-      const allowedMembers = typeof getFilteredMembers === 'function' ? getFilteredMembers(members) : members
 
-      for (const m of allowedMembers) {
+      for (const m of members) {
         if (m?.attending === 'yes') {
           const memberId = Number(m?.member_id)
           if (!memberId) continue
@@ -78,7 +94,7 @@ export function usePerPersonAttendance() {
     // Sort people alphabetically by name
     list.sort((a, b) => a.name.localeCompare(b.name))
     return list
-  }, [getAllSummaries, getFilteredMembers])
+  }, [getAllSummaries])
 
   return { data }
 }

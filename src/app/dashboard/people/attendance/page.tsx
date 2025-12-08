@@ -83,7 +83,9 @@ export default function AttendanceByPersonPage() {
                     ).map(([patrolKey, persons]) => (
                       <>
                         <div className="table-row bg-muted/50">
-                          <div className="table-cell p-4 font-semibold" colSpan={3}>Patrol: {patrolKey}</div>
+                          <div className="table-cell p-4 font-semibold col-span-full">Patrol: {patrolKey}</div>
+                          <div className="table-cell" />
+                          <div className="table-cell" />
                         </div>
                         {persons.map((p) => (
                           <div key={`${patrolKey}-${p.memberId}`} className="table-row border-b last:border-b-0 hover:bg-muted/50 transition-colors">

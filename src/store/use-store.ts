@@ -140,7 +140,7 @@ type StoreState = SessionState & ConfigState & ThemeState & QueueState
  */
 export const useStore = create<StoreState>()(
   persist(
-    (set) => ({
+    (set): StoreState => ({
       // Session State
       currentSection: null,
       setCurrentSection: (section) => set({ currentSection: section }),

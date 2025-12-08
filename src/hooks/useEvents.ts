@@ -50,7 +50,7 @@ export function useEvents() {
       return undefined
     }
     return {
-      status: queries.every((q) => q.data?.status),
+      identifier: 'eventid' as const,
       items: allItems,
     }
   })()
