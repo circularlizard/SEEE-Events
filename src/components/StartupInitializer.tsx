@@ -9,6 +9,7 @@ import type { OAuthData } from '@/lib/redis'
 const REMEMBER_KEY = 'seee.sectionSelection.v1'
 
 interface RememberedSelection {
+  userId: string
   selectedSectionIds: string[]
   timestamp: string
 }
@@ -116,25 +117,34 @@ export default function StartupInitializer() {
           const stored = localStorage.getItem(REMEMBER_KEY)
           if (stored) {
             const remembered: RememberedSelection = JSON.parse(stored)
-            const validIds = remembered.selectedSectionIds.filter(id => sectionIds.has(id))
             
-            if (validIds.length > 0) {
-              // Hydrate store with remembered selection
-              const selected = storeSections.filter((s: { sectionId: string }) => validIds.includes(s.sectionId))
-              if (selected.length === 1) {
-                setCurrentSection(selected[0])
-                setSelectedSections([])
-              } else {
-                setCurrentSection(null)
-                setSelectedSections(selected)
-              }
-              rememberedValid = true
+            // Validate userId matches current user (prevents cross-user issues on shared devices)
+            if (remembered.userId !== userId) {
               if (process.env.NODE_ENV !== 'production') {
-                console.debug('[StartupInitializer] Restored remembered section selection:', validIds)
+                console.debug('[StartupInitializer] Remembered selection userId mismatch, clearing')
               }
-            } else {
-              // Remembered selection is stale, clear it
               localStorage.removeItem(REMEMBER_KEY)
+            } else {
+              const validIds = remembered.selectedSectionIds.filter(id => sectionIds.has(id))
+              
+              if (validIds.length > 0) {
+                // Hydrate store with remembered selection
+                const selected = storeSections.filter((s: { sectionId: string }) => validIds.includes(s.sectionId))
+                if (selected.length === 1) {
+                  setCurrentSection(selected[0])
+                  setSelectedSections([])
+                } else {
+                  setCurrentSection(null)
+                  setSelectedSections(selected)
+                }
+                rememberedValid = true
+                if (process.env.NODE_ENV !== 'production') {
+                  console.debug('[StartupInitializer] Restored remembered section selection:', validIds)
+                }
+              } else {
+                // Remembered selection is stale (sections no longer available), clear it
+                localStorage.removeItem(REMEMBER_KEY)
+              }
             }
           }
         } catch {

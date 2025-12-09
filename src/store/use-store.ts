@@ -47,10 +47,6 @@ interface SessionState {
 
   // Clear all session data (for logout)
   clearSession: () => void
-
-  // UI control to force-open Section Picker
-  sectionPickerOpen: boolean
-  setSectionPickerOpen: (open: boolean) => void
 }
 
 /**
@@ -162,10 +158,6 @@ export const useStore = create<StoreState>()(
           availableSections: [],
         }),
 
-      // UI control
-      sectionPickerOpen: false,
-      setSectionPickerOpen: (open) => set({ sectionPickerOpen: open }),
-
       // Configuration State
       badgeMappings: {},
       setBadgeMappings: (mappings) => set({ badgeMappings: mappings }),
@@ -230,7 +222,6 @@ export const useStore = create<StoreState>()(
         allowedPatrolIds: state.allowedPatrolIds,
         allowedEventIds: state.allowedEventIds,
         theme: state.theme,
-        sectionPickerOpen: state.sectionPickerOpen,
       }),
     }
   )

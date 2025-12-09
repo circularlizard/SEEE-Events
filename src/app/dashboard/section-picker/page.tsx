@@ -2,6 +2,7 @@
 
 import { useState, useEffect, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
+import { useSession } from 'next-auth/react'
 import { useQueryClient } from '@tanstack/react-query'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -14,6 +15,7 @@ import { Users, CheckCircle2 } from 'lucide-react'
 const REMEMBER_KEY = 'seee.sectionSelection.v1'
 
 interface RememberedSelection {
+  userId: string
   selectedSectionIds: string[]
   timestamp: string
 }
@@ -27,13 +29,23 @@ interface RememberedSelection {
 function SectionPickerContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
+  const { data: session } = useSession()
   const queryClient = useQueryClient()
   const redirect = searchParams.get('redirect') || '/dashboard'
+  const userId = session?.user && 'id' in session.user ? (session.user as { id: string }).id : undefined
   
   const availableSections = useStore((s) => s.availableSections)
+  const currentSection = useStore((s) => s.currentSection)
+  const selectedSections = useStore((s) => s.selectedSections)
   const setCurrentSection = useStore((s) => s.setCurrentSection)
   const setSelectedSections = useStore((s) => s.setSelectedSections)
   const clearQueue = useStore((s) => s.clearQueue)
+  
+  // Check if there's a valid existing selection that allows "Skip for now"
+  const sectionIds = new Set(availableSections.map(s => s.sectionId))
+  const hasValidExistingSelection = 
+    (currentSection && sectionIds.has(currentSection.sectionId)) ||
+    (selectedSections.length > 0 && selectedSections.some(s => sectionIds.has(s.sectionId)))
   
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
   const [rememberSelection, setRememberSelection] = useState(false)
@@ -97,9 +109,10 @@ function SectionPickerContent() {
       setSelectedSections(selected)
     }
     
-    // Remember selection if checkbox is ticked
-    if (rememberSelection) {
+    // Remember selection if checkbox is ticked and we have a userId
+    if (rememberSelection && userId) {
       const payload: RememberedSelection = {
+        userId,
         selectedSectionIds: Array.from(selectedIds),
         timestamp: new Date().toISOString(),
       }
@@ -231,6 +244,15 @@ function SectionPickerContent() {
             >
               {isSubmitting ? 'Loading...' : 'Continue'}
             </Button>
+            
+            {hasValidExistingSelection && (
+              <button
+                onClick={() => router.replace(redirect)}
+                className="w-full mt-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+              >
+                Skip for now (keep current selection)
+              </button>
+            )}
           </CardContent>
         </Card>
       </div>
