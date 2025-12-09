@@ -4,7 +4,6 @@ import { MSWProvider } from '@/components/MSWProvider'
 import { SessionProvider } from '@/components/SessionProvider'
 import { QueryProvider } from '@/components/QueryProvider'
 import StartupInitializer from '@/components/StartupInitializer'
-import SectionPickerModal from '@/components/layout/SectionPickerModal'
 import ClientShell from '@/components/layout/ClientShell'
 
 export const metadata: Metadata = {
@@ -27,7 +26,6 @@ export default function RootLayout({
           <SessionProvider>
             <QueryProvider>
               <StartupInitializer />
-              <SectionPickerModal />
               <ClientShell>
                 {children}
               </ClientShell>

@@ -2,8 +2,16 @@
 
 import { useEffect, useRef } from 'react'
 import { useSession } from 'next-auth/react'
+import { useRouter, usePathname } from 'next/navigation'
 import { useStore } from '@/store/use-store'
 import type { OAuthData } from '@/lib/redis'
+
+const REMEMBER_KEY = 'seee.sectionSelection.v1'
+
+interface RememberedSelection {
+  selectedSectionIds: string[]
+  timestamp: string
+}
 
 /** Section from OAuth data with optional upgrades and terms */
 type OAuthSection = OAuthData['sections'][number] & {
@@ -25,14 +33,15 @@ type OAuthSection = OAuthData['sections'][number] & {
  */
 export default function StartupInitializer() {
   const { data: session, status } = useSession()
+  const router = useRouter()
+  const pathname = usePathname()
   const setUserRole = useStore((s) => s.setUserRole)
   const setAvailableSections = useStore((s) => s.setAvailableSections)
   const setCurrentSection = useStore((s) => s.setCurrentSection)
+  const setSelectedSections = useStore((s) => s.setSelectedSections)
   const setAccessControlStrategy = useStore((s) => s.setAccessControlStrategy)
   const setAllowedPatrolIds = useStore((s) => s.setAllowedPatrolIds)
   const setAllowedEventIds = useStore((s) => s.setAllowedEventIds)
-  const setSectionPickerOpen = useStore((s) => s.setSectionPickerOpen)
-  // currentSection and sectionPickerOpen accessed via useStore.getState() below
   const hasInitialized = useRef(false)
 
   useEffect(() => {
@@ -87,7 +96,10 @@ export default function StartupInitializer() {
         })
         setAvailableSections(storeSections)
 
-        // Auto-select when exactly one section is available and none selected yet
+        // Build a set of valid section IDs for validation
+        const sectionIds = new Set(storeSections.map((s: { sectionId: string }) => s.sectionId))
+        
+        // Auto-select when exactly one section is available
         if (storeSections.length === 1) {
           setCurrentSection({
             sectionId: storeSections[0].sectionId,
@@ -95,27 +107,56 @@ export default function StartupInitializer() {
             sectionType: storeSections[0].sectionType,
             termId: storeSections[0].termId,
           })
+          return // No need to check remembered selection or redirect
         }
-
-        // Force-open the Section Picker if there are MULTIPLE sections and no VALID selection.
-        // A persisted section from localStorage might be stale (user no longer has access to it).
+        
+        // For multi-section users, check for remembered selection in localStorage
+        let rememberedValid = false
+        try {
+          const stored = localStorage.getItem(REMEMBER_KEY)
+          if (stored) {
+            const remembered: RememberedSelection = JSON.parse(stored)
+            const validIds = remembered.selectedSectionIds.filter(id => sectionIds.has(id))
+            
+            if (validIds.length > 0) {
+              // Hydrate store with remembered selection
+              const selected = storeSections.filter((s: { sectionId: string }) => validIds.includes(s.sectionId))
+              if (selected.length === 1) {
+                setCurrentSection(selected[0])
+                setSelectedSections([])
+              } else {
+                setCurrentSection(null)
+                setSelectedSections(selected)
+              }
+              rememberedValid = true
+              if (process.env.NODE_ENV !== 'production') {
+                console.debug('[StartupInitializer] Restored remembered section selection:', validIds)
+              }
+            } else {
+              // Remembered selection is stale, clear it
+              localStorage.removeItem(REMEMBER_KEY)
+            }
+          }
+        } catch {
+          // localStorage unavailable or invalid JSON
+        }
+        
+        // Check if Zustand store already has a valid selection (from persistence)
         const state = useStore.getState()
-        const sectionIds = new Set(storeSections.map((s: { sectionId: string }) => s.sectionId))
-        
-        // Check if persisted currentSection is still valid (exists in available sections)
         const currentSectionValid = state.currentSection && sectionIds.has(state.currentSection.sectionId)
-        
-        // Check if any persisted selectedSections are still valid
         const selectedSectionsValid = state.selectedSections && 
           state.selectedSections.length > 0 &&
           state.selectedSections.some(s => sectionIds.has(s.sectionId))
         
-        const hasValidSelection = currentSectionValid || selectedSectionsValid
+        const hasValidSelection = rememberedValid || currentSectionValid || selectedSectionsValid
         
-        if (storeSections.length > 1 && !hasValidSelection) {
-          setSectionPickerOpen(true)
+        // Redirect to section picker if multi-section user with no valid selection
+        // Skip if already on the section picker page
+        if (storeSections.length > 1 && !hasValidSelection && pathname !== '/dashboard/section-picker') {
+          const redirectTo = pathname?.startsWith('/dashboard') ? pathname : '/dashboard'
+          router.replace(`/dashboard/section-picker?redirect=${encodeURIComponent(redirectTo)}`)
           if (process.env.NODE_ENV !== 'production') {
-            console.debug('[StartupInitializer] Forcing Section Picker open (multiple sections, no valid selection)')
+            console.debug('[StartupInitializer] Redirecting to section picker (multiple sections, no valid selection)')
           }
         }
 
@@ -138,7 +179,7 @@ export default function StartupInitializer() {
     }
 
     fetchSections()
-  }, [status, session, setUserRole, setAvailableSections, setCurrentSection, setSectionPickerOpen, setAccessControlStrategy, setAllowedPatrolIds, setAllowedEventIds])
+  }, [status, session, pathname, router, setUserRole, setAvailableSections, setCurrentSection, setSelectedSections, setAccessControlStrategy, setAllowedPatrolIds, setAllowedEventIds])
 
   return null
 }

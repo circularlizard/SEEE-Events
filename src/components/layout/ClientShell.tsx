@@ -1,5 +1,6 @@
 "use client";
 import { useSession } from "next-auth/react";
+import { usePathname } from "next/navigation";
 import Header from "./Header";
 import Sidebar from "./Sidebar";
 import SummaryQueueBanner from "./SummaryQueueBanner";
@@ -11,10 +12,14 @@ import type { Event } from "@/lib/schemas";
 
 export default function ClientShell({ children }: { children: React.ReactNode }) {
   const { status } = useSession();
+  const pathname = usePathname();
   const currentSection = useStore((s) => s.currentSection);
   const selectedSections = useStore((s) => s.selectedSections);
   const enqueueItems = useStore((s) => s.enqueueItems);
   const { data } = useEvents();
+  
+  // Hide sidebar on section picker page for focused UX
+  const isSectionPickerPage = pathname === '/dashboard/section-picker';
   
   // Mount the global queue processor once
   const processorState = useQueueProcessor({ concurrency: 2, delayMs: 800, retryBackoffMs: 5000 });
@@ -64,9 +69,9 @@ export default function ClientShell({ children }: { children: React.ReactNode })
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
-      <SummaryQueueBanner />
+      {!isSectionPickerPage && <SummaryQueueBanner />}
       <div className="flex flex-1">
-        <Sidebar />
+        {!isSectionPickerPage && <Sidebar />}
         <main className="flex-1">{children}</main>
       </div>
     </div>

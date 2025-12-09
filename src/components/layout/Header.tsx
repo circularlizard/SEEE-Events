@@ -1,6 +1,8 @@
 "use client";
 import { useStore } from "@/store/use-store";
 import { useSession } from "next-auth/react";
+import { usePathname } from "next/navigation";
+import Link from "next/link";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
@@ -15,11 +17,16 @@ import { signOut } from "next-auth/react";
 
 export default function Header() {
   const currentSection = useStore((s) => s.currentSection);
-  const setSectionPickerOpen = useStore((s) => s.setSectionPickerOpen);
   const selectedSections = useStore((s) => s.selectedSections);
+  const availableSections = useStore((s) => s.availableSections);
   const selectedSectionName = currentSection?.sectionName ?? null;
   const multiNames = selectedSections.length > 0 ? selectedSections.map(s => s.sectionName) : [];
   const { data: session } = useSession();
+  const pathname = usePathname();
+  
+  // Only show "Change Section" button if user has multiple sections
+  const showChangeSectionButton = availableSections.length > 1;
+  const changeSectionHref = `/dashboard/section-picker?redirect=${encodeURIComponent(pathname || '/dashboard')}`;
   const initials = (() => {
     const name = session?.user?.name || '';
     const parts = name.trim().split(/\s+/);
@@ -49,14 +56,17 @@ export default function Header() {
           ) : selectedSectionName && (
             <span className="text-sm text-muted-foreground">• {selectedSectionName}</span>
           )}
-          <Button
-            variant="outline"
-            size="sm"
-            className="ml-2"
-            onClick={() => setSectionPickerOpen(true)}
-          >
-            Change Section
-          </Button>
+          {showChangeSectionButton && (
+            <Link href={changeSectionHref}>
+              <Button
+                variant="outline"
+                size="sm"
+                className="ml-2"
+              >
+                Change Section
+              </Button>
+            </Link>
+          )}
         </div>
         <div className="flex items-center gap-2">
           <DropdownMenu>
