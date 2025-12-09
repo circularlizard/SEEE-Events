@@ -141,22 +141,17 @@ export default function StartupInitializer() {
           // localStorage unavailable or invalid JSON
         }
         
-        // Check if Zustand store already has a valid selection (from persistence)
-        const state = useStore.getState()
-        const currentSectionValid = state.currentSection && sectionIds.has(state.currentSection.sectionId)
-        const selectedSectionsValid = state.selectedSections && 
-          state.selectedSections.length > 0 &&
-          state.selectedSections.some(s => sectionIds.has(s.sectionId))
+        // Only skip section picker if user explicitly chose "remember my selection"
+        // Zustand persistence keeps the selection during the session, but doesn't skip the picker on new login
+        // The rememberedValid flag is set only when the explicit localStorage key exists
         
-        const hasValidSelection = rememberedValid || currentSectionValid || selectedSectionsValid
-        
-        // Redirect to section picker if multi-section user with no valid selection
+        // Redirect to section picker if multi-section user without remembered selection
         // Skip if already on the section picker page
-        if (storeSections.length > 1 && !hasValidSelection && pathname !== '/dashboard/section-picker') {
+        if (storeSections.length > 1 && !rememberedValid && pathname !== '/dashboard/section-picker') {
           const redirectTo = pathname?.startsWith('/dashboard') ? pathname : '/dashboard'
           router.replace(`/dashboard/section-picker?redirect=${encodeURIComponent(redirectTo)}`)
           if (process.env.NODE_ENV !== 'production') {
-            console.debug('[StartupInitializer] Redirecting to section picker (multiple sections, no valid selection)')
+            console.debug('[StartupInitializer] Redirecting to section picker (multiple sections, no remembered selection)')
           }
         }
 

@@ -2,6 +2,7 @@
 
 import { useState, useEffect, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
+import { useQueryClient } from '@tanstack/react-query'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -26,11 +27,13 @@ interface RememberedSelection {
 function SectionPickerContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
+  const queryClient = useQueryClient()
   const redirect = searchParams.get('redirect') || '/dashboard'
   
   const availableSections = useStore((s) => s.availableSections)
   const setCurrentSection = useStore((s) => s.setCurrentSection)
   const setSelectedSections = useStore((s) => s.setSelectedSections)
+  const clearQueue = useStore((s) => s.clearQueue)
   
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
   const [rememberSelection, setRememberSelection] = useState(false)
@@ -114,7 +117,16 @@ function SectionPickerContent() {
       }
     }
     
-    // TODO: Clear event/summary caches here when we implement cache clearing
+    // Clear all cached data to prevent mixing data from different sections
+    // Clear TanStack Query cache (events, event summaries, attendance data)
+    queryClient.clear()
+    
+    // Clear the event summary fetch queue
+    clearQueue()
+    
+    if (process.env.NODE_ENV !== 'production') {
+      console.debug('[SectionPicker] Cleared query cache and event queue after section change')
+    }
     
     router.replace(redirect)
   }
