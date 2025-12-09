@@ -128,6 +128,11 @@ export async function getEvents(params: {
 
 /**
  * Fetch patrols (Tier 1 - Strict validation)
+ *
+ * Upstream OSM API returns an object keyed by patrol ID (and sometimes an
+ * "unallocated" key), not a `{ patrols: [...] }` array. We normalize that
+ * into the simple `{ patrols: Patrol[] }` shape expected by
+ * `PatrolsResponseSchema` before running strict validation.
  */
 export async function getPatrols(params: {
   sectionid: number
@@ -141,8 +146,44 @@ export async function getPatrols(params: {
     section: params.section || 'explorers',
   })
 
-  const data = await response.json()
-  return parseStrict(PatrolsResponseSchema, data, 'Patrols')
+  const raw = await response.json() as unknown
+
+  // Normalize into `{ patrols: Patrol[] }` regardless of upstream shape
+  let normalized: { patrols: Array<{ patrolid: number; name: string; active?: boolean }> }
+
+  if (raw && typeof raw === 'object' && Array.isArray((raw as any).patrols)) {
+    // Already in the expected shape
+    normalized = { patrols: (raw as any).patrols }
+  } else if (raw && typeof raw === 'object') {
+    // OSM-style object keyed by patrolid plus optional "unallocated" key
+    const values = Object.values(raw as Record<string, unknown>)
+    const patrols = values
+      .filter((v) => v && typeof v === 'object' && 'patrolid' in (v as any) && 'name' in (v as any))
+      .map((v) => {
+        const p = v as { patrolid: unknown; name: unknown; active?: unknown }
+        const patrolid = typeof p.patrolid === 'string' ? parseInt(p.patrolid, 10) : Number(p.patrolid)
+        const name = String(p.name ?? '')
+        const activeValue = (p as any).active
+        const active =
+          typeof activeValue === 'boolean'
+            ? activeValue
+            : activeValue === '1' || activeValue === 1
+
+        return {
+          patrolid,
+          name,
+          ...(Number.isFinite(patrolid) && name ? { active } : {}),
+        }
+      })
+      // Filter out any entries where patrolid is NaN or name is empty
+      .filter((p) => Number.isFinite(p.patrolid) && p.name.length > 0)
+
+    normalized = { patrols }
+  } else {
+    normalized = { patrols: [] }
+  }
+
+  return parseStrict(PatrolsResponseSchema, normalized, 'Patrols')
 }
 
 /**
