@@ -263,3 +263,125 @@ export async function isRedisAvailable(): Promise<boolean> {
     return false
   }
 }
+
+// ============================================================================
+// PATROL REFERENCE CACHE
+// ============================================================================
+
+/**
+ * Patrol cache key for a section
+ */
+export function getPatrolCacheKey(sectionId: string): string {
+  return `patrols:${sectionId}`
+}
+
+/**
+ * Patrol cache metadata key (stores last updated timestamp)
+ */
+export const PATROL_CACHE_META_KEY = 'patrols:meta'
+
+/**
+ * Cached patrol data structure
+ */
+export interface CachedPatrol {
+  patrolId: number
+  patrolName: string
+  sectionId: string
+  sectionName: string
+  memberCount: number
+}
+
+export interface PatrolCacheMeta {
+  lastUpdated: string
+  updatedBy: string
+  sectionCount: number
+  patrolCount: number
+}
+
+/**
+ * Store patrol data in Redis cache
+ * @param sectionId Section ID
+ * @param patrols Array of cached patrol data
+ * @param ttl Time to live in seconds (default: 90 days per ARCHITECTURE.md)
+ */
+export async function setPatrolCache(
+  sectionId: string,
+  patrols: CachedPatrol[],
+  ttl: number = 90 * 24 * 60 * 60 // 90 days
+): Promise<void> {
+  const client = getRedisClient()
+  const key = getPatrolCacheKey(sectionId)
+  await client.setex(key, ttl, JSON.stringify(patrols))
+  logRedis({ event: 'patrol_cache_stored', sectionId, patrolCount: patrols.length, ttl })
+}
+
+/**
+ * Get patrol data from Redis cache
+ * @param sectionId Section ID
+ * @returns Array of cached patrol data or null if not found
+ */
+export async function getPatrolCache(sectionId: string): Promise<CachedPatrol[] | null> {
+  const client = getRedisClient()
+  const key = getPatrolCacheKey(sectionId)
+  const data = await client.get(key)
+  if (data) {
+    logRedis({ event: 'patrol_cache_retrieved', sectionId })
+    return JSON.parse(data)
+  }
+  return null
+}
+
+/**
+ * Get all cached patrols across all sections
+ * @returns Map of sectionId -> patrols
+ */
+export async function getAllPatrolCaches(): Promise<Map<string, CachedPatrol[]>> {
+  const client = getRedisClient()
+  const keys = await client.keys('patrols:*')
+  const patrolKeys = keys.filter(k => k !== PATROL_CACHE_META_KEY && k.startsWith('patrols:'))
+  
+  const result = new Map<string, CachedPatrol[]>()
+  
+  for (const key of patrolKeys) {
+    const data = await client.get(key)
+    if (data) {
+      const sectionId = key.replace('patrols:', '')
+      result.set(sectionId, JSON.parse(data))
+    }
+  }
+  
+  return result
+}
+
+/**
+ * Update patrol cache metadata
+ */
+export async function setPatrolCacheMeta(meta: PatrolCacheMeta): Promise<void> {
+  const client = getRedisClient()
+  await client.set(PATROL_CACHE_META_KEY, JSON.stringify(meta))
+  logRedis({ event: 'patrol_cache_meta_updated', ...meta })
+}
+
+/**
+ * Get patrol cache metadata
+ */
+export async function getPatrolCacheMeta(): Promise<PatrolCacheMeta | null> {
+  const client = getRedisClient()
+  const data = await client.get(PATROL_CACHE_META_KEY)
+  if (data) {
+    return JSON.parse(data)
+  }
+  return null
+}
+
+/**
+ * Clear all patrol caches
+ */
+export async function clearPatrolCaches(): Promise<void> {
+  const client = getRedisClient()
+  const keys = await client.keys('patrols:*')
+  if (keys.length > 0) {
+    await client.del(...keys)
+  }
+  logRedis({ event: 'patrol_caches_cleared', keyCount: keys.length })
+}

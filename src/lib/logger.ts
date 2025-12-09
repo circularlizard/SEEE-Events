@@ -143,10 +143,16 @@ export function logValidationError(params: {
  * Log Redis connection events
  */
 export function logRedis(params: {
-  event: 'connected' | 'error' | 'disconnected' | 'oauth_data_stored' | 'oauth_data_retrieved'
+  event: 'connected' | 'error' | 'disconnected' | 'oauth_data_stored' | 'oauth_data_retrieved' | 'patrol_cache_stored' | 'patrol_cache_retrieved' | 'patrol_cache_meta_updated' | 'patrol_caches_cleared'
   error?: unknown
   userId?: string
   ttl?: number
+  sectionId?: string
+  patrolCount?: number
+  sectionCount?: number
+  lastUpdated?: string
+  updatedBy?: string
+  keyCount?: number
 }) {
   if (params.event === 'error') {
     logger.error(

@@ -1,6 +1,7 @@
 import { getServerSession } from 'next-auth/next'
 import Link from 'next/link'
 import { getAuthConfig } from '@/lib/auth'
+import { PatrolManagement } from './PatrolManagement'
 
 export default async function AdminPage() {
   const authOptions = await getAuthConfig()
@@ -25,11 +26,15 @@ export default async function AdminPage() {
   }
 
   return (
-    <div className="p-6">
-      <h1 className="text-xl font-semibold" data-testid="admin-title">Admin</h1>
-      <p className="mt-2 text-sm text-muted-foreground">
-        Admin tools will appear here in Phase 4.
-      </p>
+    <div className="p-4 md:p-6 space-y-6">
+      <div>
+        <h1 className="text-2xl md:text-3xl font-bold" data-testid="admin-title">Admin</h1>
+        <p className="text-muted-foreground mt-1">
+          Manage system settings and reference data
+        </p>
+      </div>
+      
+      <PatrolManagement />
     </div>
   )
 }
