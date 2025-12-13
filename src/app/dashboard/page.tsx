@@ -91,6 +91,7 @@ export default function DashboardPage() {
   
   const currentSection = useStore((s) => s.currentSection);
   const selectedSections = useStore((s) => s.selectedSections);
+  const availableSections = useStore((s) => s.availableSections);
   
   const { data: eventsData, isLoading: eventsLoading } = useEvents();
   
@@ -134,6 +135,21 @@ export default function DashboardPage() {
           <Skeleton className="h-48" />
           <Skeleton className="h-48" />
         </div>
+      </div>
+    );
+  }
+
+  // If the user is authenticated, has multiple available sections, but no
+  // current/selected section yet, StartupInitializer will shortly redirect
+  // them to the section picker. To avoid flashing the main dashboard before
+  // that redirect occurs, render a minimal loading state here.
+  const needsSectionSelection =
+    availableSections.length > 1 && !currentSection && (!selectedSections || selectedSections.length === 0);
+
+  if (needsSectionSelection) {
+    return (
+      <div className="flex items-center justify-center min-h-[50vh] p-4">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
       </div>
     );
   }

@@ -64,6 +64,18 @@ function SectionPickerContent() {
       router.replace(redirect)
     }
   }, [availableSections, setCurrentSection, router, redirect])
+
+  // Initialize picker selection from existing store selection so it reflects
+  // the current / previously chosen sections when opened.
+  useEffect(() => {
+    if (selectedIds.size > 0) return
+
+    if (selectedSections.length > 0) {
+      setSelectedIds(new Set(selectedSections.map((s) => s.sectionId)))
+    } else if (currentSection?.sectionId) {
+      setSelectedIds(new Set([currentSection.sectionId]))
+    }
+  }, [selectedSections, currentSection, selectedIds.size])
   
   const toggleSection = (sectionId: string) => {
     setSelectedIds(prev => {

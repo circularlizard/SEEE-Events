@@ -16,7 +16,7 @@ export default function Sidebar() {
 
   const hasMultiSelection = selectedSections.length > 0;
   const sectionLabel = hasMultiSelection
-    ? `${selectedSections.length} sections selected`
+    ? selectedSections.map((s) => s.sectionName).join(", ")
     : currentSection?.sectionName ?? "No section selected";
 
   // Only show Change Section when user actually has more than one available section

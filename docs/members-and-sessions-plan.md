@@ -48,15 +48,24 @@ This plan covers:
 
 3. **Header cleanup**
    - Remove the section summary and "Change section" button from `Header.tsx` for desktop.
-   - For mobile, either:
-     - Keep a compact "Change section" action in the header, or
-     - Rely on the sidebar if it is accessible via a mobile drawer.
+   - Keep a compact section summary + "Change section" action in the header **on mobile only** (`md:hidden`), so mobile users still have an easy way to switch sections when the sidebar is hidden.
 
 ### 2.4. Testing
 
 - Update any existing tests around the section picker and initial dashboard load to reflect:
   - Section controls living in the sidebar instead of the header.
   - No flash of the main dashboard when a section is not yet selected.
+
+### 2.5. Current status
+
+- Implemented:
+  - Section summary and "Change section" control have been moved into the **top of the sidebar** using Zustand state and `usePathname` for the redirect.
+  - The header now shows section information and the change button **only on mobile**, with desktop deferring to the sidebar.
+  - The section picker initializes its selection state from the current/selected sections in the store so it reflects the existing selection when opened.
+  - `DashboardPage` includes a guard that renders a minimal loading state when the user is authenticated, has multiple available sections, and no section is selected, to reduce dashboard flashing.
+- Still outstanding / not fully working:
+  - There is still some residual flash of the main page before the section selector appears in certain flows. This needs a deeper follow-up (e.g. coordinating `StartupInitializer`, initial route rendering, and dashboard gating) and will be revisited later.
+- Aside from the flash issue, section 2 work is effectively complete and implementation can proceed to section 3 (session timeout) next.
 
 ---
 

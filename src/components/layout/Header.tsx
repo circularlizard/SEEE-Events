@@ -42,31 +42,34 @@ export default function Header() {
         <div className="flex items-center gap-2">
           <TentTree className="h-6 w-6 text-primary" aria-hidden />
           <span className="font-semibold tracking-tight text-lg">OSM Dashboard</span>
-          {(multiNames.length > 0) ? (
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <span className="text-sm text-muted-foreground truncate max-w-[240px]">• {multiNames.join(', ')}</span>
-                </TooltipTrigger>
-                <TooltipContent>
-                  {multiNames.join(', ')}
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          ) : selectedSectionName && (
-            <span className="text-sm text-muted-foreground">• {selectedSectionName}</span>
-          )}
-          {showChangeSectionButton && (
-            <Link href={changeSectionHref}>
-              <Button
-                variant="outline"
-                size="sm"
-                className="ml-2"
-              >
-                Change Section
-              </Button>
-            </Link>
-          )}
+          {/* Section summary + change control: mobile only, desktop uses sidebar */}
+          <div className="flex items-center gap-2 md:hidden">
+            {multiNames.length > 0 ? (
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <span className="text-sm text-muted-foreground truncate max-w-[160px]">• {multiNames.join(', ')}</span>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    {multiNames.join(', ')}
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            ) : selectedSectionName && (
+              <span className="text-sm text-muted-foreground">• {selectedSectionName}</span>
+            )}
+            {showChangeSectionButton && (
+              <Link href={changeSectionHref}>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="ml-1"
+                >
+                  Change Section
+                </Button>
+              </Link>
+            )}
+          </div>
         </div>
         <div className="flex items-center gap-2">
           <DropdownMenu>
