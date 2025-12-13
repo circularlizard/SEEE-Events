@@ -557,6 +557,48 @@ Section 4 core implementation is **complete**. Proceed to Section 5 (Members pag
 - Add a member detail view (modal or separate route) showing full normalized member data.
 - Allow configurable column visibility (hide/show optional columns such as separate first-name column or DOB).
 
+### 5.6. Current status
+
+**Implemented** (December 2025):
+
+1. **Route** (`src/app/dashboard/members/page.tsx`):
+   - Server component with admin role check (same pattern as `/dashboard/admin`).
+   - Returns "Forbidden" message for non-admin users.
+   - Renders `MembersClient` component for admin users.
+
+2. **Client component** (`src/app/dashboard/members/MembersClient.tsx`):
+   - Uses `useMembers`, `useMembersLoadingState`, `useMembersProgress` from Zustand store.
+   - Sortable columns: Name, Age, DOB, Patrol, Loading status.
+   - Sort direction toggle (asc/desc) with visual indicators.
+   - Status icons for photo consent, medical info, allergies.
+   - Per-member loading state indicator (pending, loading, error).
+   - Progress bar during hydration showing phase and completion count.
+   - Empty state when no section selected.
+   - Loading state while hydration in progress.
+
+3. **Responsive layout**:
+   - Desktop: Table view with sortable column headers.
+   - Mobile: Card-based layout with key info per member.
+
+4. **Sidebar** (`src/components/layout/Sidebar.tsx`):
+   - Added "Members" link in admin section.
+   - Uses `UsersIcon` from lucide-react.
+   - Only visible to admin users.
+
+**Verified working**:
+- Page loads with hydrated member data.
+- Sorting works correctly for all columns.
+- Status icons reflect member data (photo consent, medical, allergies).
+- Progress bar shows hydration progress.
+- Mobile card view renders correctly.
+
+**Still outstanding**:
+- Unit tests for `MembersClient` component.
+- Text search and filtering.
+- Member detail view (modal or separate route).
+
+Section 5 is **complete**. Proceed to Section 6 (Member data issues view).
+
 ---
 
 ## 6. Member data-quality view (admin)
