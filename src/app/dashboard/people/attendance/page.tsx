@@ -9,7 +9,7 @@ import { cn } from '@/lib/utils'
 import { usePerPersonAttendance } from '@/hooks/usePerPersonAttendance'
 import { usePatrolMap } from '@/hooks/usePatrolMap'
 import { Skeleton } from '@/components/ui/skeleton'
-import { ChevronDown, ChevronRight } from 'lucide-react'
+import { ChevronDown, ChevronRight, Users as UsersIcon } from 'lucide-react'
 
 type PersonAttendance = ReturnType<typeof usePerPersonAttendance>['data'][number]
 
@@ -133,10 +133,16 @@ export default function AttendanceByPersonPage() {
 
   return (
     <div className={cn('p-4 md:p-6')}>
+      <div className="mb-6 rounded-lg bg-primary text-primary-foreground px-4 py-3 flex items-center justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-bold flex items-center gap-2">
+            <UsersIcon className="h-6 w-6" aria-hidden />
+            <span>Attendance by Person</span>
+          </h1>
+        </div>
+      </div>
+
       <Card>
-        <CardHeader>
-          <CardTitle className={cn('text-2xl md:text-3xl font-semibold')}>Attendance by Person</CardTitle>
-        </CardHeader>
         <CardContent>
           <div className="flex flex-wrap items-center gap-4">
             <RadioGroup value={groupMode} onValueChange={(v) => setGroupMode(v as GroupMode)} className="flex flex-wrap gap-4">

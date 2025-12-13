@@ -1,5 +1,6 @@
 import { getServerSession } from 'next-auth/next'
 import Link from 'next/link'
+import { Users } from 'lucide-react'
 import { getAuthConfig } from '@/lib/auth'
 import { PatrolManagement } from './PatrolManagement'
 
@@ -27,11 +28,19 @@ export default async function AdminPage() {
 
   return (
     <div className="p-4 md:p-6 space-y-6">
-      <div>
-        <h1 className="text-2xl md:text-3xl font-bold" data-testid="admin-title">Patrol data</h1>
-        <p className="text-muted-foreground mt-1">
-          Manage cached patrol reference data used across the dashboard
-        </p>
+      <div className="rounded-lg bg-primary text-primary-foreground px-4 py-3 flex items-center justify-between gap-4">
+        <div>
+          <h1
+            className="text-2xl md:text-3xl font-bold flex items-center gap-2"
+            data-testid="admin-title"
+          >
+            <Users className="h-6 w-6" aria-hidden />
+            <span>Patrol data</span>
+          </h1>
+          <p className="mt-1 text-sm md:text-base opacity-90">
+            Manage cached patrol reference data used across the dashboard
+          </p>
+        </div>
       </div>
       
       <PatrolManagement />

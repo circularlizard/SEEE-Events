@@ -5,7 +5,7 @@ import { useEvents } from '@/hooks/useEvents'
 import { EventsListSkeleton } from '@/components/domain/EventsListSkeleton'
 import { EventCard } from '@/components/domain/EventCard'
 import { EventsTable } from '@/components/domain/EventsTable'
-import { AlertCircle } from 'lucide-react'
+import { AlertCircle, CalendarDays } from 'lucide-react'
 import type { Event } from '@/lib/schemas'
 import { getFilteredEvents, useStore } from '@/store/use-store'
 
@@ -47,9 +47,14 @@ export default function EventsPage() {
   if (isLoading) {
     return (
       <div className="p-4 md:p-6">
-        <div className="mb-6">
-          <h1 className="text-3xl font-bold">Events</h1>
-          <p className="text-muted-foreground mt-1">Loading events...</p>
+        <div className="mb-6 rounded-lg bg-primary text-primary-foreground px-4 py-3 flex items-center justify-between gap-4">
+          <div>
+            <h1 className="text-3xl font-bold flex items-center gap-2">
+              <CalendarDays className="h-6 w-6" aria-hidden />
+              <span>Events</span>
+            </h1>
+            <p className="mt-1 text-sm md:text-base opacity-90">Loading events...</p>
+          </div>
         </div>
         <EventsListSkeleton />
       </div>
@@ -59,8 +64,13 @@ export default function EventsPage() {
   if (error) {
     return (
       <div className="p-4 md:p-6">
-        <div className="mb-6">
-          <h1 className="text-3xl font-bold">Events</h1>
+        <div className="mb-6 rounded-lg bg-primary text-primary-foreground px-4 py-3 flex items-center justify-between gap-4">
+          <div>
+            <h1 className="text-3xl font-bold flex items-center gap-2">
+              <CalendarDays className="h-6 w-6" aria-hidden />
+              <span>Events</span>
+            </h1>
+          </div>
         </div>
         <div className="flex items-center gap-3 p-4 border border-destructive/50 bg-destructive/10 rounded-lg text-destructive">
           <AlertCircle className="h-5 w-5" />
@@ -75,11 +85,16 @@ export default function EventsPage() {
 
   return (
     <div className="p-4 md:p-6">
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold">Events</h1>
-        <p className="text-muted-foreground mt-1">
-          {visibleEvents.length} {visibleEvents.length === 1 ? 'event' : 'events'} found
-        </p>
+      <div className="mb-6 rounded-lg bg-primary text-primary-foreground px-4 py-3 flex items-center justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-bold flex items-center gap-2">
+            <CalendarDays className="h-6 w-6" aria-hidden />
+            <span>Events</span>
+          </h1>
+          <p className="mt-1 text-sm md:text-base opacity-90">
+            {visibleEvents.length} {visibleEvents.length === 1 ? 'event' : 'events'} found
+          </p>
+        </div>
       </div>
 
       {visibleEvents.length === 0 ? (
