@@ -8,15 +8,15 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Label } from '@/components/ui/label'
-import { useStore, type Section } from '@/store/use-store'
+import { useStore } from '@/store/use-store'
 import { cn } from '@/lib/utils'
-import { Users, CheckCircle2 } from 'lucide-react'
+import { CheckCircle2, Circle } from 'lucide-react'
 
 const REMEMBER_KEY = 'seee.sectionSelection.v1'
 
 interface RememberedSelection {
   userId: string
-  selectedSectionIds: string[]
+  selectedSectionId: string // Changed from array to single ID
   timestamp: string
 }
 
@@ -24,7 +24,10 @@ interface RememberedSelection {
  * Section Picker Page Content
  * 
  * Displayed after login for multi-section users who don't have a valid remembered selection.
- * Allows selecting one or more sections, with an option to remember the selection.
+ * Allows selecting a single section, with an option to remember the selection.
+ * 
+ * Note: Changed from multi-select to single-select to avoid complexity of merging
+ * potentially conflicting data structures from different sections.
  */
 function SectionPickerContent() {
   const router = useRouter()
@@ -47,7 +50,7 @@ function SectionPickerContent() {
     (currentSection && sectionIds.has(currentSection.sectionId)) ||
     (selectedSections.length > 0 && selectedSections.some(s => sectionIds.has(s.sectionId)))
   
-  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
+  const [selectedId, setSelectedId] = useState<string | null>(null)
   const [rememberSelection, setRememberSelection] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   
@@ -66,66 +69,45 @@ function SectionPickerContent() {
   }, [availableSections, setCurrentSection, router, redirect])
 
   // Initialize picker selection from existing store selection so it reflects
-  // the current / previously chosen sections when opened.
+  // the current / previously chosen section when opened.
   useEffect(() => {
-    if (selectedIds.size > 0) return
+    if (selectedId) return
 
-    if (selectedSections.length > 0) {
-      setSelectedIds(new Set(selectedSections.map((s) => s.sectionId)))
-    } else if (currentSection?.sectionId) {
-      setSelectedIds(new Set([currentSection.sectionId]))
+    if (currentSection?.sectionId) {
+      setSelectedId(currentSection.sectionId)
+    } else if (selectedSections.length > 0) {
+      // Legacy: if there were multiple sections selected, pick the first one
+      setSelectedId(selectedSections[0].sectionId)
     }
-  }, [selectedSections, currentSection, selectedIds.size])
+  }, [selectedSections, currentSection, selectedId])
   
-  const toggleSection = (sectionId: string) => {
-    setSelectedIds(prev => {
-      const next = new Set(prev)
-      if (next.has(sectionId)) {
-        next.delete(sectionId)
-      } else {
-        next.add(sectionId)
-      }
-      return next
-    })
-  }
-  
-  const selectAll = () => {
-    setSelectedIds(new Set(availableSections.map(s => s.sectionId)))
-  }
-  
-  const clearAll = () => {
-    setSelectedIds(new Set())
+  const selectSection = (sectionId: string) => {
+    setSelectedId(sectionId)
   }
   
   const handleContinue = () => {
-    if (selectedIds.size === 0) return
+    if (!selectedId) return
     
     setIsSubmitting(true)
     
-    // Build selected sections array
-    const selected: Section[] = availableSections
-      .filter(s => selectedIds.has(s.sectionId))
-      .map(s => ({
-        sectionId: s.sectionId,
-        sectionName: s.sectionName,
-        sectionType: s.sectionType,
-        termId: s.termId,
-      }))
+    // Find the selected section
+    const selected = availableSections.find(s => s.sectionId === selectedId)
+    if (!selected) return
     
-    // Update store
-    if (selected.length === 1) {
-      setCurrentSection(selected[0])
-      setSelectedSections([])
-    } else {
-      setCurrentSection(null)
-      setSelectedSections(selected)
-    }
+    // Update store with single section
+    setCurrentSection({
+      sectionId: selected.sectionId,
+      sectionName: selected.sectionName,
+      sectionType: selected.sectionType,
+      termId: selected.termId,
+    })
+    setSelectedSections([]) // Clear any legacy multi-selection
     
     // Remember selection if checkbox is ticked and we have a userId
     if (rememberSelection && userId) {
       const payload: RememberedSelection = {
         userId,
-        selectedSectionIds: Array.from(selectedIds),
+        selectedSectionId: selectedId,
         timestamp: new Date().toISOString(),
       }
       try {
@@ -172,45 +154,26 @@ function SectionPickerContent() {
     <div className="flex flex-col items-center justify-center min-h-[70vh] p-4">
       <div className="w-full max-w-2xl">
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold mb-2">Select Your Sections</h1>
+          <h1 className="text-3xl font-bold mb-2">Select Your Section</h1>
           <p className="text-muted-foreground">
-            You have access to multiple sections. Choose which ones you want to work with.
+            You have access to multiple sections. Choose which one you want to work with.
           </p>
         </div>
         
         <Card>
           <CardHeader>
-            <div className="flex items-center justify-between">
-              <div>
-                <CardTitle>Available Sections</CardTitle>
-                <CardDescription>
-                  {selectedIds.size} of {availableSections.length} selected
-                </CardDescription>
-              </div>
-              <div className="flex gap-2 text-sm">
-                <button 
-                  onClick={selectAll} 
-                  className="text-primary hover:underline"
-                >
-                  Select All
-                </button>
-                <span className="text-muted-foreground">|</span>
-                <button 
-                  onClick={clearAll} 
-                  className="text-primary hover:underline"
-                >
-                  Clear
-                </button>
-              </div>
-            </div>
+            <CardTitle>Available Sections</CardTitle>
+            <CardDescription>
+              Select the section you want to work with
+            </CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">
             {availableSections.map((section) => {
-              const isSelected = selectedIds.has(section.sectionId)
+              const isSelected = selectedId === section.sectionId
               return (
                 <button
                   key={section.sectionId}
-                  onClick={() => toggleSection(section.sectionId)}
+                  onClick={() => selectSection(section.sectionId)}
                   className={cn(
                     'w-full flex items-center gap-4 p-4 rounded-lg border transition-colors text-left',
                     isSelected 
@@ -225,7 +188,7 @@ function SectionPickerContent() {
                     {isSelected ? (
                       <CheckCircle2 className="h-5 w-5" />
                     ) : (
-                      <Users className="h-5 w-5" />
+                      <Circle className="h-5 w-5" />
                     )}
                   </div>
                   <div className="flex-1">
@@ -253,7 +216,7 @@ function SectionPickerContent() {
             
             <Button 
               onClick={handleContinue}
-              disabled={selectedIds.size === 0 || isSubmitting}
+              disabled={!selectedId || isSubmitting}
               className="w-full mt-4"
               size="lg"
             >

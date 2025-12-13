@@ -240,6 +240,196 @@ export type Patrol = z.infer<typeof PatrolSchema>
 export type PatrolsResponse = z.infer<typeof PatrolsResponseSchema>
 
 // ============================================================================
+// MEMBER DETAIL SCHEMAS (for getIndividual and getCustomData APIs)
+// ============================================================================
+
+/**
+ * Individual Member Response Schema
+ * Used for ext/members/contact/?action=getIndividual
+ * Returns DOB, membership history, and other sections
+ */
+export const IndividualDataSchema = z.object({
+  scoutid: z.union([z.string(), z.number()]).transform(String),
+  firstname: z.string(),
+  lastname: z.string(),
+  photo_guid: z.string().nullable(),
+  dob: z.string(), // "2008-01-31"
+  started: z.string(), // "2014-03-01"
+  created_date: z.string(),
+  last_accessed: z.string(),
+  patrolid: z.union([z.string(), z.number()]).transform(String),
+  patrolleader: z.union([z.string(), z.number()]).transform(String),
+  startedsection: z.string(), // "2022-08-08"
+  enddate: z.string().nullable(),
+  age: z.string(), // "17 years and 10 months"
+  age_simple: z.string(), // "17 / 10"
+  sectionid: z.number(),
+  active: z.boolean(),
+  meetings: z.union([z.string(), z.number()]).transform(String),
+  others: z.array(z.string()), // Other sections member belongs to
+})
+
+export const IndividualResponseSchema = z.object({
+  ok: z.boolean(),
+  read_only: z.array(z.unknown()),
+  data: IndividualDataSchema,
+  meta: z.array(z.unknown()),
+})
+
+export type IndividualData = z.infer<typeof IndividualDataSchema>
+export type IndividualResponse = z.infer<typeof IndividualResponseSchema>
+
+/**
+ * Custom Data Column Schema
+ * Individual field within a custom data group
+ */
+export const CustomDataColumnSchema = z.object({
+  column_id: z.number(),
+  type: z.string(),
+  required: z.string(),
+  display_in_advanced_view: z.string(),
+  display_if_empty: z.string(),
+  hide_from_group_display: z.string(),
+  config: z.unknown(), // Can be array or object
+  varname: z.string(),
+  label: z.string(),
+  value: z.union([z.string(), z.number(), z.boolean(), z.null()]).transform((v) => 
+    v === null ? '' : String(v)
+  ),
+  is_core: z.string(),
+  order: z.string(),
+  force_read_only: z.string(),
+  special_permissions: z.string(),
+  permissions: z.array(z.unknown()),
+  orig_label: z.string(),
+})
+
+/**
+ * Custom Data Group Schema
+ * Groups like "Member", "Primary Contact 1", "Emergency Contact", etc.
+ */
+export const CustomDataGroupSchema = z.object({
+  group_id: z.number(),
+  config: z.unknown().nullable(),
+  group_type: z.string(),
+  identifier: z.string(), // Key identifier: "contact_primary_member", "contact_primary_1", etc.
+  name: z.string(),
+  description: z.string(),
+  description_mymember: z.string(),
+  is_considered_core: z.string(),
+  allow_new_columns: z.string(),
+  display: z.string(),
+  columns: z.array(CustomDataColumnSchema),
+  custom_order: z.number(),
+})
+
+/**
+ * Custom Data Response Schema
+ * Full response from ext/customdata/?action=getData
+ */
+export const CustomDataResponseSchema = z.object({
+  status: z.boolean(),
+  error: z.unknown().nullable(),
+  data: z.array(CustomDataGroupSchema),
+  meta: z.object({
+    group_name: z.string().optional(),
+    section_name: z.string().optional(),
+  }).passthrough().optional(),
+})
+
+export type CustomDataColumn = z.infer<typeof CustomDataColumnSchema>
+export type CustomDataGroup = z.infer<typeof CustomDataGroupSchema>
+export type CustomDataResponse = z.infer<typeof CustomDataResponseSchema>
+
+/**
+ * Normalized Contact Schema
+ * Unified structure for member, parent, and emergency contacts
+ */
+export const NormalizedContactSchema = z.object({
+  firstName: z.string(),
+  lastName: z.string(),
+  address1: z.string(),
+  address2: z.string(),
+  address3: z.string(),
+  address4: z.string(),
+  postcode: z.string(),
+  phone1: z.string(),
+  phone2: z.string(),
+  email1: z.string(),
+  email2: z.string(),
+  relationship: z.string().optional(), // For parent/emergency contacts
+})
+
+export type NormalizedContact = z.infer<typeof NormalizedContactSchema>
+
+/**
+ * Normalized Consents Schema
+ */
+export const NormalizedConsentsSchema = z.object({
+  photoConsent: z.boolean(),
+  medicalConsent: z.boolean(),
+  // Additional consent fields can be added as needed
+})
+
+export type NormalizedConsents = z.infer<typeof NormalizedConsentsSchema>
+
+/**
+ * Normalized Member Schema
+ * Unified view combining getMembers + getIndividual + getCustomData
+ */
+export const NormalizedMemberSchema = z.object({
+  // Core identity (from getMembers)
+  id: z.string(), // scoutid
+  firstName: z.string(),
+  lastName: z.string(),
+  fullName: z.string(),
+  photoGuid: z.string().nullable(),
+  
+  // Section info
+  sectionId: z.number(),
+  patrolId: z.number(),
+  patrolName: z.string(),
+  active: z.boolean(),
+  
+  // Age info (from getMembers + getIndividual)
+  age: z.string(), // "17 / 10" from getMembers
+  dateOfBirth: z.string().nullable(), // "2008-01-31" from getIndividual
+  
+  // Membership dates (from getIndividual)
+  started: z.string().nullable(), // When they joined scouting
+  startedSection: z.string().nullable(), // When they joined this section
+  endDate: z.string().nullable(),
+  
+  // Other sections (from getIndividual)
+  otherSections: z.array(z.string()),
+  
+  // Contact info (from getCustomData)
+  memberContact: NormalizedContactSchema.nullable(),
+  primaryContact1: NormalizedContactSchema.nullable(),
+  primaryContact2: NormalizedContactSchema.nullable(),
+  emergencyContact: NormalizedContactSchema.nullable(),
+  
+  // Doctor info (from getCustomData)
+  doctorName: z.string().nullable(),
+  doctorPhone: z.string().nullable(),
+  doctorAddress: z.string().nullable(),
+  
+  // Medical info (from getCustomData)
+  medicalNotes: z.string().nullable(),
+  dietaryNotes: z.string().nullable(),
+  allergyNotes: z.string().nullable(),
+  
+  // Consents (from getCustomData)
+  consents: NormalizedConsentsSchema.nullable(),
+  
+  // Loading state for progressive hydration
+  loadingState: z.enum(['pending', 'summary', 'individual', 'customData', 'complete', 'error']),
+  errorMessage: z.string().nullable(),
+})
+
+export type NormalizedMember = z.infer<typeof NormalizedMemberSchema>
+
+// ============================================================================
 // TIER 2: PERMISSIVE SCHEMAS (Logistics Data - Graceful Degradation)
 // ============================================================================
 

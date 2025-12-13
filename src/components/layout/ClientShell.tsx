@@ -8,6 +8,7 @@ import { useEvents } from "@/hooks/useEvents";
 import { useEffect, useRef } from "react";
 import { useQueueProcessor } from "@/hooks/useQueueProcessor";
 import { useSessionTimeout } from "@/hooks/useSessionTimeout";
+import { useMembersHydration } from "@/hooks/useMembersHydration";
 import { useStore, type Section } from "@/store/use-store";
 import type { Event } from "@/lib/schemas";
 
@@ -21,6 +22,19 @@ export default function ClientShell({ children }: { children: React.ReactNode })
   
   // Global inactivity timeout for authenticated users
   useSessionTimeout();
+  
+  // Global member data hydration for admin users
+  const membersHydration = useMembersHydration();
+  
+  useEffect(() => {
+    if (process.env.NODE_ENV !== 'production' && membersHydration.isAdmin) {
+      console.log('[ClientShell] Members hydration state:', {
+        loadingState: membersHydration.loadingState,
+        memberCount: membersHydration.members.length,
+        progress: membersHydration.progress,
+      });
+    }
+  }, [membersHydration.loadingState, membersHydration.members.length, membersHydration.progress, membersHydration.isAdmin]);
   
   // Hide sidebar on section picker page for focused UX
   const isSectionPickerPage = pathname === '/dashboard/section-picker';

@@ -18,9 +18,9 @@ jest.mock('next/navigation', () => ({
 }))
 
 // Mock TanStack Query
-const mockClear = jest.fn()
+const mockRemoveQueries = jest.fn()
 jest.mock('@tanstack/react-query', () => ({
-  useQueryClient: () => ({ clear: mockClear }),
+  useQueryClient: () => ({ removeQueries: mockRemoveQueries }),
 }))
 
 // Mock the store
@@ -58,7 +58,7 @@ describe('Section Picker Page', () => {
   test('renders available sections', () => {
     render(<SectionPickerPage />)
     
-    expect(screen.getByText('Select Your Sections')).toBeInTheDocument()
+    expect(screen.getByText('Select Your Section')).toBeInTheDocument()
     expect(screen.getByText('Troop A')).toBeInTheDocument()
     expect(screen.getByText('Troop B')).toBeInTheDocument()
     expect(screen.getByText('Troop C')).toBeInTheDocument()
@@ -81,25 +81,18 @@ describe('Section Picker Page', () => {
     expect(continueButton).not.toBeDisabled()
   })
 
-  test('Select All selects all sections', () => {
+  test('selecting a section replaces previous selection (single-select)', () => {
     render(<SectionPickerPage />)
     
-    fireEvent.click(screen.getByText('Select All'))
+    // Select first section
+    fireEvent.click(screen.getByText('Troop A'))
     
-    // All sections should be selected, count should show 3 of 3
-    expect(screen.getByText('3 of 3 selected')).toBeInTheDocument()
-  })
-
-  test('Clear deselects all sections', () => {
-    render(<SectionPickerPage />)
+    // Select second section - should replace first
+    fireEvent.click(screen.getByText('Troop B'))
     
-    // Select all first
-    fireEvent.click(screen.getByText('Select All'))
-    expect(screen.getByText('3 of 3 selected')).toBeInTheDocument()
-    
-    // Then clear
-    fireEvent.click(screen.getByText('Clear'))
-    expect(screen.getByText('0 of 3 selected')).toBeInTheDocument()
+    // Continue button should still be enabled (one section selected)
+    const continueButton = screen.getByRole('button', { name: /continue/i })
+    expect(continueButton).not.toBeDisabled()
   })
 
   test('clicking Continue with single section sets currentSection', async () => {
@@ -119,10 +112,10 @@ describe('Section Picker Page', () => {
     })
   })
 
-  test('clicking Continue with multiple sections sets selectedSections', async () => {
+  test('clicking Continue always sets currentSection (single-select mode)', async () => {
     render(<SectionPickerPage />)
     
-    // Select multiple sections
+    // Select a section (clicking second one replaces first in single-select)
     fireEvent.click(screen.getByText('Troop A'))
     fireEvent.click(screen.getByText('Troop B'))
     
@@ -130,24 +123,23 @@ describe('Section Picker Page', () => {
     fireEvent.click(screen.getByRole('button', { name: /continue/i }))
     
     await waitFor(() => {
-      expect(mockSetCurrentSection).toHaveBeenCalledWith(null)
-      expect(mockSetSelectedSections).toHaveBeenCalledWith(
-        expect.arrayContaining([
-          expect.objectContaining({ sectionId: 'section-1' }),
-          expect.objectContaining({ sectionId: 'section-2' }),
-        ])
+      // In single-select mode, the last clicked section is selected
+      expect(mockSetCurrentSection).toHaveBeenCalledWith(
+        expect.objectContaining({ sectionId: 'section-2', sectionName: 'Troop B' })
       )
+      // selectedSections should be cleared
+      expect(mockSetSelectedSections).toHaveBeenCalledWith([])
     })
   })
 
-  test('clicking Continue clears query cache and queue', async () => {
+  test('clicking Continue removes query cache and clears queue', async () => {
     render(<SectionPickerPage />)
     
     fireEvent.click(screen.getByText('Troop A'))
     fireEvent.click(screen.getByRole('button', { name: /continue/i }))
     
     await waitFor(() => {
-      expect(mockClear).toHaveBeenCalled()
+      expect(mockRemoveQueries).toHaveBeenCalled()
       expect(mockClearQueue).toHaveBeenCalled()
     })
   })
@@ -182,7 +174,7 @@ describe('Section Picker Page', () => {
       
       const parsed = JSON.parse(stored!)
       expect(parsed.userId).toBe('user-123')
-      expect(parsed.selectedSectionIds).toContain('section-1')
+      expect(parsed.selectedSectionId).toBe('section-1')
       expect(parsed.timestamp).toBeDefined()
     })
   })
@@ -217,10 +209,10 @@ describe('Remembered Selection Validation', () => {
     localStorage.clear()
   })
 
-  test('valid remembered selection has correct structure', () => {
+  test('valid remembered selection has correct structure (single section)', () => {
     const validSelection = {
       userId: 'user-123',
-      selectedSectionIds: ['section-1', 'section-2'],
+      selectedSectionId: 'section-1',
       timestamp: new Date().toISOString(),
     }
     
@@ -229,14 +221,14 @@ describe('Remembered Selection Validation', () => {
     const parsed = JSON.parse(stored!)
     
     expect(parsed.userId).toBe('user-123')
-    expect(parsed.selectedSectionIds).toHaveLength(2)
+    expect(parsed.selectedSectionId).toBe('section-1')
     expect(parsed.timestamp).toBeDefined()
   })
 
-  test('stale selection with invalid section IDs should be detected', () => {
+  test('stale selection with invalid section ID should be detected', () => {
     const staleSelection = {
       userId: 'user-123',
-      selectedSectionIds: ['deleted-section', 'another-deleted'],
+      selectedSectionId: 'deleted-section',
       timestamp: new Date().toISOString(),
     }
     
@@ -246,15 +238,15 @@ describe('Remembered Selection Validation', () => {
     
     // Simulate validation against available sections
     const availableSectionIds = new Set(['section-1', 'section-2', 'section-3'])
-    const validIds = parsed.selectedSectionIds.filter((id: string) => availableSectionIds.has(id))
+    const isValid = availableSectionIds.has(parsed.selectedSectionId)
     
-    expect(validIds).toHaveLength(0)
+    expect(isValid).toBe(false)
   })
 
   test('userId mismatch should invalidate remembered selection', () => {
     const wrongUserSelection = {
       userId: 'different-user',
-      selectedSectionIds: ['section-1'],
+      selectedSectionId: 'section-1',
       timestamp: new Date().toISOString(),
     }
     
@@ -268,24 +260,21 @@ describe('Remembered Selection Validation', () => {
     expect(isValidUser).toBe(false)
   })
 
-  test('partial valid selection should keep only valid section IDs', () => {
-    const partiallyValidSelection = {
+  test('valid section ID should pass validation', () => {
+    const validSelection = {
       userId: 'user-123',
-      selectedSectionIds: ['section-1', 'deleted-section', 'section-3'],
+      selectedSectionId: 'section-1',
       timestamp: new Date().toISOString(),
     }
     
-    localStorage.setItem(REMEMBER_KEY, JSON.stringify(partiallyValidSelection))
+    localStorage.setItem(REMEMBER_KEY, JSON.stringify(validSelection))
     const stored = localStorage.getItem(REMEMBER_KEY)
     const parsed = JSON.parse(stored!)
     
     // Simulate validation
     const availableSectionIds = new Set(['section-1', 'section-2', 'section-3'])
-    const validIds = parsed.selectedSectionIds.filter((id: string) => availableSectionIds.has(id))
+    const isValid = availableSectionIds.has(parsed.selectedSectionId)
     
-    expect(validIds).toHaveLength(2)
-    expect(validIds).toContain('section-1')
-    expect(validIds).toContain('section-3')
-    expect(validIds).not.toContain('deleted-section')
+    expect(isValid).toBe(true)
   })
 })

@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
+import type { NormalizedMember } from '@/lib/schemas'
 
 /**
  * User Role Types
@@ -112,9 +113,59 @@ interface QueueState {
 }
 
 /**
+ * Members Loading State
+ */
+export type MembersLoadingState = 
+  | 'idle' 
+  | 'loading-summary' 
+  | 'loading-individual' 
+  | 'loading-custom' 
+  | 'complete' 
+  | 'error'
+
+/**
+ * Members Progress
+ */
+export interface MembersProgress {
+  total: number
+  completed: number
+  phase: string
+}
+
+/**
+ * Members State
+ * Stores normalized member data for admin users
+ */
+interface MembersState {
+  // Normalized member data
+  members: NormalizedMember[]
+  
+  // Overall loading state
+  membersLoadingState: MembersLoadingState
+  
+  // Progress tracking
+  membersProgress: MembersProgress
+  
+  // Last updated timestamp
+  membersLastUpdated: Date | null
+  
+  // Section ID for which members are loaded (to detect stale data)
+  membersSectionId: string | null
+  
+  // Actions
+  setMembers: (members: NormalizedMember[]) => void
+  updateMember: (id: string, updates: Partial<NormalizedMember>) => void
+  setMembersLoadingState: (state: MembersLoadingState) => void
+  setMembersProgress: (progress: MembersProgress) => void
+  setMembersLastUpdated: (date: Date | null) => void
+  setMembersSectionId: (sectionId: string | null) => void
+  clearMembers: () => void
+}
+
+/**
  * Combined Store State
  */
-type StoreState = SessionState & ConfigState & ThemeState & QueueState
+type StoreState = SessionState & ConfigState & ThemeState & QueueState & MembersState
 
 /**
  * Main Application Store
@@ -210,6 +261,31 @@ export const useStore = create<StoreState>()(
       setQueueRunning: (count) => set({ queueRunning: count }),
       setQueueTimerActive: (active) => set({ queueTimerActive: active }),
       clearQueue: () => set({ queueItems: [], queueRunning: 0, queueTimerActive: false }),
+
+      // Members State (not persisted - sensitive data)
+      members: [],
+      membersLoadingState: 'idle',
+      membersProgress: { total: 0, completed: 0, phase: '' },
+      membersLastUpdated: null,
+      membersSectionId: null,
+      
+      setMembers: (members) => set({ members }),
+      updateMember: (id, updates) => set((state) => ({
+        members: state.members.map((m) => 
+          m.id === id ? { ...m, ...updates } : m
+        ),
+      })),
+      setMembersLoadingState: (membersLoadingState) => set({ membersLoadingState }),
+      setMembersProgress: (membersProgress) => set({ membersProgress }),
+      setMembersLastUpdated: (membersLastUpdated) => set({ membersLastUpdated }),
+      setMembersSectionId: (membersSectionId) => set({ membersSectionId }),
+      clearMembers: () => set({
+        members: [],
+        membersLoadingState: 'idle',
+        membersProgress: { total: 0, completed: 0, phase: '' },
+        membersLastUpdated: null,
+        membersSectionId: null,
+      }),
     }),
     {
       name: 'seee-storage',
@@ -236,6 +312,12 @@ export const useUserRole = () => useStore((state) => state.userRole)
 export const useTheme = () => useStore((state) => state.theme)
 export const useBadgeMappings = () => useStore((state) => state.badgeMappings)
 export const useFlexiColumnMappings = () => useStore((state) => state.flexiColumnMappings)
+
+// Members selectors
+export const useMembers = () => useStore((state) => state.members)
+export const useMembersLoadingState = () => useStore((state) => state.membersLoadingState)
+export const useMembersProgress = () => useStore((state) => state.membersProgress)
+export const useMembersLastUpdated = () => useStore((state) => state.membersLastUpdated)
 
 /**
  * Access Control Selectors (Phase 2.8.1)

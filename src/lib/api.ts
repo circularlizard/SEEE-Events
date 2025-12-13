@@ -13,6 +13,8 @@ import {
   BadgeRecordsResponseSchema,
   AttendanceResponseSchema,
   PatrolsResponseSchema,
+  IndividualResponseSchema,
+  CustomDataResponseSchema,
   parseStrict,
   parsePermissive,
   type Member,
@@ -22,6 +24,8 @@ import {
   type BadgeRecordsResponse,
   type AttendanceResponse,
   type PatrolsResponse,
+  type IndividualResponse,
+  type CustomDataResponse,
   StartupDataSchema,
   type StartupData,
 } from './schemas'
@@ -286,6 +290,54 @@ export async function getEventDetails(eventid: number): Promise<unknown> {
 export async function getEventSummary(eventid: number): Promise<unknown> {
   const response = await proxyFetch(`v3/events/event/${eventid}/summary`)
   return await response.json()
+}
+
+/**
+ * Fetch individual member details (Tier 1 - Strict validation)
+ * Returns DOB, membership history, and other sections
+ * 
+ * Upstream URL: ext/members/contact/?action=getIndividual&sectionid={sectionid}&scoutid={scoutid}&termid={termid}&context=members
+ */
+export async function getMemberIndividual(params: {
+  sectionid: number
+  scoutid: number
+  termid: number
+}): Promise<IndividualResponse> {
+  const response = await proxyFetch('ext/members/contact/', {
+    action: 'getIndividual',
+    sectionid: params.sectionid.toString(),
+    scoutid: params.scoutid.toString(),
+    termid: params.termid.toString(),
+    context: 'members',
+  })
+
+  const data = await response.json()
+  return parseStrict(IndividualResponseSchema, data, 'Individual Member')
+}
+
+/**
+ * Fetch member custom data (Tier 1 - Strict validation)
+ * Returns contacts, medical info, consents, and custom fields
+ * 
+ * Upstream URL: ext/customdata/?action=getData&section_id={sectionid}&associated_id={scoutid}&associated_type=member&...
+ */
+export async function getMemberCustomData(params: {
+  sectionid: number
+  scoutid: number
+}): Promise<CustomDataResponse> {
+  const response = await proxyFetch('ext/customdata/', {
+    action: 'getData',
+    section_id: params.sectionid.toString(),
+    associated_id: params.scoutid.toString(),
+    associated_type: 'member',
+    associated_is_section: 'null',
+    varname_filter: 'null',
+    context: 'members',
+    group_order: 'section',
+  })
+
+  const data = await response.json()
+  return parseStrict(CustomDataResponseSchema, data, 'Member Custom Data')
 }
 
 /**
