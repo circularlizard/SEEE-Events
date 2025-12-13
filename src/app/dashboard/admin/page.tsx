@@ -28,9 +28,9 @@ export default async function AdminPage() {
   return (
     <div className="p-4 md:p-6 space-y-6">
       <div>
-        <h1 className="text-2xl md:text-3xl font-bold" data-testid="admin-title">Admin</h1>
+        <h1 className="text-2xl md:text-3xl font-bold" data-testid="admin-title">Patrol data</h1>
         <p className="text-muted-foreground mt-1">
-          Manage system settings and reference data
+          Manage cached patrol reference data used across the dashboard
         </p>
       </div>
       

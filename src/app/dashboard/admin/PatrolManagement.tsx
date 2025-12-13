@@ -1,5 +1,6 @@
 'use client'
 
+import { useMemo, useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -30,14 +31,47 @@ export function PatrolManagement() {
   const { refresh, isRefreshing, error: refreshError, lastResult } = usePatrolRefresh()
 
   // Group patrols by section for display
-  const patrolsBySection = patrols.reduce<Record<string, typeof patrols>>((acc, patrol) => {
-    const key = patrol.sectionName || patrol.sectionId
-    if (!acc[key]) {
-      acc[key] = []
-    }
-    acc[key].push(patrol)
-    return acc
-  }, {})
+  const patrolsBySection = useMemo(
+    () =>
+      patrols.reduce<Record<string, typeof patrols>>((acc, patrol) => {
+        const key = patrol.sectionName || patrol.sectionId
+        if (!acc[key]) {
+          acc[key] = []
+        }
+        acc[key].push(patrol)
+        return acc
+      }, {}),
+    [patrols],
+  )
+
+  const [openSections, setOpenSections] = useState<Set<string>>(new Set())
+
+  const toggleSection = (sectionKey: string) => {
+    setOpenSections((prev) => {
+      const next = new Set(prev)
+      if (next.has(sectionKey)) {
+        next.delete(sectionKey)
+      } else {
+        next.add(sectionKey)
+      }
+      return next
+    })
+  }
+
+  const expandAll = () => {
+    const allKeys = new Set<string>()
+    patrols.forEach((patrol) => {
+      const key = patrol.sectionId || patrol.sectionName
+      if (key) {
+        allKeys.add(key)
+      }
+    })
+    setOpenSections(allKeys)
+  }
+
+  const collapseAll = () => {
+    setOpenSections(new Set())
+  }
 
   return (
     <Card>
@@ -52,14 +86,27 @@ export function PatrolManagement() {
               Cached patrol names used throughout the dashboard
             </CardDescription>
           </div>
-          <Button
-            onClick={() => refresh()}
-            disabled={isRefreshing}
-            variant="outline"
-          >
-            <RefreshCw className={`h-4 w-4 mr-2 ${isRefreshing ? 'animate-spin' : ''}`} />
-            {isRefreshing ? 'Refreshing...' : 'Refresh Patrol Data'}
-          </Button>
+          <div className="flex flex-col items-end gap-2">
+            <Button
+              onClick={() => refresh()}
+              disabled={isRefreshing}
+              variant="outline"
+            >
+              <RefreshCw className={`h-4 w-4 mr-2 ${isRefreshing ? 'animate-spin' : ''}`} />
+              {isRefreshing ? 'Refreshing...' : 'Refresh Patrol Data'}
+            </Button>
+            {!isLoading && patrols.length > 0 && (
+              <div className="flex gap-2 text-xs text-primary">
+                <button type="button" onClick={expandAll} className="hover:underline">
+                  Expand all
+                </button>
+                <span className="text-muted-foreground">|</span>
+                <button type="button" onClick={collapseAll} className="hover:underline">
+                  Collapse all
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -121,9 +168,15 @@ export function PatrolManagement() {
               const first = sectionPatrols[0]
               const displayName = first?.sectionName || sectionName
               const sectionLabel = `${displayName} (${sectionPatrols.length} patrol${sectionPatrols.length === 1 ? '' : 's'})`
+              const sectionKey = first?.sectionId ?? sectionName
 
               return (
-                <Collapsible key={`${first?.sectionId ?? sectionName}`} defaultOpen className="border rounded-lg">
+                <Collapsible
+                  key={sectionKey}
+                  open={openSections.has(sectionKey)}
+                  onOpenChange={() => toggleSection(sectionKey)}
+                  className="border rounded-lg"
+                >
                   <div className="flex items-center justify-between bg-muted px-3 py-2 border-b">
                     <CollapsibleTrigger className="flex items-center gap-2 text-sm font-semibold">
                       <ChevronDown className="h-4 w-4" aria-hidden />

@@ -32,7 +32,7 @@ export default function Sidebar() {
               href="/dashboard/admin"
             >
               <Shield className="h-4 w-4" />
-              Admin
+              Patrol data
             </Link>
           </div>
         )}
