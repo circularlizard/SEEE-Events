@@ -41,7 +41,7 @@ export default function Header() {
       <div className="px-4 h-14 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <TentTree className="h-6 w-6 text-primary" aria-hidden />
-          <span className="font-semibold tracking-tight text-lg">SEEE Expedition Dashboard</span>
+          <span className="font-semibold tracking-tight text-lg">OSM Dashboard</span>
           {(multiNames.length > 0) ? (
             <TooltipProvider>
               <Tooltip>

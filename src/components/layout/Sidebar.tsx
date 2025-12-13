@@ -20,12 +20,6 @@ export default function Sidebar() {
         <Link className="block px-2 py-1 rounded-md hover:bg-accent hover:text-accent-foreground" href="/dashboard/people/attendance">
           Attendance by Person
         </Link>
-        <Link className="block px-2 py-1 rounded-md hover:bg-accent hover:text-accent-foreground" href="#">
-          Patrols
-        </Link>
-        <Link className="block px-2 py-1 rounded-md hover:bg-accent hover:text-accent-foreground" href="#">
-          Readiness
-        </Link>
         
         {/* Admin section - only visible to administrators */}
         {isAdmin && (
@@ -65,14 +59,6 @@ export default function Sidebar() {
           >
             OAuth Resource
           </Link>
-          <div className="mt-4">
-            <p className="px-2 text-xs font-semibold text-muted-foreground uppercase mb-2">
-              Settings
-            </p>
-            <Link className="block px-2 py-1 rounded-md hover:bg-accent hover:text-accent-foreground" href="/dashboard/settings">
-              Settings
-            </Link>
-          </div>
         </div>
       </nav>
     </aside>

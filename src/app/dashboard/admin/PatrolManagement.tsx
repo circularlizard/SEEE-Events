@@ -3,8 +3,9 @@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
 import { usePatrolMap, usePatrolRefresh } from '@/hooks/usePatrolMap'
-import { RefreshCw, Users, Clock, AlertCircle } from 'lucide-react'
+import { RefreshCw, Users, Clock, AlertCircle, ChevronDown } from 'lucide-react'
 
 /**
  * Format date for display
@@ -113,38 +114,50 @@ export function PatrolManagement() {
           </div>
         )}
 
-        {/* Patrol table */}
+        {/* Patrol table grouped by section in collapsible panels */}
         {!isLoading && patrols.length > 0 && (
-          <div className="border rounded-lg overflow-hidden">
-            <div className="table w-full text-sm">
-              <div className="table-header-group bg-muted">
-                <div className="table-row">
-                  <div className="table-cell p-3 font-semibold text-left">Patrol ID</div>
-                  <div className="table-cell p-3 font-semibold text-left">Patrol Name</div>
-                  <div className="table-cell p-3 font-semibold text-left">Section</div>
-                </div>
-              </div>
-              <div className="table-row-group">
-                {Object.entries(patrolsBySection).map(([sectionName, sectionPatrols]) => (
-                  sectionPatrols.map((patrol, idx) => (
-                    <div
-                      key={`${patrol.sectionId}-${patrol.patrolId}`}
-                      className="table-row border-t hover:bg-muted/50 transition-colors"
-                    >
-                      <div className="table-cell p-3 font-mono text-muted-foreground">
-                        {patrol.patrolId}
+          <div className="space-y-2">
+            {Object.entries(patrolsBySection).map(([sectionName, sectionPatrols]) => {
+              const first = sectionPatrols[0]
+              const displayName = first?.sectionName || sectionName
+              const sectionLabel = `${displayName} (${sectionPatrols.length} patrol${sectionPatrols.length === 1 ? '' : 's'})`
+
+              return (
+                <Collapsible key={`${first?.sectionId ?? sectionName}`} defaultOpen className="border rounded-lg">
+                  <div className="flex items-center justify-between bg-muted px-3 py-2 border-b">
+                    <CollapsibleTrigger className="flex items-center gap-2 text-sm font-semibold">
+                      <ChevronDown className="h-4 w-4" aria-hidden />
+                      <span>{sectionLabel}</span>
+                    </CollapsibleTrigger>
+                  </div>
+                  <CollapsibleContent>
+                    <div className="table w-full text-sm">
+                      <div className="table-header-group bg-muted/60">
+                        <div className="table-row">
+                          <div className="table-cell p-3 font-semibold text-left">Patrol ID</div>
+                          <div className="table-cell p-3 font-semibold text-left">Patrol Name</div>
+                        </div>
                       </div>
-                      <div className="table-cell p-3 font-medium">
-                        {patrol.patrolName}
-                      </div>
-                      <div className="table-cell p-3 text-muted-foreground">
-                        {idx === 0 ? sectionName : ''}
+                      <div className="table-row-group">
+                        {sectionPatrols.map((patrol) => (
+                          <div
+                            key={`${patrol.sectionId}-${patrol.patrolId}`}
+                            className="table-row border-t hover:bg-muted/50 transition-colors"
+                          >
+                            <div className="table-cell p-3 font-mono text-muted-foreground">
+                              {patrol.patrolId}
+                            </div>
+                            <div className="table-cell p-3 font-medium">
+                              {patrol.patrolName}
+                            </div>
+                          </div>
+                        ))}
                       </div>
                     </div>
-                  ))
-                ))}
-              </div>
-            </div>
+                  </CollapsibleContent>
+                </Collapsible>
+              )
+            })}
           </div>
         )}
       </CardContent>

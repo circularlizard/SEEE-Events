@@ -48,7 +48,7 @@ function LoginContent() {
   return (
     <Card className="w-full max-w-md shadow-2xl">
           <CardHeader>
-            <CardTitle className="text-xl">SEEE Expedition Dashboard</CardTitle>
+            <CardTitle className="text-xl">OSM Dashboard</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <p className="text-sm text-muted-foreground">
