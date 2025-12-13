@@ -71,6 +71,13 @@ export default function Sidebar() {
             </p>
             <Link
               className="flex items-center gap-2 px-2 py-1 rounded-md hover:bg-accent hover:text-accent-foreground"
+              href="/dashboard/members"
+            >
+              <UsersIcon className="h-4 w-4" />
+              Members
+            </Link>
+            <Link
+              className="flex items-center gap-2 px-2 py-1 rounded-md hover:bg-accent hover:text-accent-foreground"
               href="/dashboard/admin"
             >
               <Shield className="h-4 w-4" />
