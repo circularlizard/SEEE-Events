@@ -12,7 +12,7 @@ import {
   AlertCircle,
   RefreshCw
 } from 'lucide-react'
-import { useMembers, useMembersLoadingState, useMembersProgress } from '@/store/use-store'
+import { useMembers, useMembersLoadingState } from '@/store/use-store'
 import type { NormalizedMember } from '@/lib/schemas'
 import { cn } from '@/lib/utils'
 
@@ -312,12 +312,9 @@ export function MembersClient() {
   // Loading state (no members yet)
   if (members.length === 0 && loadingState !== 'idle') {
     return (
-      <div className="space-y-4">
-        <HydrationProgress />
-        <div className="text-center py-12">
-          <Loader2 className="h-8 w-8 mx-auto animate-spin text-primary mb-4" aria-hidden />
-          <p className="text-muted-foreground">Loading members...</p>
-        </div>
+      <div className="text-center py-12">
+        <Loader2 className="h-8 w-8 mx-auto animate-spin text-primary mb-4" aria-hidden />
+        <p className="text-muted-foreground">Loading members...</p>
       </div>
     )
   }

@@ -7,8 +7,7 @@ import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useStore } from "@/store/use-store";
-import { useEvents } from "@/hooks/useEvents";
+import { useStore, useEventsData, useEventsLoadingState } from "@/store/use-store";
 import { CalendarDays, MapPin, Users, CheckCircle2, XCircle, Clock } from "lucide-react";
 import type { Event } from "@/lib/schemas";
 
@@ -93,7 +92,10 @@ export default function DashboardPage() {
   const selectedSections = useStore((s) => s.selectedSections);
   const availableSections = useStore((s) => s.availableSections);
   
-  const { data: eventsData, isLoading: eventsLoading } = useEvents();
+  // Use hydrated events data from the store
+  const events = useEventsData();
+  const eventsLoadingState = useEventsLoadingState();
+  const eventsLoading = eventsLoadingState === 'loading' || eventsLoadingState === 'idle';
   
   // Determine section display
   const sectionDisplay = useMemo(() => {
@@ -116,9 +118,9 @@ export default function DashboardPage() {
   
   // Get next 3 upcoming events
   const upcomingEvents = useMemo(() => {
-    if (!eventsData?.items) return []
-    return getUpcomingEvents(eventsData.items, 3)
-  }, [eventsData])
+    if (events.length === 0) return []
+    return getUpcomingEvents(events, 3)
+  }, [events])
 
   // Redirect to login if not authenticated
   if (status === "unauthenticated") {
@@ -206,10 +208,10 @@ export default function DashboardPage() {
           </div>
         )}
         
-        {upcomingEvents.length > 0 && eventsData && eventsData.items.length > 3 && (
+        {upcomingEvents.length > 0 && events.length > 3 && (
           <div className="mt-4 text-center">
             <Link href="/dashboard/events" className="text-sm text-primary hover:underline">
-              View all {eventsData.items.length} events →
+              View all {events.length} events →
             </Link>
           </div>
         )}

@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import type { NormalizedMember } from '@/lib/schemas'
+import type { NormalizedMember, Event } from '@/lib/schemas'
 
 /**
  * User Role Types
@@ -113,7 +113,31 @@ interface QueueState {
 }
 
 /**
- * Members Loading State
+ * Generic Data Loading State
+ * Used for tracking loading progress of any data source
+ */
+export type DataLoadingState = 
+  | 'idle' 
+  | 'loading' 
+  | 'complete' 
+  | 'error'
+
+/**
+ * Data Source Progress
+ * Tracks loading progress for a single data source
+ */
+export interface DataSourceProgress {
+  id: string           // Unique identifier (e.g., 'members', 'events')
+  label: string        // Display label (e.g., 'Members', 'Events')
+  state: DataLoadingState
+  total: number
+  completed: number
+  phase: string        // Current phase description
+  error?: string       // Error message if state is 'error'
+}
+
+/**
+ * Members Loading State (legacy, kept for compatibility)
  */
 export type MembersLoadingState = 
   | 'idle' 
@@ -124,7 +148,7 @@ export type MembersLoadingState =
   | 'error'
 
 /**
- * Members Progress
+ * Members Progress (legacy, kept for compatibility)
  */
 export interface MembersProgress {
   total: number
@@ -163,9 +187,52 @@ interface MembersState {
 }
 
 /**
+ * Events State
+ * Stores events data with eager loading
+ */
+interface EventsState {
+  // Events data
+  events: Event[]
+  
+  // Loading state
+  eventsLoadingState: DataLoadingState
+  
+  // Progress tracking
+  eventsProgress: { total: number; completed: number; phase: string }
+  
+  // Last updated timestamp
+  eventsLastUpdated: Date | null
+  
+  // Section ID(s) for which events are loaded
+  eventsSectionIds: string[] | null
+  
+  // Actions
+  setEvents: (events: Event[]) => void
+  setEventsLoadingState: (state: DataLoadingState) => void
+  setEventsProgress: (progress: { total: number; completed: number; phase: string }) => void
+  setEventsLastUpdated: (date: Date | null) => void
+  setEventsSectionIds: (sectionIds: string[] | null) => void
+  clearEvents: () => void
+}
+
+/**
+ * Unified Data Loading State
+ * Tracks all data sources for the global progress banner
+ */
+interface DataLoadingTrackerState {
+  // Map of data source ID to progress
+  dataSourceProgress: Record<string, DataSourceProgress>
+  
+  // Actions
+  updateDataSourceProgress: (id: string, progress: Partial<DataSourceProgress>) => void
+  clearDataSourceProgress: (id: string) => void
+  clearAllDataSourceProgress: () => void
+}
+
+/**
  * Combined Store State
  */
-type StoreState = SessionState & ConfigState & ThemeState & QueueState & MembersState
+type StoreState = SessionState & ConfigState & ThemeState & QueueState & MembersState & EventsState & DataLoadingTrackerState
 
 /**
  * Main Application Store
@@ -286,6 +353,53 @@ export const useStore = create<StoreState>()(
         membersLastUpdated: null,
         membersSectionId: null,
       }),
+
+      // Events State (not persisted)
+      events: [],
+      eventsLoadingState: 'idle',
+      eventsProgress: { total: 0, completed: 0, phase: '' },
+      eventsLastUpdated: null,
+      eventsSectionIds: null,
+      
+      setEvents: (events) => set({ events }),
+      setEventsLoadingState: (eventsLoadingState) => set({ eventsLoadingState }),
+      setEventsProgress: (eventsProgress) => set({ eventsProgress }),
+      setEventsLastUpdated: (eventsLastUpdated) => set({ eventsLastUpdated }),
+      setEventsSectionIds: (eventsSectionIds) => set({ eventsSectionIds }),
+      clearEvents: () => set({
+        events: [],
+        eventsLoadingState: 'idle',
+        eventsProgress: { total: 0, completed: 0, phase: '' },
+        eventsLastUpdated: null,
+        eventsSectionIds: null,
+      }),
+
+      // Unified Data Loading Tracker
+      dataSourceProgress: {},
+      
+      updateDataSourceProgress: (id, progress) => set((state) => ({
+        dataSourceProgress: {
+          ...state.dataSourceProgress,
+          [id]: {
+            ...state.dataSourceProgress[id],
+            id,
+            label: progress.label ?? state.dataSourceProgress[id]?.label ?? id,
+            state: progress.state ?? state.dataSourceProgress[id]?.state ?? 'idle',
+            total: progress.total ?? state.dataSourceProgress[id]?.total ?? 0,
+            completed: progress.completed ?? state.dataSourceProgress[id]?.completed ?? 0,
+            phase: progress.phase ?? state.dataSourceProgress[id]?.phase ?? '',
+            error: progress.error,
+          },
+        },
+      })),
+      
+      clearDataSourceProgress: (id) => set((state) => {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { [id]: _removed, ...rest } = state.dataSourceProgress
+        return { dataSourceProgress: rest }
+      }),
+      
+      clearAllDataSourceProgress: () => set({ dataSourceProgress: {} }),
     }),
     {
       name: 'seee-storage',
@@ -318,6 +432,16 @@ export const useMembers = () => useStore((state) => state.members)
 export const useMembersLoadingState = () => useStore((state) => state.membersLoadingState)
 export const useMembersProgress = () => useStore((state) => state.membersProgress)
 export const useMembersLastUpdated = () => useStore((state) => state.membersLastUpdated)
+
+// Events selectors
+export const useEventsData = () => useStore((state) => state.events)
+export const useEventsLoadingState = () => useStore((state) => state.eventsLoadingState)
+export const useEventsProgress = () => useStore((state) => state.eventsProgress)
+export const useEventsLastUpdated = () => useStore((state) => state.eventsLastUpdated)
+
+// Unified data loading selectors
+export const useDataSourceProgress = () => useStore((state) => state.dataSourceProgress)
+export const useDataSourceProgressById = (id: string) => useStore((state) => state.dataSourceProgress[id])
 
 /**
  * Access Control Selectors (Phase 2.8.1)

@@ -62,6 +62,7 @@ export function useMembersHydration() {
   const setMembersLastUpdated = useStore((s) => s.setMembersLastUpdated)
   const setMembersSectionId = useStore((s) => s.setMembersSectionId)
   const clearMembers = useStore((s) => s.clearMembers)
+  const updateDataSourceProgress = useStore((s) => s.updateDataSourceProgress)
   
   // Hydration state ref (to track across renders without causing re-renders)
   const hydrationRef = useRef<HydrationState>({
@@ -114,6 +115,14 @@ export function useMembersHydration() {
 
     // Guard: check if cache is fresh
     if (isCacheFresh() && members.length > 0) {
+      // Still update the data source progress to show complete
+      updateDataSourceProgress('members', {
+        label: 'Members',
+        state: 'complete',
+        total: members.length,
+        completed: members.length,
+        phase: `${members.length} members loaded`,
+      })
       return
     }
 
@@ -135,6 +144,13 @@ export function useMembersHydration() {
       // Phase 1: Fetch member summaries
       setMembersLoadingState('loading-summary')
       setMembersProgress({ total: 0, completed: 0, phase: 'Loading members...' })
+      updateDataSourceProgress('members', {
+        label: 'Members',
+        state: 'loading',
+        total: 0,
+        completed: 0,
+        phase: 'Loading member list...',
+      })
 
       const membersList = await getMembers({
         sectionid: sectionId,
@@ -183,6 +199,10 @@ export function useMembersHydration() {
 
         completed++
         setMembersProgress({ total, completed, phase: 'Loading member info...' })
+        updateDataSourceProgress('members', {
+          completed,
+          phase: `Loading member info (${completed}/${total})...`,
+        })
       }
 
       // Phase 3: Fetch custom data (contacts, medical, consents) for each member
@@ -223,6 +243,10 @@ export function useMembersHydration() {
 
         completed++
         setMembersProgress({ total, completed, phase: 'Loading member details...' })
+        updateDataSourceProgress('members', {
+          completed,
+          phase: `Loading member details (${completed}/${total})...`,
+        })
       }
 
       // Mark hydration complete
@@ -230,6 +254,12 @@ export function useMembersHydration() {
         setMembersLoadingState('complete')
         setMembersLastUpdated(new Date())
         setMembersProgress({ total, completed: total, phase: 'Complete' })
+        updateDataSourceProgress('members', {
+          state: 'complete',
+          total,
+          completed: total,
+          phase: `${total} members loaded`,
+        })
       }
 
     } catch (error) {
@@ -237,6 +267,11 @@ export function useMembersHydration() {
       if (!abortController.signal.aborted) {
         setMembersLoadingState('error')
         setMembersProgress({ total: 0, completed: 0, phase: 'Error loading members' })
+        updateDataSourceProgress('members', {
+          state: 'error',
+          phase: 'Error loading members',
+          error: error instanceof Error ? error.message : 'Unknown error',
+        })
       }
     } finally {
       hydrationRef.current.isHydrating = false
@@ -253,6 +288,7 @@ export function useMembersHydration() {
     setMembersProgress,
     setMembersLastUpdated,
     setMembersSectionId,
+    updateDataSourceProgress,
   ])
 
   /**

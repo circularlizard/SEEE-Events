@@ -1,27 +1,23 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
-import { useEvents } from '@/hooks/useEvents'
 import { EventsListSkeleton } from '@/components/domain/EventsListSkeleton'
 import { EventCard } from '@/components/domain/EventCard'
 import { EventsTable } from '@/components/domain/EventsTable'
 import { AlertCircle, CalendarDays } from 'lucide-react'
 import type { Event } from '@/lib/schemas'
-import { getFilteredEvents, useStore } from '@/store/use-store'
+import { getFilteredEvents, useStore, useEventsData, useEventsLoadingState } from '@/store/use-store'
 
 /**
  * Events List Page
- * Displays all events for the selected section with progressive hydration
+ * Displays all events for the selected section using eagerly hydrated data from the store
  */
 export default function EventsPage() {
-  const { data, isLoading, error } = useEvents()
-  const enqueueItems = useStore((s) => s.enqueueItems)
-  
-  // Track which event IDs we've already enqueued to avoid re-enqueueing on every render
-  const enqueuedRef = useRef<Set<number>>(new Set())
+  // Use hydrated events data from the store (loaded eagerly by useEventsHydration in ClientShell)
+  const events = useEventsData()
+  const loadingState = useEventsLoadingState()
+  const eventsProgress = useStore((s) => s.eventsProgress)
 
-  // Compute visible events (safe to do even when loading/error - will be empty array)
-  const events = data?.items || []
+  // Compute visible events with access control filtering
   const filteredIds = new Set(
     getFilteredEvents(
       events.map((e) => ({
@@ -32,19 +28,8 @@ export default function EventsPage() {
   )
   const visibleEvents = events.filter((e) => filteredIds.has(String(e.eventid)))
 
-  // Enqueue summaries for visible events (in useEffect to avoid setState during render)
-  useEffect(() => {
-    if (visibleEvents.length === 0) return
-    const ids = visibleEvents.map((e) => Number(e.eventid))
-    const newIds = ids.filter((id) => !enqueuedRef.current.has(id))
-    if (newIds.length > 0) {
-      enqueueItems(newIds)
-      newIds.forEach((id) => enqueuedRef.current.add(id))
-    }
-  }, [visibleEvents, enqueueItems])
-
-  // Early returns AFTER all hooks
-  if (isLoading) {
+  // Show skeleton while loading
+  if (loadingState === 'loading' || (loadingState === 'idle' && events.length === 0)) {
     return (
       <div className="p-4 md:p-6">
         <div className="mb-6 rounded-lg bg-primary text-primary-foreground px-4 py-3 flex items-center justify-between gap-4">
@@ -53,7 +38,9 @@ export default function EventsPage() {
               <CalendarDays className="h-6 w-6" aria-hidden />
               <span>Events</span>
             </h1>
-            <p className="mt-1 text-sm md:text-base opacity-90">Loading events...</p>
+            <p className="mt-1 text-sm md:text-base opacity-90">
+              {eventsProgress.phase || 'Loading events...'}
+            </p>
           </div>
         </div>
         <EventsListSkeleton />
@@ -61,7 +48,7 @@ export default function EventsPage() {
     )
   }
 
-  if (error) {
+  if (loadingState === 'error') {
     return (
       <div className="p-4 md:p-6">
         <div className="mb-6 rounded-lg bg-primary text-primary-foreground px-4 py-3 flex items-center justify-between gap-4">
@@ -76,7 +63,7 @@ export default function EventsPage() {
           <AlertCircle className="h-5 w-5" />
           <div>
             <p className="font-semibold">Failed to load events</p>
-            <p className="text-sm">{error instanceof Error ? error.message : 'An error occurred'}</p>
+            <p className="text-sm">{eventsProgress.phase || 'An error occurred'}</p>
           </div>
         </div>
       </div>

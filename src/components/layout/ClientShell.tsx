@@ -1,25 +1,20 @@
 "use client";
 import { useSession } from "next-auth/react";
 import { usePathname } from "next/navigation";
+import { useEffect } from "react";
 import Header from "./Header";
 import Sidebar from "./Sidebar";
-import SummaryQueueBanner from "./SummaryQueueBanner";
-import { MembersHydrationBanner } from "./MembersHydrationBanner";
-import { useEvents } from "@/hooks/useEvents";
-import { useEffect, useRef } from "react";
-import { useQueueProcessor } from "@/hooks/useQueueProcessor";
+import { DataLoadingBanner } from "./DataLoadingBanner";
 import { useSessionTimeout } from "@/hooks/useSessionTimeout";
 import { useMembersHydration } from "@/hooks/useMembersHydration";
-import { useStore, type Section } from "@/store/use-store";
-import type { Event } from "@/lib/schemas";
+import { useEventsHydration } from "@/hooks/useEventsHydration";
+import { useStore } from "@/store/use-store";
 
 export default function ClientShell({ children }: { children: React.ReactNode }) {
   const { status } = useSession();
   const pathname = usePathname();
   const currentSection = useStore((s) => s.currentSection);
   const selectedSections = useStore((s) => s.selectedSections);
-  const enqueueItems = useStore((s) => s.enqueueItems);
-  const { data, isFetched } = useEvents();
   
   // Global inactivity timeout for authenticated users
   useSessionTimeout();
@@ -27,59 +22,36 @@ export default function ClientShell({ children }: { children: React.ReactNode })
   // Global member data hydration for admin users
   const membersHydration = useMembersHydration();
   
+  // Global events data hydration (eager loading on section select)
+  const eventsHydration = useEventsHydration();
+  
+  // Debug logging in development
   useEffect(() => {
-    if (process.env.NODE_ENV !== 'production' && membersHydration.isAdmin) {
-      console.log('[ClientShell] Members hydration state:', {
-        loadingState: membersHydration.loadingState,
-        memberCount: membersHydration.members.length,
-        progress: membersHydration.progress,
+    if (process.env.NODE_ENV !== 'production') {
+      if (membersHydration.isAdmin) {
+        console.log('[ClientShell] Members hydration:', {
+          state: membersHydration.loadingState,
+          count: membersHydration.members.length,
+        });
+      }
+      console.log('[ClientShell] Events hydration:', {
+        state: eventsHydration.loadingState,
+        count: eventsHydration.events.length,
       });
     }
-  }, [membersHydration.loadingState, membersHydration.members.length, membersHydration.progress, membersHydration.isAdmin]);
+  }, [
+    membersHydration.loadingState,
+    membersHydration.members.length,
+    membersHydration.isAdmin,
+    eventsHydration.loadingState,
+    eventsHydration.events.length,
+  ]);
   
   // Hide sidebar on section picker page for focused UX
   const isSectionPickerPage = pathname === '/dashboard/section-picker';
   
-  // Mount the global queue processor once
-  const processorState = useQueueProcessor({ concurrency: 2, delayMs: 800, retryBackoffMs: 5000 });
-  
-  useEffect(() => {
-    if (process.env.NODE_ENV !== 'production') {
-      console.log('[ClientShell] Queue processor mounted. State:', processorState);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- we intentionally track individual properties
-  }, [processorState.queueLength, processorState.running, processorState.timerActive]);
-  
-  const enqueuedRef = useRef<{ sectionKey?: string; ids?: number[]; done: boolean }>({ done: false });
-  
-  useEffect(() => {
-    // Enqueue when events are available
-    const hasSection = !!currentSection?.sectionId || (selectedSections && selectedSections.length > 0);
-    if (!hasSection) return;
-    
-    const sectionKey = currentSection?.sectionId || (selectedSections?.map((s: Section) => s.sectionId).sort().join(',')) || 'none';
-    const items = data?.items ?? [];
-    
-    if (items.length) {
-      const ids = Array.from(new Set(items.map((e: Event) => Number(e.eventid))));
-      
-      if (process.env.NODE_ENV !== 'production') {
-        const sectionCtx = currentSection?.sectionName || (selectedSections?.length ? `${selectedSections.length} sections` : 'unknown section');
-        console.debug('[ClientShell] Preparing enqueue. Events:', items.length, 'Unique IDs:', ids.length, 'Section(s):', sectionCtx);
-        console.debug('[ClientShell] Enqueue event summary IDs:', ids);
-      }
-      
-      // If section or ids changed, allow re-enqueue
-      const changedSection = enqueuedRef.current.sectionKey !== sectionKey;
-      const changedIds = JSON.stringify(enqueuedRef.current.ids || []) !== JSON.stringify(ids);
-      
-      if (changedSection || changedIds || !enqueuedRef.current.done) {
-        enqueueItems(ids);
-        enqueuedRef.current = { sectionKey, ids, done: true };
-      }
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- sectionName is only for logging, not logic
-  }, [currentSection?.sectionId, selectedSections, data, isFetched, enqueueItems]);
+  // Determine if we should show the banner (has section selected)
+  const hasSection = !!currentSection?.sectionId || (selectedSections && selectedSections.length > 0);
   // Only render the full application chrome when authenticated.
   // Hide during loading state to prevent flash of navigation on login page
   if (status === "loading" || status === "unauthenticated") {
@@ -88,10 +60,7 @@ export default function ClientShell({ children }: { children: React.ReactNode })
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
-      {membersHydration.isAdmin && (
-        <MembersHydrationBanner />
-      )}
-      {!isSectionPickerPage && <SummaryQueueBanner />}
+      {!isSectionPickerPage && hasSection && <DataLoadingBanner />}
       <div className="flex flex-1">
         {!isSectionPickerPage && <Sidebar />}
         <main className="flex-1">{children}</main>
