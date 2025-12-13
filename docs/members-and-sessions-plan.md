@@ -759,3 +759,83 @@ Section 5 is **complete**. Proceed to Section 6 (Member data issues view).
   - Viewing member data issues and verifying issue counts.
   - Navigating via sidebar between Dashboard, Members, and Member data issues.
   - Login → section selection → dashboard without flash.
+
+---
+
+## 10. Unified Data Loading System
+
+### 10.1. Implementation Status (Completed)
+
+- **Unified Loading Banner**
+  - Created `DataLoadingBanner` component to replace separate loading indicators
+  - Banner shows combined progress for all data sources (members, events, etc.)
+  - Displays "All data loaded" when complete
+  - Handles error states with clear messaging
+  - Shows source summary (e.g., "Members: 42, Events: 15") on desktop
+
+- **Eager Events Loading**
+  - Implemented `useEventsHydration` hook for eager loading of events data
+  - Events now load immediately when a section is selected
+  - Added proper error handling and retry logic
+  - Integrated with the unified loading state system
+
+- **State Management**
+  - Extended Zustand store with `dataSourceProgress` state
+  - Added actions for updating and clearing progress
+  - Implemented selectors for derived state (loading, complete, error states)
+
+- **Code Cleanup**
+  - Removed deprecated components: `MembersHydrationBanner` and `SummaryQueueBanner`
+  - Updated all pages to use the new unified loading system
+  - Improved TypeScript types for better type safety
+
+### 10.2. Testing
+
+- **Unit Tests**
+  - Added comprehensive tests for `DataLoadingBanner` component
+  - Added tests for data loading tracker store actions
+  - All existing tests passing
+
+- **Manual Testing**
+  - Verified loading states for both members and events
+  - Tested error handling and recovery
+  - Confirmed proper behavior when switching sections
+
+### 10.3. Next Steps
+
+1. **Performance Optimization**
+   - Consider implementing request deduplication for events data
+   - Add caching for events data to avoid unnecessary refetches
+   - Implement proper cleanup of stale data when switching sections
+
+2. **Enhanced Error Recovery**
+   - Add retry buttons for failed data loads
+   - Implement exponential backoff for retries
+   - Add more detailed error reporting
+
+3. **Progressive Enhancement**
+   - Add skeleton loading states for better perceived performance
+   - Implement optimistic UI updates where appropriate
+   - Add loading priorities for critical vs non-critical data
+
+4. **Documentation**
+   - Update API documentation for the new data loading system
+   - Add developer documentation for adding new data sources
+   - Create user documentation for the new loading indicators
+
+5. **Analytics**
+   - Add performance metrics for data loading times
+   - Track error rates and common failure modes
+   - Monitor user experience with the new loading patterns
+
+### 10.4. Known Issues
+
+- Occasional flash of loading state when navigating between pages
+- Some edge cases in error recovery could be handled more gracefully
+- Mobile layout may need additional refinement for the new banner
+
+### 10.5. Future Considerations
+
+- Implement server-side rendering for initial data loading
+- Add support for background refresh of stale data
+- Consider implementing a proper data fetching library like React Query or SWR
