@@ -91,6 +91,8 @@ benefits from Section 2 being in place.
 
 ### 2.6. Single-section selection (NEW)
 
+//TODO - Is this section done? Seems to be - test it.
+
 **Rationale**: To avoid the complexity of merging potentially conflicting data structures from different sections (especially `getCustomData` which can have section-specific custom fields), the section picker should be changed to allow **only a single section** to be selected at a time.
 
 **Changes required**:
@@ -171,6 +173,8 @@ benefits from Section 2 being in place.
     - Redirect to login when session has expired after inactivity.
     - No checks performed when user is unauthenticated.
 - Section 3 is **complete**.
+
+//TODO - when the server restarts, all sessions should be cleared. Low priority
 
 ---
 
@@ -439,7 +443,7 @@ Add to Zustand store (`src/store/use-store.ts`):
 
 ### 4.16. Current status
 
-**Implemented** (December 2025):
+**Implemented** (13 December 2025):
 
 1. **Zod schemas** (`src/lib/schemas.ts`):
    - `IndividualDataSchema` / `IndividualResponseSchema` - for `getIndividual` API response (DOB, membership history).
@@ -563,7 +567,7 @@ Section 4 core implementation is **complete**. Proceed to Section 5 (Members pag
 
 ### 5.6. Current status
 
-**Implemented** (December 2025):
+**Implemented** (13 December 2025):
 
 1. **Route** (`src/app/dashboard/members/page.tsx`):
    - Server component with admin role check (same pattern as `/dashboard/admin`).
@@ -827,6 +831,7 @@ Section 5 is **complete**. Proceed to Section 6 (Member data issues view).
    - Add performance metrics for data loading times
    - Track error rates and common failure modes
    - Monitor user experience with the new loading patterns
+   - View transaction log in the browser
 
 ### 10.4. Known Issues
 
@@ -838,4 +843,4 @@ Section 5 is **complete**. Proceed to Section 6 (Member data issues view).
 
 - Implement server-side rendering for initial data loading
 - Add support for background refresh of stale data
-- Consider implementing a proper data fetching library like React Query or SWR
+- Consider implementing a proper data fetching library like React Query or SWR --> Need to analyse this further and expand on what it would do for us.
