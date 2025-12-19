@@ -64,6 +64,11 @@ Before final implementation, the following strategic decisions must be resolved:
   * The interface must provide a "Unit Filter" dropdown.  
   * **Logic:** Filter participants based on their "Patrol" field in OSM, which currently stores the Unit/ESU name (e.g., "Borestane ESU", "Tweed Glen ESU")
 
+**Routes (canonical):**
+
+* Event dashboard: `/dashboard/events`
+* Event attendance: `/dashboard/events/attendance`
+
 ### **3.3 Expedition Logistics View**
 
 ### For each event, the dashboard must display logistical details.
@@ -150,6 +155,11 @@ To support offline analysis and physical record-keeping during expeditions:
     * Missing doctor information.
     * Emergency contact duplicates a primary contact.
 * **Security:** Member contact/medical data is sensitive and must not be persisted to localStorage.
+
+**Routes (canonical, admin only):**
+
+* Members list: `/dashboard/members`
+* Member data issues: `/dashboard/members/issues`
 
 ## **4\. Data Management Strategy**
 
