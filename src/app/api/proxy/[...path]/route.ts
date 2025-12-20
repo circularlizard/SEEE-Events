@@ -104,6 +104,28 @@ function findMockData(path: string, queryParams: URLSearchParams): unknown | nul
   
   // Get action param if present (most OSM endpoints use this)
   const action = queryParams.get('action')
+
+  const wrapMembersListIfNeeded = (data: unknown): unknown => {
+    if (action !== 'getListOfMembers') return data
+    if (normalizedPath !== '/ext/members/contact') return data
+
+    // Keep existing real-shape mocks as-is
+    if (data && typeof data === 'object' && !Array.isArray(data)) {
+      const obj = data as Record<string, unknown>
+      if (Array.isArray(obj.items) && typeof obj.identifier === 'string') return data
+    }
+
+    // Legacy fixture shape: array of members
+    if (Array.isArray(data)) {
+      return {
+        identifier: 'scoutid',
+        photos: true,
+        items: data,
+      }
+    }
+
+    return data
+  }
   
   // Try to find best match:
   // 1. Match by path and action
@@ -129,7 +151,7 @@ function findMockData(path: string, queryParams: URLSearchParams): unknown | nul
     const mockData = mockDataRegistry[entry.mock_data_file]
     if (mockData) {
       console.log(`[Proxy] Returning mock data: ${entry.mock_data_file} for ${normalizedPath}${action ? ` (action=${action})` : ''}`)
-      return mockData
+      return wrapMembersListIfNeeded(mockData)
     }
   }
 
@@ -149,7 +171,7 @@ function findMockData(path: string, queryParams: URLSearchParams): unknown | nul
     const mockData = mockDataRegistry[endpoint.exampleResponse]
     if (mockData) {
       console.log(`[Proxy] Fallback mock via API_ENDPOINTS: ${endpoint.exampleResponse} for ${normalizedPath}${action ? ` (action=${action})` : ''}`)
-      return mockData
+      return wrapMembersListIfNeeded(mockData)
     }
   }
   

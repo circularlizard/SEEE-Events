@@ -96,19 +96,11 @@ export type OAuthResource = z.infer<typeof OAuthResourceSchema>
 /**
  * Scout/Member Schema (Tier 1)
  * Used for getmembers.txt - Must have valid IDs and names
- * 
- * Note: The real OSM API only returns firstname/lastname (camelCase).
- * The snake_case variants (first_name, last_name, full_name) are only
- * present in some API versions or mock data. We make them optional and
- * derive them via transform if missing.
  */
 export const MemberSchema = z.object({
   scoutid: z.number(),
   firstname: z.string().min(1),
   lastname: z.string().min(1),
-  first_name: z.string().optional(),
-  last_name: z.string().optional(),
-  full_name: z.string().optional(),
   photo_guid: z.string().uuid().nullable().catch(null),
   patrolid: z.number(),
   patrol: z.string(),
@@ -117,16 +109,16 @@ export const MemberSchema = z.object({
   age: z.string(),
   patrol_role_level_label: z.string(),
   active: z.boolean(),
-}).transform((member) => ({
-  ...member,
-  first_name: member.first_name ?? member.firstname,
-  last_name: member.last_name ?? member.lastname,
-  full_name: member.full_name ?? `${member.firstname} ${member.lastname}`,
-}))
+})
 
-export const MembersListSchema = z.array(MemberSchema)
+export const MembersListResponseSchema = z.object({
+  identifier: z.string().catch('scoutid'),
+  photos: z.boolean().optional(),
+  items: z.array(MemberSchema),
+})
 
 export type Member = z.infer<typeof MemberSchema>
+export type MembersListResponse = z.infer<typeof MembersListResponseSchema>
 
 /**
  * Event Schema (Tier 1)

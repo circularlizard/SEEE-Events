@@ -90,8 +90,19 @@ function generateHandlers() {
         // The actual query params are validated by the proxy layer.
         // This approach follows MSW v2+ best practices.
         
+        const normalizedMockData = (() => {
+          // For getListOfMembers, return the same wrapper shape as the real OSM API.
+          // Our fixture historically was a plain array, so wrap it at runtime.
+          if (entry.path === '/ext/members/contact/' && entry.action === 'getListOfMembers') {
+            if (Array.isArray(mockData)) {
+              return { identifier: 'scoutid', photos: true, items: mockData }
+            }
+          }
+          return mockData
+        })()
+
         // Simulate API rate limit headers
-        return HttpResponse.json(mockData as Record<string, unknown>, {
+        return HttpResponse.json(normalizedMockData as Record<string, unknown>, {
           headers: {
             'X-RateLimit-Limit': '1000',
             'X-RateLimit-Remaining': '950',

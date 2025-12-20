@@ -6,7 +6,7 @@
  */
 
 import {
-  MembersListSchema,
+  MembersListResponseSchema,
   EventsResponseSchema,
   FlexiDataResponseSchema,
   FlexiStructureSchema,
@@ -18,6 +18,7 @@ import {
   parseStrict,
   parsePermissive,
   type Member,
+  type MembersListResponse,
   type EventsResponse,
   type FlexiDataResponse,
   type FlexiStructure,
@@ -111,29 +112,53 @@ export async function getMembers(params: {
 
   const raw = (await response.json()) as unknown
 
-  const normalized = (() => {
-    if (Array.isArray(raw)) return raw
-    if (raw && typeof raw === 'object') {
+  const normalized: unknown = (() => {
+    if (raw && typeof raw === 'object' && !Array.isArray(raw)) {
       const obj = raw as Record<string, unknown>
-      const candidates: Array<unknown> = [obj.items, obj.data, obj.members, obj.results]
-      const firstArray = candidates.find(Array.isArray)
-      if (firstArray && Array.isArray(firstArray)) return firstArray
+      // Real OSM shape: { identifier, photos, items }
+      if (Array.isArray(obj.items)) return raw
 
-      // Some OSM endpoints return an object keyed by scoutid (or similar), where
-      // the values are the member records. Convert to an array.
+      // Other common wrapper keys
+      const candidates: Array<unknown> = [obj.data, obj.members, obj.results]
+      const firstArray = candidates.find(Array.isArray)
+      if (firstArray && Array.isArray(firstArray)) {
+        const wrapped: MembersListResponse = {
+          identifier: typeof obj.identifier === 'string' ? obj.identifier : 'scoutid',
+          photos: typeof obj.photos === 'boolean' ? obj.photos : undefined,
+          items: firstArray as Member[],
+        }
+        return wrapped
+      }
+
+      // Keyed object: { "123": { scoutid, firstname, lastname, ... }, ... }
       const values = Object.values(obj)
       const looksLikeMemberRecord = (v: unknown): v is Record<string, unknown> => {
         if (!v || typeof v !== 'object') return false
         const rec = v as Record<string, unknown>
-        return 'scoutid' in rec && ('firstname' in rec || 'first_name' in rec) && ('lastname' in rec || 'last_name' in rec)
+        return 'scoutid' in rec && 'firstname' in rec && 'lastname' in rec
       }
       const memberValues = values.filter(looksLikeMemberRecord)
-      if (memberValues.length > 0) return memberValues
+      if (memberValues.length > 0) {
+        const wrapped: MembersListResponse = {
+          identifier: 'scoutid',
+          photos: undefined,
+          items: memberValues as Member[],
+        }
+        return wrapped
+      }
     }
+
+    // Legacy mock shape: raw array
+    if (Array.isArray(raw)) {
+      const wrapped: MembersListResponse = { identifier: 'scoutid', photos: undefined, items: raw as Member[] }
+      return wrapped
+    }
+
     return raw
   })()
 
-  return parseStrict(MembersListSchema, normalized, 'Members')
+  const parsed = parseStrict(MembersListResponseSchema, normalized, 'Members')
+  return parsed.items
 }
 
 /**

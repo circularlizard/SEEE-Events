@@ -42,14 +42,13 @@ describe('getStartupData API', () => {
 
   it('parses members list when upstream response is an object wrapper', async () => {
     const wrappedMembers = {
+      identifier: 'scoutid',
+      photos: true,
       items: [
         {
           scoutid: 12345,
           firstname: 'John',
           lastname: 'Doe',
-          first_name: 'John',
-          last_name: 'Doe',
-          full_name: 'John Doe',
           photo_guid: null,
           patrolid: 1,
           patrol: 'Eagles',
@@ -85,9 +84,6 @@ describe('getStartupData API', () => {
         scoutid: 12345,
         firstname: 'John',
         lastname: 'Doe',
-        first_name: 'John',
-        last_name: 'Doe',
-        full_name: 'John Doe',
         photo_guid: null,
         patrolid: 1,
         patrol: 'Eagles',

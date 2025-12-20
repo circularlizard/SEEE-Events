@@ -183,7 +183,7 @@ export function createNormalizedMemberFromSummary(member: Member): NormalizedMem
     id: member.scoutid.toString(),
     firstName: member.firstname,
     lastName: member.lastname,
-    fullName: member.full_name,
+    fullName: `${member.firstname} ${member.lastname}`,
     photoGuid: member.photo_guid,
     sectionId: member.sectionid,
     patrolId: member.patrolid,
