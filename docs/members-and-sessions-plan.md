@@ -45,10 +45,10 @@ benefits from Section 2 being in place.
   - Section 4 (members hydration)
   - Section 5 (members page)
   - Section 6 (member data issues)
+  - Section 7 (navigation updates)
   - Section 8 (TanStack React Query migration)
   - Section 11 (unified data loading system)
 - **Next**:
-  - Section 7 (navigation updates)
   - Section 9 (section selector hardening)
 
 ### 1.3. Detailed implementation checklist conventions
@@ -668,11 +668,11 @@ Section 5 is **complete**. Proceed to Section 6 (Member data issues view).
 
 ### 7.0. Detailed implementation checklist
 
-- [ ] Ensure sidebar shows admin-only Members links (Members, Member data issues).
-- [ ] Move or alias attendance route to `/dashboard/events/attendance`.
-- [ ] Update any internal links/route helpers to point to the new attendance route.
-- [ ] Verify non-admin users do not see Members-related links.
-- [ ] Add/adjust tests for routing + sidebar visibility.
+- [x] Ensure sidebar shows admin-only Members links (Members, Member data issues).
+- [x] Move or alias attendance route to `/dashboard/events/attendance`.
+- [x] Update any internal links/route helpers to point to the new attendance route.
+- [x] Verify non-admin users do not see Members-related links.
+- [x] Add/adjust tests for routing + sidebar visibility.
 
 ### 7.1. Sidebar Members section (admin-only)
 
