@@ -46,6 +46,16 @@ export default function StartupInitializer() {
   const hasInitialized = useRef(false)
 
   useEffect(() => {
+    if (!pathname?.startsWith('/dashboard')) return
+
+    const sessionError = (session as { error?: string } | null)?.error
+    if (status === 'unauthenticated' || sessionError === 'SessionExpired') {
+      hasInitialized.current = false
+      router.replace('/')
+    }
+  }, [pathname, router, session, status])
+
+  useEffect(() => {
     // Safety checks: only fetch once when authenticated
     if (status !== 'authenticated' || !session?.user || hasInitialized.current) {
       return

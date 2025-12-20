@@ -38,6 +38,13 @@ async function bumpSessionVersionOnStart() {
   try {
     const newVersion = await client.incr(sessionVersionKey)
     console.log(`[Init] Session version incremented to ${newVersion}`)
+
+    // Rotate the effective NextAuth secret on each version bump.
+    // This makes existing JWT session cookies fail verification after restart,
+    // which forces a fresh login (middleware/getToken will return null).
+    if (process.env.NEXTAUTH_SECRET) {
+      process.env.NEXTAUTH_SECRET = `${process.env.NEXTAUTH_SECRET}:${newVersion}`
+    }
   } finally {
     client.disconnect()
   }
