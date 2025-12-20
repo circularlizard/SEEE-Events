@@ -7,6 +7,7 @@ import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { SectionSelector } from "@/components/SectionSelector";
 import { useStore } from "@/store/use-store";
 import { useEvents } from "@/hooks/useEvents";
 import { CalendarDays, MapPin, Users, CheckCircle2, XCircle, Clock } from "lucide-react";
@@ -140,19 +141,11 @@ export default function DashboardPage() {
     );
   }
 
-  // If the user is authenticated, has multiple available sections, but no
-  // current/selected section yet, StartupInitializer will shortly redirect
-  // them to the section picker. To avoid flashing the main dashboard before
-  // that redirect occurs, render a minimal loading state here.
-  const needsSectionSelection =
-    availableSections.length > 1 && !currentSection && (!selectedSections || selectedSections.length === 0);
+  // If no section is selected, show the section selector immediately (no flash)
+  const needsSectionSelection = !currentSection && (!selectedSections || selectedSections.length === 0);
 
   if (needsSectionSelection) {
-    return (
-      <div className="flex items-center justify-center min-h-[50vh] p-4">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
-      </div>
-    );
+    return <SectionSelector redirectTo="/dashboard" />;
   }
 
   return (
