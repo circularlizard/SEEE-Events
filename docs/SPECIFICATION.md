@@ -40,13 +40,17 @@ Before final implementation, the following strategic decisions must be resolved:
     * `section:flexirecord:read`
   * **Standard Viewer (Unit/Expedition Leader):** Requires minimal access for viewing events.
     * `section:event:read`
-* **Section Selection:** Upon successful login, if a user has access to multiple OSM sections (e.g., different Units or Regional levels), they must be presented with a choice to select which Section they wish to view.
+* **Section Selection:** The application must operate with a single active section at a time (`currentSection`).
+  - If there is a previously selected section stored in the client session store, the application must load that section immediately and must not show the full section selector.
+  - If there is no previously selected section, the application must show the section selector immediately and must not render the normal dashboard UI before the user selects a section.
+  - Once the user selects a section, that selection is persisted and the application loads data for that section.
 
 **Implementation alignment (Dec 2025)**:
 
 * **Single-section selection:** The application must treat one `currentSection` as active at a time.
 * **Primary control location:** Section selection controls live in the **sidebar** (desktop), with a compact mobile affordance in the header.
-* **No-flash requirement:** Multi-section users without a remembered selection must be routed to the section picker **before** the main dashboard content renders.
+* **No-flash requirement:** If there is no remembered selection, the section selector must render **before** the main dashboard shell renders.
+* **Change section UX:** If a section is already selected, section switching should be done via a compact dropdown control (not a full-screen modal).
 
 ### **3.1.1 Session timeout**
 

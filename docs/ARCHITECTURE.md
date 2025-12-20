@@ -63,8 +63,12 @@ This document defines the technical architecture for the SEEE Expedition Dashboa
     * Administrator: `/api/auth/callback/osm-admin`
     * Standard Viewer: `/api/auth/callback/osm-standard`
   * **Role Persistence:** The selected role is embedded in the user profile during OAuth callback and stored in the JWT token
-* **Section Selection:** Upon successful login and role determination, if a user has access to multiple OSM Sections, a "Section Picker" modal must interrupt the flow.
-* **Component:** A simple Card-based selection UI presented before the Dashboard loads.
+* **Section Selection:** The application uses a single active section (`currentSection`).
+  - If `currentSection` is present (persisted), the dashboard shell renders immediately and data loads for that section.
+  - If `currentSection` is missing, the section selector must render immediately and the normal dashboard shell must not render first (no-flash gating).
+* **Components:**
+  - **Full-screen section selector**: used only when there is no selected section.
+  - **Inline dropdown section switcher**: used when a section is already selected (instead of a full-screen modal).
 * **Persistence:** The selected `section_id` and the determined `userRole` are stored in the **Zustand Session Store** (see 4.2) to persist across reloads.
 
 ### **3.6 Mobile Responsiveness Strategy (Req 6\)**
@@ -137,7 +141,10 @@ graph TD
 
 * **Purpose:** Manages local user preferences and ephemeral configuration.  
 * **Specific Use Cases:**  
-  * **Session Context:** Stores `sectionId` and `userRole` (Admin/Standard). The `userRole` determined during login is critical for driving UI visibility of Admin controls and influencing data sourcing strategies (e.g., whether to fetch member/patrol data directly from OSM or from the server-side cache).
+  * **Session Context:** Stores `currentSection` (selected section) and `userRole` (Admin/Standard).
+    - `currentSection` is persisted (non-sensitive) to support restoring the user’s last selection on refresh.
+    - When `currentSection` is absent, the UI must gate the dashboard shell and render the section selector immediately (no-flash).
+    - The `userRole` determined during login is critical for driving UI visibility of Admin controls and influencing data sourcing strategies.
   * **Column Mapping (Section 3.3):** Stores the user's manual mapping of "Walking Grp" columns for the current session.  
   * **Readiness Filters (Section 3.5):** Remembers that the user wants to see "Patrol A" and "Bronze Events" so the view doesn't reset on refresh.  
 * **Persistence:** Configured to persist to localStorage for **non-sensitive** settings so preferences survive a page reload.

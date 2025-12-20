@@ -758,34 +758,46 @@ This section consolidates the recommendations from `docs/completed-plans/members
 
 ### 9.0. Detailed implementation checklist
 
-- [ ] Ensure single-section users land directly on `/dashboard` with a valid selected section.
-- [ ] Ensure multi-section users without remembered selection go directly to `/dashboard/section-picker`.
-- [ ] Remove residual dashboard flash by gating initial dashboard render appropriately.
-- [ ] Add/adjust tests for post-login redirect + no-flash behavior.
+- [ ] If there is a cached selected section, load data for it and do not show the section selector.
+- [ ] If there is no cached selected section, show the section selector immediately (no dashboard flash), store the selection, then load data.
+- [ ] When a section is already selected, switching section uses an inline dropdown (not the full-screen section picker route).
+- [ ] Add/adjust tests for initial load gating + section switching behavior.
 
 ### 9.1. Requirements
 
-- After login for:
-  - Single-section users: they should land directly on `/dashboard` with a valid section selected.
-  - Multi-section users without a remembered selection: they should go straight to `/dashboard/section-picker` without a flash of the main dashboard.
-- There should be no visible flash of the main dashboard content before the section selector appears.
+- **Initial load behavior**:
+  - If `currentSection` is present (persisted selection), the app renders the normal dashboard shell and begins loading data for that section.
+  - If `currentSection` is not present, the app must render the section selector immediately (no flash of the normal dashboard UI), and only render the dashboard shell after a section is chosen.
+
+- **Selection persistence**:
+  - The selected section is stored in the client session store (persisted) so refreshes return to the same section.
+
+- **Change section behavior**:
+  - If a section is already selected, the user can switch section via a compact dropdown control.
+  - The full section picker UI is reserved for the “no section selected” state (or optional explicit “change section” flow if needed).
+
+- **No-flash requirement**:
+  - When no section is selected, the normal dashboard layout (sidebar/header/content) must not render before the section selector.
 
 ### 9.2. Implementation steps
 
-1. **Login redirect**
-   - Update the login redirect logic to:
-     - For single-section users, redirect to `/dashboard` with a valid section selected.
-     - For multi-section users without a remembered selection, redirect to `/dashboard/section-picker`.
+1. **Gated initial render (no flash)**
+   - Gate rendering of the main dashboard shell on `currentSection`.
+   - If `currentSection` is missing, render the section selector directly (full-screen) and delay rendering the dashboard shell until after selection.
 
-2. **Section picker optimization**
-   - Optimize the section picker to load quickly and minimize the flash of the main dashboard content.
+2. **Persisted section restore**
+   - On initial load, if `currentSection` exists, use it immediately and trigger data loads (events + members) for that section.
+
+3. **Dropdown change section**
+   - Replace the “Change section” link/modal flow with an inline dropdown when a section is already selected.
+   - Switching sections should update `currentSection` and naturally re-key React Query caches.
 
 ### 9.3. Testing
 
 - Section selector hardening:
-  - Single-section users land directly on `/dashboard` with a valid section selected.
-  - Multi-section users without a remembered selection go directly to `/dashboard/section-picker`.
-  - There is no visible flash of the main dashboard content before the section selector appears.
+  - With a cached selection, the section selector is not shown and data loads for the selected section.
+  - With no cached selection, the section selector is shown immediately and there is no flash of the normal dashboard UI.
+  - With a selected section, switching section uses the dropdown control and loads the new section’s data.
 
 ---
 
