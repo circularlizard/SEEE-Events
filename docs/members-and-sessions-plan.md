@@ -49,8 +49,9 @@ benefits from Section 2 being in place.
   - Section 8 (TanStack React Query migration)
   - Section 9 (section selector hardening / no-flash)
   - Section 11 (unified data loading system)
-- **Next**:
   - Section 12 (member issues page UX improvements)
+- **Next**:
+  - All sections complete!
 
 ### 1.3. Detailed implementation checklist conventions
 
@@ -943,11 +944,11 @@ This section consolidates the recommendations from `docs/completed-plans/members
 
 ### 12.0. Detailed implementation checklist
 
-- [ ] Replace card-based layout with collapsible sections
-- [ ] Section headers show summary (count, criticality, color coding)
-- [ ] Expanded sections show sortable member tables
-- [ ] Tables sortable by all columns (default: name)
-- [ ] Update tests for new component structure
+- [x] Replace card-based layout with collapsible sections
+- [x] Section headers show summary (count, criticality, color coding)
+- [x] Expanded sections show sortable member tables
+- [x] Tables sortable by all columns (default: name)
+- [x] Update tests for new component structure
 
 ### 12.1. Requirements
 
