@@ -1,8 +1,10 @@
 'use client'
 
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { ReactNode, useState } from 'react'
+import { QueryClient, QueryClientProvider, useQueryClient } from '@tanstack/react-query'
+import { ReactNode, useState, createContext, useContext, useCallback } from 'react'
+import { signOut } from 'next-auth/react'
 import { APIError } from '@/lib/api'
+import { useStore } from '@/store/use-store'
 
 /**
  * Determines if a failed query should be retried based on error type.
@@ -64,4 +66,34 @@ export function QueryProvider({ children }: { children: ReactNode }) {
   )
 
   return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+}
+
+/**
+ * Hook to perform a complete logout that clears all cached data
+ * 
+ * This ensures:
+ * - React Query cache is cleared (no stale data for next user)
+ * - Zustand session state is cleared
+ * - next-auth session is ended
+ * 
+ * @returns logout function that clears all caches and redirects to home
+ */
+export function useLogout() {
+  const queryClient = useQueryClient()
+  const clearSession = useStore((s) => s.clearSession)
+  const clearAllDataSourceProgress = useStore((s) => s.clearAllDataSourceProgress)
+
+  const logout = useCallback(async () => {
+    // Clear React Query cache first (before redirect)
+    queryClient.clear()
+    
+    // Clear Zustand session state
+    clearSession()
+    clearAllDataSourceProgress()
+    
+    // Sign out via next-auth (this will redirect)
+    await signOut({ callbackUrl: '/' })
+  }, [queryClient, clearSession, clearAllDataSourceProgress])
+
+  return logout
 }

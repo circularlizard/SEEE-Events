@@ -13,7 +13,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { LogOut, TentTree } from "lucide-react";
-import { signOut } from "next-auth/react";
+import { useLogout } from "@/components/QueryProvider";
 
 export default function Header() {
   const currentSection = useStore((s) => s.currentSection);
@@ -23,6 +23,7 @@ export default function Header() {
   const multiNames = selectedSections.length > 0 ? selectedSections.map(s => s.sectionName) : [];
   const { data: session } = useSession();
   const pathname = usePathname();
+  const logout = useLogout();
   
   // Only show "Change Section" button if user has multiple sections
   const showChangeSectionButton = availableSections.length > 1;
@@ -79,7 +80,7 @@ export default function Header() {
               </Avatar>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={() => signOut({ callbackUrl: "/" })}>
+              <DropdownMenuItem onClick={() => logout()}>
                 <LogOut className="mr-2 h-4 w-4" /> Logout
               </DropdownMenuItem>
             </DropdownMenuContent>
