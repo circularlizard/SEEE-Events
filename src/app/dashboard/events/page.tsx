@@ -5,17 +5,16 @@ import { EventCard } from '@/components/domain/EventCard'
 import { EventsTable } from '@/components/domain/EventsTable'
 import { AlertCircle, CalendarDays } from 'lucide-react'
 import type { Event } from '@/lib/schemas'
-import { getFilteredEvents, useStore, useEventsData, useEventsLoadingState } from '@/store/use-store'
+import { getFilteredEvents } from '@/store/use-store'
+import { useEvents } from '@/hooks/useEvents'
 
 /**
  * Events List Page
- * Displays all events for the selected section using eagerly hydrated data from the store
+ * Displays all events for the selected section using React Query as the single source of truth
  */
 export default function EventsPage() {
-  // Use hydrated events data from the store (loaded eagerly by useEventsHydration in ClientShell)
-  const events = useEventsData()
-  const loadingState = useEventsLoadingState()
-  const eventsProgress = useStore((s) => s.eventsProgress)
+  // Use React Query hook - single source of truth for events data
+  const { events, isLoading, isError, error } = useEvents()
 
   // Compute visible events with access control filtering
   const filteredIds = new Set(
@@ -29,7 +28,7 @@ export default function EventsPage() {
   const visibleEvents = events.filter((e) => filteredIds.has(String(e.eventid)))
 
   // Show skeleton while loading
-  if (loadingState === 'loading' || (loadingState === 'idle' && events.length === 0)) {
+  if (isLoading) {
     return (
       <div className="p-4 md:p-6">
         <div className="mb-6 rounded-lg bg-primary text-primary-foreground px-4 py-3 flex items-center justify-between gap-4">
@@ -39,7 +38,7 @@ export default function EventsPage() {
               <span>Events</span>
             </h1>
             <p className="mt-1 text-sm md:text-base opacity-90">
-              {eventsProgress.phase || 'Loading events...'}
+              Loading events...
             </p>
           </div>
         </div>
@@ -48,7 +47,7 @@ export default function EventsPage() {
     )
   }
 
-  if (loadingState === 'error') {
+  if (isError) {
     return (
       <div className="p-4 md:p-6">
         <div className="mb-6 rounded-lg bg-primary text-primary-foreground px-4 py-3 flex items-center justify-between gap-4">
@@ -63,7 +62,7 @@ export default function EventsPage() {
           <AlertCircle className="h-5 w-5" />
           <div>
             <p className="font-semibold">Failed to load events</p>
-            <p className="text-sm">{eventsProgress.phase || 'An error occurred'}</p>
+            <p className="text-sm">{error?.message || 'An error occurred'}</p>
           </div>
         </div>
       </div>

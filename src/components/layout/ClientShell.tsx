@@ -7,7 +7,7 @@ import Sidebar from "./Sidebar";
 import { DataLoadingBanner } from "./DataLoadingBanner";
 import { useSessionTimeout } from "@/hooks/useSessionTimeout";
 import { useMembersHydration } from "@/hooks/useMembersHydration";
-import { useEventsHydration } from "@/hooks/useEventsHydration";
+import { useEvents } from "@/hooks/useEvents";
 import { useStore } from "@/store/use-store";
 
 export default function ClientShell({ children }: { children: React.ReactNode }) {
@@ -22,8 +22,9 @@ export default function ClientShell({ children }: { children: React.ReactNode })
   // Global member data hydration for admin users
   const membersHydration = useMembersHydration();
   
-  // Global events data hydration (eager loading on section select)
-  const eventsHydration = useEventsHydration();
+  // Events data via React Query (single source of truth)
+  // This hook triggers data loading and updates the data loading tracker
+  const { events, isLoading: eventsLoading, isFetched: eventsFetched } = useEvents();
   
   // Debug logging in development
   useEffect(() => {
@@ -34,17 +35,19 @@ export default function ClientShell({ children }: { children: React.ReactNode })
           count: membersHydration.members.length,
         });
       }
-      console.log('[ClientShell] Events hydration:', {
-        state: eventsHydration.loadingState,
-        count: eventsHydration.events.length,
+      console.log('[ClientShell] Events (React Query):', {
+        loading: eventsLoading,
+        fetched: eventsFetched,
+        count: events.length,
       });
     }
   }, [
     membersHydration.loadingState,
     membersHydration.members.length,
     membersHydration.isAdmin,
-    eventsHydration.loadingState,
-    eventsHydration.events.length,
+    eventsLoading,
+    eventsFetched,
+    events.length,
   ]);
   
   // Hide sidebar on section picker page for focused UX

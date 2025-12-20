@@ -7,7 +7,8 @@ import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useStore, useEventsData, useEventsLoadingState } from "@/store/use-store";
+import { useStore } from "@/store/use-store";
+import { useEvents } from "@/hooks/useEvents";
 import { CalendarDays, MapPin, Users, CheckCircle2, XCircle, Clock } from "lucide-react";
 import type { Event } from "@/lib/schemas";
 
@@ -92,10 +93,8 @@ export default function DashboardPage() {
   const selectedSections = useStore((s) => s.selectedSections);
   const availableSections = useStore((s) => s.availableSections);
   
-  // Use hydrated events data from the store
-  const events = useEventsData();
-  const eventsLoadingState = useEventsLoadingState();
-  const eventsLoading = eventsLoadingState === 'loading' || eventsLoadingState === 'idle';
+  // Use React Query hook - single source of truth for events data
+  const { events, isLoading: eventsLoading } = useEvents();
   
   // Determine section display
   const sectionDisplay = useMemo(() => {
