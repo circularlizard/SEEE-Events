@@ -427,16 +427,28 @@ export const useTheme = () => useStore((state) => state.theme)
 export const useBadgeMappings = () => useStore((state) => state.badgeMappings)
 export const useFlexiColumnMappings = () => useStore((state) => state.flexiColumnMappings)
 
-// Members selectors
-export const useMembers = () => useStore((state) => state.members)
+/**
+ * @deprecated Use `useMembers` from `@/hooks/useMembers` instead.
+ * React Query is now the single source of truth for members data.
+ */
+export const useMembersZustand = () => useStore((state) => state.members)
+/** @deprecated Use `useMembers` from `@/hooks/useMembers` instead. */
 export const useMembersLoadingState = () => useStore((state) => state.membersLoadingState)
+/** @deprecated Use `useMembers` from `@/hooks/useMembers` instead. */
 export const useMembersProgress = () => useStore((state) => state.membersProgress)
+/** @deprecated Use `useMembers` from `@/hooks/useMembers` instead. */
 export const useMembersLastUpdated = () => useStore((state) => state.membersLastUpdated)
 
-// Events selectors
+/**
+ * @deprecated Use `useEvents` from `@/hooks/useEvents` instead.
+ * React Query is now the single source of truth for events data.
+ */
 export const useEventsData = () => useStore((state) => state.events)
+/** @deprecated Use `useEvents` from `@/hooks/useEvents` instead. */
 export const useEventsLoadingState = () => useStore((state) => state.eventsLoadingState)
+/** @deprecated Use `useEvents` from `@/hooks/useEvents` instead. */
 export const useEventsProgress = () => useStore((state) => state.eventsProgress)
+/** @deprecated Use `useEvents` from `@/hooks/useEvents` instead. */
 export const useEventsLastUpdated = () => useStore((state) => state.eventsLastUpdated)
 
 // Unified data loading selectors

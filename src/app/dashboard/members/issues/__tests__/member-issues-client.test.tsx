@@ -1,9 +1,9 @@
 import { render, screen } from '@testing-library/react'
 import { MemberIssuesClient } from '../MemberIssuesClient'
-import { useMembers } from '@/store/use-store'
+import { useMembers } from '@/hooks/useMembers'
 import type { NormalizedMember, NormalizedContact } from '@/lib/schemas'
 
-jest.mock('@/store/use-store', () => ({
+jest.mock('@/hooks/useMembers', () => ({
   useMembers: jest.fn(),
 }))
 
@@ -68,7 +68,7 @@ describe('MemberIssuesClient', () => {
   })
 
   it('shows empty state when no members loaded', () => {
-    ;(useMembers as jest.Mock).mockReturnValue([])
+    ;(useMembers as jest.Mock).mockReturnValue({ members: [], isLoading: false, isFetched: true, isError: false, error: null, isAdmin: true, refresh: jest.fn() })
     render(<MemberIssuesClient />)
     expect(
       screen.getByText(/No members loaded. Please select a section to view member data issues./i)
@@ -80,7 +80,7 @@ describe('MemberIssuesClient', () => {
       createMember({ id: '1', firstName: 'Alice', lastName: 'Smith' }),
       createMember({ id: '2', firstName: 'Bob', lastName: 'Jones' }),
     ]
-    ;(useMembers as jest.Mock).mockReturnValue(members)
+    ;(useMembers as jest.Mock).mockReturnValue({ members, isLoading: false, isFetched: true, isError: false, error: null, isAdmin: true, refresh: jest.fn() })
     render(<MemberIssuesClient />)
     expect(screen.getByText(/No Issues Found/i)).toBeInTheDocument()
     expect(screen.getByText(/All 2 members have complete data/i)).toBeInTheDocument()
@@ -92,7 +92,7 @@ describe('MemberIssuesClient', () => {
       createMember({ id: '2', doctorName: null, doctorPhone: null, doctorAddress: null }),
       createMember({ id: '3', consents: { photoConsent: false, medicalConsent: false } }),
     ]
-    ;(useMembers as jest.Mock).mockReturnValue(members)
+    ;(useMembers as jest.Mock).mockReturnValue({ members, isLoading: false, isFetched: true, isError: false, error: null, isAdmin: true, refresh: jest.fn() })
     render(<MemberIssuesClient />)
 
     expect(screen.getAllByText(/No Emergency Contact/i).length).toBeGreaterThan(0)
@@ -110,7 +110,7 @@ describe('MemberIssuesClient', () => {
         emergencyContact: null,
       }),
     ]
-    ;(useMembers as jest.Mock).mockReturnValue(members)
+    ;(useMembers as jest.Mock).mockReturnValue({ members, isLoading: false, isFetched: true, isError: false, error: null, isAdmin: true, refresh: jest.fn() })
     render(<MemberIssuesClient />)
 
     expect(screen.getByText(/Critical Issues/i)).toBeInTheDocument()
@@ -128,7 +128,7 @@ describe('MemberIssuesClient', () => {
         doctorAddress: null,
       }),
     ]
-    ;(useMembers as jest.Mock).mockReturnValue(members)
+    ;(useMembers as jest.Mock).mockReturnValue({ members, isLoading: false, isFetched: true, isError: false, error: null, isAdmin: true, refresh: jest.fn() })
     render(<MemberIssuesClient />)
 
     expect(screen.getByText(/Medium Issues/i)).toBeInTheDocument()
@@ -144,7 +144,7 @@ describe('MemberIssuesClient', () => {
         consents: { photoConsent: false, medicalConsent: true },
       }),
     ]
-    ;(useMembers as jest.Mock).mockReturnValue(members)
+    ;(useMembers as jest.Mock).mockReturnValue({ members, isLoading: false, isFetched: true, isError: false, error: null, isAdmin: true, refresh: jest.fn() })
     render(<MemberIssuesClient />)
 
     expect(screen.getByText(/Low Priority Issues/i)).toBeInTheDocument()
@@ -160,7 +160,7 @@ describe('MemberIssuesClient', () => {
         memberContact: createContact({ email1: '', email2: '' }),
       }),
     ]
-    ;(useMembers as jest.Mock).mockReturnValue(members)
+    ;(useMembers as jest.Mock).mockReturnValue({ members, isLoading: false, isFetched: true, isError: false, error: null, isAdmin: true, refresh: jest.fn() })
     render(<MemberIssuesClient />)
 
     expect(screen.getByText(/Missing: email/i)).toBeInTheDocument()
@@ -178,7 +178,7 @@ describe('MemberIssuesClient', () => {
         primaryContact1: createContact({ email1: sharedEmail }),
       }),
     ]
-    ;(useMembers as jest.Mock).mockReturnValue(members)
+    ;(useMembers as jest.Mock).mockReturnValue({ members, isLoading: false, isFetched: true, isError: false, error: null, isAdmin: true, refresh: jest.fn() })
     render(<MemberIssuesClient />)
 
     expect(screen.getByText(/Same as Primary Contact 1/i)).toBeInTheDocument()
@@ -194,7 +194,7 @@ describe('MemberIssuesClient', () => {
         emergencyContact: null,
       }),
     ]
-    ;(useMembers as jest.Mock).mockReturnValue(members)
+    ;(useMembers as jest.Mock).mockReturnValue({ members, isLoading: false, isFetched: true, isError: false, error: null, isAdmin: true, refresh: jest.fn() })
     render(<MemberIssuesClient />)
 
     expect(screen.getByText('Eagles')).toBeInTheDocument()
@@ -206,7 +206,7 @@ describe('MemberIssuesClient', () => {
       createMember({ id: '2', doctorName: null, doctorPhone: null, doctorAddress: null }),
       createMember({ id: '3', consents: { photoConsent: false, medicalConsent: true } }),
     ]
-    ;(useMembers as jest.Mock).mockReturnValue(members)
+    ;(useMembers as jest.Mock).mockReturnValue({ members, isLoading: false, isFetched: true, isError: false, error: null, isAdmin: true, refresh: jest.fn() })
     render(<MemberIssuesClient />)
 
     expect(screen.getAllByText('Critical').length).toBeGreaterThan(0)
@@ -227,7 +227,7 @@ describe('MemberIssuesClient', () => {
         doctorAddress: null,
       }),
     ]
-    ;(useMembers as jest.Mock).mockReturnValue(members)
+    ;(useMembers as jest.Mock).mockReturnValue({ members, isLoading: false, isFetched: true, isError: false, error: null, isAdmin: true, refresh: jest.fn() })
     render(<MemberIssuesClient />)
 
     expect(screen.getAllByText(/No Emergency Contact/i).length).toBeGreaterThan(0)

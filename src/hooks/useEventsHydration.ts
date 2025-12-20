@@ -1,5 +1,10 @@
 /**
- * Events Hydration Hook
+ * @deprecated Use `useEvents` from `@/hooks/useEvents` instead.
+ * 
+ * This hook is deprecated as part of the React Query migration (Phase 8).
+ * React Query is now the single source of truth for events data.
+ * 
+ * Events Hydration Hook (DEPRECATED)
  * 
  * Eagerly fetches events data when a section is selected.
  * Similar to useMembersHydration but for events data.

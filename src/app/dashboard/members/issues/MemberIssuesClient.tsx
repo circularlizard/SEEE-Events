@@ -2,7 +2,7 @@
 
 import { useMemo } from 'react'
 import { AlertCircle, AlertTriangle, Info } from 'lucide-react'
-import { useMembers } from '@/store/use-store'
+import { useMembers } from '@/hooks/useMembers'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import {
   getMemberIssues,
@@ -132,7 +132,7 @@ function IssueTable({
 }
 
 export function MemberIssuesClient() {
-  const members = useMembers()
+  const { members } = useMembers()
 
   const { counts, membersWithIssues } = useMemo(() => {
     const counts = getIssueCounts(members)

@@ -1,5 +1,10 @@
 /**
- * Members Hydration Hook
+ * @deprecated Use `useMembers` from `@/hooks/useMembers` instead.
+ * 
+ * This hook is deprecated as part of the React Query migration (Phase 8).
+ * React Query is now the single source of truth for members data.
+ * 
+ * Members Hydration Hook (DEPRECATED)
  * 
  * Fetches and hydrates member data for admin users.
  * Uses a three-phase approach:
