@@ -47,12 +47,27 @@ export class APIError extends Error {
 }
 
 /**
+ * Options for proxyFetch
+ */
+interface ProxyFetchOptions {
+  signal?: AbortSignal
+}
+
+/**
  * Base fetch wrapper with error handling
  * 
  * All API calls go through the proxy route. This function is designed for
  * client-side use where the browser handles cookies/auth automatically.
+ * 
+ * @param path - API path (e.g., 'ext/members/contact/')
+ * @param params - Query parameters
+ * @param options - Optional fetch options including AbortSignal for cancellation
  */
-async function proxyFetch(path: string, params?: Record<string, string>): Promise<Response> {
+async function proxyFetch(
+  path: string,
+  params?: Record<string, string>,
+  options?: ProxyFetchOptions
+): Promise<Response> {
   const searchParams = new URLSearchParams(params)
   const url = `/api/proxy/${path}${params ? `?${searchParams.toString()}` : ''}`
 
@@ -61,6 +76,7 @@ async function proxyFetch(path: string, params?: Record<string, string>): Promis
     headers: {
       'Content-Type': 'application/json',
     },
+    signal: options?.signal,
   })
 
   // Handle error responses
@@ -101,6 +117,7 @@ export async function getMembers(params: {
   sectionid: number
   termid: number
   section?: string
+  signal?: AbortSignal
 }): Promise<Member[]> {
   const response = await proxyFetch('ext/members/contact/', {
     action: 'getListOfMembers',
@@ -108,7 +125,7 @@ export async function getMembers(params: {
     sectionid: params.sectionid.toString(),
     termid: params.termid.toString(),
     section: params.section || 'explorers',
-  })
+  }, { signal: params.signal })
 
   const raw = (await response.json()) as unknown
 
@@ -167,12 +184,13 @@ export async function getMembers(params: {
 export async function getEvents(params: {
   sectionid: number
   termid: number
+  signal?: AbortSignal
 }): Promise<EventsResponse> {
   const response = await proxyFetch('ext/events/summary/', {
     action: 'get',
     sectionid: params.sectionid.toString(),
     termid: params.termid.toString(),
-  })
+  }, { signal: params.signal })
 
   const data = await response.json()
   return parseStrict(EventsResponseSchema, data, 'Events')
@@ -190,13 +208,14 @@ export async function getPatrols(params: {
   sectionid: number
   termid: number
   section?: string
+  signal?: AbortSignal
 }): Promise<PatrolsResponse> {
   const response = await proxyFetch('ext/members/patrols/', {
     action: 'getPatrolsWithPeople',
     sectionid: params.sectionid.toString(),
     termid: params.termid.toString(),
     section: params.section || 'explorers',
-  })
+  }, { signal: params.signal })
 
   const raw = await response.json() as unknown
 
@@ -244,12 +263,13 @@ export async function getPatrols(params: {
 export async function getFlexiStructure(params: {
   sectionid: number
   extraid: number
+  signal?: AbortSignal
 }): Promise<FlexiStructure> {
   const response = await proxyFetch('ext/members/flexirecords/', {
     action: 'getStructure',
     sectionid: params.sectionid.toString(),
     extraid: params.extraid.toString(),
-  })
+  }, { signal: params.signal })
 
   const data = await response.json()
   return parseStrict(FlexiStructureSchema, data, 'Flexi Structure')
@@ -262,6 +282,7 @@ export async function getFlexiData(params: {
   sectionid: number
   termid: number
   extraid: number
+  signal?: AbortSignal
 }): Promise<FlexiDataResponse> {
   const response = await proxyFetch('ext/members/flexirecords/', {
     action: 'getData',
@@ -269,7 +290,7 @@ export async function getFlexiData(params: {
     termid: params.termid.toString(),
     extraid: params.extraid.toString(),
     nototal: 'true',
-  })
+  }, { signal: params.signal })
 
   const data = await response.json()
   return parsePermissive(
@@ -288,6 +309,7 @@ export async function getBadgeRecords(params: {
   termid: number
   badgeId: number
   section?: string
+  signal?: AbortSignal
 }): Promise<BadgeRecordsResponse> {
   const response = await proxyFetch('ext/badges/records/', {
     action: 'getBadgeRecords',
@@ -298,7 +320,7 @@ export async function getBadgeRecords(params: {
     badge_version: '1',
     payload: '1',
     type_id: '1',
-  })
+  }, { signal: params.signal })
 
   const data = await response.json()
   return parsePermissive(
@@ -315,10 +337,11 @@ export async function getBadgeRecords(params: {
 export async function getEventAttendance(params: {
   eventid: number
   termid: number
+  signal?: AbortSignal
 }): Promise<AttendanceResponse> {
   const response = await proxyFetch(`v3/events/event/${params.eventid}/members/attendance`, {
     term_id: params.termid.toString(),
-  })
+  }, { signal: params.signal })
 
   const data = await response.json()
   return parsePermissive(AttendanceResponseSchema, data, [], 'Event Attendance')
@@ -327,16 +350,16 @@ export async function getEventAttendance(params: {
 /**
  * Fetch event details
  */
-export async function getEventDetails(eventid: number): Promise<unknown> {
-  const response = await proxyFetch(`v3/events/event/${eventid}/basic_details`)
+export async function getEventDetails(eventid: number, signal?: AbortSignal): Promise<unknown> {
+  const response = await proxyFetch(`v3/events/event/${eventid}/basic_details`, undefined, { signal })
   return await response.json()
 }
 
 /**
  * Fetch event summary
  */
-export async function getEventSummary(eventid: number): Promise<unknown> {
-  const response = await proxyFetch(`v3/events/event/${eventid}/summary`)
+export async function getEventSummary(eventid: number, signal?: AbortSignal): Promise<unknown> {
+  const response = await proxyFetch(`v3/events/event/${eventid}/summary`, undefined, { signal })
   return await response.json()
 }
 
@@ -350,6 +373,7 @@ export async function getMemberIndividual(params: {
   sectionid: number
   scoutid: number
   termid: number
+  signal?: AbortSignal
 }): Promise<IndividualResponse> {
   const response = await proxyFetch('ext/members/contact/', {
     action: 'getIndividual',
@@ -357,7 +381,7 @@ export async function getMemberIndividual(params: {
     scoutid: params.scoutid.toString(),
     termid: params.termid.toString(),
     context: 'members',
-  })
+  }, { signal: params.signal })
 
   const data = await response.json()
   return parseStrict(IndividualResponseSchema, data, 'Individual Member')
@@ -372,6 +396,7 @@ export async function getMemberIndividual(params: {
 export async function getMemberCustomData(params: {
   sectionid: number
   scoutid: number
+  signal?: AbortSignal
 }): Promise<CustomDataResponse> {
   const response = await proxyFetch('ext/customdata/', {
     action: 'getData',
@@ -382,7 +407,7 @@ export async function getMemberCustomData(params: {
     varname_filter: 'null',
     context: 'members',
     group_order: 'section',
-  })
+  }, { signal: params.signal })
 
   const data = await response.json()
   return parseStrict(CustomDataResponseSchema, data, 'Member Custom Data')
