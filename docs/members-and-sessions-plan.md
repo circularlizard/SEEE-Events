@@ -720,37 +720,37 @@ This section consolidates the recommendations from `docs/completed-plans/members
 
 ### 8.3. Prerequisites
 
-- [ ] Add true request cancellation:
-  - [ ] Update `proxyFetch()` to accept an optional `AbortSignal` and pass it to `fetch(..., { signal })`.
-  - [ ] Thread that signal through exported API helpers (`getEvents`, `getMembers`, `getMemberIndividual`, `getMemberCustomData`, etc.).
+- [x] Add true request cancellation:
+  - [x] Update `proxyFetch()` to accept an optional `AbortSignal` and pass it to `fetch(..., { signal })`.
+  - [x] Thread that signal through exported API helpers (`getEvents`, `getMembers`, `getMemberIndividual`, `getMemberCustomData`, etc.).
 
-- [ ] Define retry rules for `APIError` so the client does not hammer the proxy:
-  - [ ] `401` unauthenticated: no retry.
-  - [ ] `429` soft lock: no retry (or a single delayed retry), surface a clear “cooling down” UI.
-  - [ ] `503` hard lock: no retry, surface a clear “system halted” UI.
+- [x] Define retry rules for `APIError` so the client does not hammer the proxy:
+  - [x] `401` unauthenticated: no retry.
+  - [x] `429` soft lock: no retry (or a single delayed retry), surface a clear “cooling down” UI.
+  - [x] `503` hard lock: no retry, surface a clear “system halted” UI.
 
 ### 8.4. Migration sequence
 
-- [ ] Migrate **events first**:
-  - [ ] Introduce an events query key (e.g. `['events', sectionId]`).
-  - [ ] Use a conservative `staleTime` and disable `refetchOnWindowFocus` for events if it is expensive.
-  - [ ] Ensure section change naturally switches cache keys.
+- [x] Migrate **events first**:
+  - [x] Introduce an events query key (e.g. `['events', sectionId]`).
+  - [x] Use a conservative `staleTime` and disable `refetchOnWindowFocus` for events if it is expensive.
+  - [x] Ensure section change naturally switches cache keys.
 
-- [ ] Migrate **members second**:
-  - [ ] Introduce a members query key (e.g. `['members', sectionId]`).
-  - [ ] Implement the 3-phase pipeline inside the query function (Phase 1 list, Phase 2 individual, Phase 3 custom data).
-  - [ ] Write incremental updates to the query cache so the UI can progressively render partial data (Option 1).
-  - [ ] Ensure long `staleTime` and disabled focus refetch for members.
+- [x] Migrate **members second**:
+  - [x] Introduce a members query key (e.g. `['members', sectionId]`).
+  - [x] Implement the 3-phase pipeline inside the query function (Phase 1 list, Phase 2 individual, Phase 3 custom data).
+  - [x] Write incremental updates to the query cache so the UI can progressively render partial data (Option 1).
+  - [x] Ensure long `staleTime` and disabled focus refetch for members.
 
-- [ ] Remove duplicated server-state from Zustand:
-  - [ ] Remove members/events as the authoritative data source in Zustand (avoid two sources of truth).
-  - [ ] Keep only UI state and (optionally) the unified loading banner state.
+- [x] Remove duplicated server-state from Zustand:
+  - [x] Remove members/events as the authoritative data source in Zustand (avoid two sources of truth).
+  - [x] Keep only UI state and (optionally) the unified loading banner state.
 
 ### 8.5. Verification
 
-- [ ] Query cancellation aborts network requests (not just cooperative cancellation).
-- [ ] Logout clears React Query cache.
-- [ ] Section change does not leak old data into the new section.
+- [x] Query cancellation aborts network requests (not just cooperative cancellation).
+- [x] Logout clears React Query cache.
+- [x] Section change does not leak old data into the new section.
 
 ---
 
