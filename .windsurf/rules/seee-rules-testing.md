@@ -10,6 +10,7 @@ description: SEEE Expedition Dashboard testing and QA rules
 - **End-to-end tests:** Playwright (desktop + mobile profiles, HTTPS dev server).
 - **Mocking network:** MSW (Mock Service Worker) for simulating OSM API behavior and safety-layer scenarios.
   - Prefer MSW handlers over global `fetch` mocks. Do **not** globally mock `fetch` when MSW can intercept the request.
+- **Requirement traceability:** All tests (unit, integration, E2E) should reference the relevant `REQ-<domain>-<nn>` identifiers from `docs/SPECIFICATION.md`. Feature files use `@REQ-...` tags; unit/integration tests include the ID in the `describe`/`it` names.
 
 ## 2. General Testing Principles
 - **Safety-critical focus:**
