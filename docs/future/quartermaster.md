@@ -107,3 +107,15 @@ We need to create and track and inventory of 100th Pentland and Bore Stane kit. 
     * Easy to move from working with one item to the next one
 * Second most common feature will be event planning / kit reservation
 * Can assume data connection. No offline functionality
+
+
+## Other questions to deal with
+For assumption 2, you might want to add that they may be in a field
+On issuing kit, will it know section members or will it only be issuing to a leader?
+So on the kit issuance, Scouts and Explorers are likely to want to be able to check that at a member level while Beavers and Cubs probably just need it at the section level, e.g. Barclay Cubs have the mess tent.
+Does “All users” include members or is that just leaders?
+Will any personal data (including name) be stored outside of OSM?
+- If data is stored outside of OSM, where will it be stored? Will it be encrypted in transit / at rest?
+Where is the app going to be hosted?
+Where will the code for the app be hosted?
+Who will be maintaining the code?

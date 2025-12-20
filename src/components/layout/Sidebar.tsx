@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { usePathname } from "next/navigation";
-import { Shield, CalendarDays, Users as UsersIcon } from "lucide-react";
+import { Shield, CalendarDays, Users as UsersIcon, AlertTriangle } from "lucide-react";
 import { useStore } from "@/store/use-store";
 
 export default function Sidebar() {
@@ -75,6 +75,13 @@ export default function Sidebar() {
             >
               <UsersIcon className="h-4 w-4" />
               Members
+            </Link>
+            <Link
+              className="flex items-center gap-2 px-2 py-1 rounded-md hover:bg-accent hover:text-accent-foreground"
+              href="/dashboard/members/issues"
+            >
+              <AlertTriangle className="h-4 w-4" />
+              Member Data Issues
             </Link>
             <Link
               className="flex items-center gap-2 px-2 py-1 rounded-md hover:bg-accent hover:text-accent-foreground"
