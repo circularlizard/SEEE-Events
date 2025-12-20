@@ -6,7 +6,7 @@ import Header from "./Header";
 import Sidebar from "./Sidebar";
 import { DataLoadingBanner } from "./DataLoadingBanner";
 import { useSessionTimeout } from "@/hooks/useSessionTimeout";
-import { useMembersHydration } from "@/hooks/useMembersHydration";
+import { useMembers } from "@/hooks/useMembers";
 import { useEvents } from "@/hooks/useEvents";
 import { useStore } from "@/store/use-store";
 
@@ -19,8 +19,9 @@ export default function ClientShell({ children }: { children: React.ReactNode })
   // Global inactivity timeout for authenticated users
   useSessionTimeout();
   
-  // Global member data hydration for admin users
-  const membersHydration = useMembersHydration();
+  // Members data via React Query (single source of truth)
+  // This hook triggers data loading with 3-phase progressive enrichment
+  const { members, isLoading: membersLoading, isFetched: membersFetched, isAdmin } = useMembers();
   
   // Events data via React Query (single source of truth)
   // This hook triggers data loading and updates the data loading tracker
@@ -29,10 +30,11 @@ export default function ClientShell({ children }: { children: React.ReactNode })
   // Debug logging in development
   useEffect(() => {
     if (process.env.NODE_ENV !== 'production') {
-      if (membersHydration.isAdmin) {
-        console.log('[ClientShell] Members hydration:', {
-          state: membersHydration.loadingState,
-          count: membersHydration.members.length,
+      if (isAdmin) {
+        console.log('[ClientShell] Members (React Query):', {
+          loading: membersLoading,
+          fetched: membersFetched,
+          count: members.length,
         });
       }
       console.log('[ClientShell] Events (React Query):', {
@@ -42,9 +44,10 @@ export default function ClientShell({ children }: { children: React.ReactNode })
       });
     }
   }, [
-    membersHydration.loadingState,
-    membersHydration.members.length,
-    membersHydration.isAdmin,
+    membersLoading,
+    membersFetched,
+    members.length,
+    isAdmin,
     eventsLoading,
     eventsFetched,
     events.length,

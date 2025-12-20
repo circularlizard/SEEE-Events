@@ -3,17 +3,13 @@ import { render, screen, within, fireEvent } from '@testing-library/react'
 
 import { MembersClient } from '../MembersClient'
 import type { NormalizedMember } from '@/lib/schemas'
-import { useMembers, useMembersLoadingState, useMembersProgress } from '@/store/use-store'
+import { useMembers } from '@/hooks/useMembers'
 
-jest.mock('@/store/use-store', () => ({
+jest.mock('@/hooks/useMembers', () => ({
   useMembers: jest.fn(),
-  useMembersLoadingState: jest.fn(),
-  useMembersProgress: jest.fn(),
 }))
 
 const mockUseMembers = useMembers as jest.Mock
-const mockUseMembersLoadingState = useMembersLoadingState as jest.Mock
-const mockUseMembersProgress = useMembersProgress as jest.Mock
 
 function createMember(overrides: Partial<NormalizedMember> = {}): NormalizedMember {
   const base: NormalizedMember = {
@@ -50,12 +46,24 @@ function createMember(overrides: Partial<NormalizedMember> = {}): NormalizedMemb
   return { ...base, ...overrides }
 }
 
+// Helper to create mock return value for useMembers hook
+function createMockUseMembersReturn(members: NormalizedMember[], overrides: Partial<ReturnType<typeof useMembers>> = {}) {
+  return {
+    members,
+    isLoading: false,
+    isFetching: false,
+    isFetched: true,
+    isError: false,
+    error: null,
+    isAdmin: true,
+    refresh: jest.fn(),
+    ...overrides,
+  }
+}
+
 describe('MembersClient', () => {
   beforeEach(() => {
     jest.clearAllMocks()
-
-    mockUseMembersLoadingState.mockReturnValue('complete')
-    mockUseMembersProgress.mockReturnValue({ total: 0, completed: 0, phase: 'idle' })
   })
 
   test('renders members table with sections and icon legend', () => {
@@ -82,7 +90,7 @@ describe('MembersClient', () => {
       }),
     ]
 
-    mockUseMembers.mockReturnValue(members)
+    mockUseMembers.mockReturnValue(createMockUseMembersReturn(members))
 
     render(<MembersClient />)
 
@@ -136,7 +144,7 @@ describe('MembersClient', () => {
       }),
     ]
 
-    mockUseMembers.mockReturnValue(members)
+    mockUseMembers.mockReturnValue(createMockUseMembersReturn(members))
 
     render(<MembersClient />)
 
@@ -163,7 +171,7 @@ describe('MembersClient', () => {
       }),
     ]
 
-    mockUseMembers.mockReturnValue(members)
+    mockUseMembers.mockReturnValue(createMockUseMembersReturn(members))
 
     render(<MembersClient />)
 
@@ -173,9 +181,8 @@ describe('MembersClient', () => {
     expect(row.getByText('—')).toBeInTheDocument()
   })
 
-  test('shows empty state when no members and loading is idle', () => {
-    mockUseMembers.mockReturnValue([])
-    mockUseMembersLoadingState.mockReturnValue('idle')
+  test('shows empty state when no members and not loading', () => {
+    mockUseMembers.mockReturnValue(createMockUseMembersReturn([], { isLoading: false, isFetched: false }))
 
     render(<MembersClient />)
 
@@ -192,7 +199,7 @@ describe('MembersClient', () => {
       createMember({ id: 'pending', loadingState: 'pending' as any }),
     ]
 
-    mockUseMembers.mockReturnValue(members)
+    mockUseMembers.mockReturnValue(createMockUseMembersReturn(members))
 
     render(<MembersClient />)
 
@@ -219,7 +226,7 @@ describe('MembersClient', () => {
       }),
     ]
 
-    mockUseMembers.mockReturnValue(members)
+    mockUseMembers.mockReturnValue(createMockUseMembersReturn(members))
 
     render(<MembersClient />)
 
@@ -240,7 +247,7 @@ describe('MembersClient', () => {
       createMember({ id: 'smith-alice', firstName: 'Alice', lastName: 'Smith' }),
     ]
 
-    mockUseMembers.mockReturnValue(members)
+    mockUseMembers.mockReturnValue(createMockUseMembersReturn(members))
 
     render(<MembersClient />)
 
@@ -269,7 +276,7 @@ describe('MembersClient', () => {
       }),
     ]
 
-    mockUseMembers.mockReturnValue(members)
+    mockUseMembers.mockReturnValue(createMockUseMembersReturn(members))
 
     render(<MembersClient />)
 
@@ -301,7 +308,7 @@ describe('MembersClient', () => {
       }),
     ]
 
-    mockUseMembers.mockReturnValue(members)
+    mockUseMembers.mockReturnValue(createMockUseMembersReturn(members))
 
     render(<MembersClient />)
 
@@ -329,7 +336,7 @@ describe('MembersClient', () => {
       createMember({ id: 'one' }),
     ]
 
-    mockUseMembers.mockReturnValue(members)
+    mockUseMembers.mockReturnValue(createMockUseMembersReturn(members))
 
     render(<MembersClient />)
 
@@ -350,7 +357,7 @@ describe('MembersClient', () => {
       }),
     ]
 
-    mockUseMembers.mockReturnValue(members)
+    mockUseMembers.mockReturnValue(createMockUseMembersReturn(members))
 
     render(<MembersClient />)
 

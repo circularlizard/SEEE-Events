@@ -12,7 +12,7 @@ import {
   AlertCircle,
   RefreshCw
 } from 'lucide-react'
-import { useMembers, useMembersLoadingState } from '@/store/use-store'
+import { useMembers } from '@/hooks/useMembers'
 import type { NormalizedMember } from '@/lib/schemas'
 import { cn } from '@/lib/utils'
 
@@ -280,8 +280,7 @@ function MemberCard({ member, onClick }: { member: NormalizedMember; onClick?: (
  * Main members table/list component
  */
 export function MembersClient() {
-  const members = useMembers()
-  const loadingState = useMembersLoadingState()
+  const { members, isLoading, isFetched, refresh } = useMembers()
   const [sortConfig, setSortConfig] = useState<SortConfig>({ field: 'name', direction: 'asc' })
   
   const sortedMembers = useMemo(
@@ -296,8 +295,8 @@ export function MembersClient() {
     }))
   }
   
-  // Empty state
-  if (members.length === 0 && loadingState === 'idle') {
+  // Empty state (not loading and no members)
+  if (members.length === 0 && !isLoading && !isFetched) {
     return (
       <div className="text-center py-12">
         <AlertCircle className="h-12 w-12 mx-auto text-muted-foreground mb-4" aria-hidden />
@@ -310,7 +309,7 @@ export function MembersClient() {
   }
   
   // Loading state (no members yet)
-  if (members.length === 0 && loadingState !== 'idle') {
+  if (members.length === 0 && isLoading) {
     return (
       <div className="text-center py-12">
         <Loader2 className="h-8 w-8 mx-auto animate-spin text-primary mb-4" aria-hidden />
@@ -324,13 +323,10 @@ export function MembersClient() {
       {/* Summary stats */}
       <div className="flex items-center justify-between text-sm text-muted-foreground">
         <span>{members.length} members</span>
-        {loadingState === 'complete' && (
+        {isFetched && (
           <button 
             className="inline-flex items-center gap-1 hover:text-primary transition-colors"
-            onClick={() => {
-              // TODO: Implement refresh functionality
-              console.log('Refresh members')
-            }}
+            onClick={refresh}
           >
             <RefreshCw className="h-4 w-4" aria-hidden />
             Refresh
