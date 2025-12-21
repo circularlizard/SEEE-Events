@@ -213,8 +213,7 @@ Authoring plan:
 
 - [ ] Land GitHub Actions workflows (`ci-test`, `ci-mutation`, `ci-deploy`) per §6.2.
 - [ ] Publish Windsurf workflows (`/test-stack`, `/mutation-scan`, `/bdd-fix`) per §6.3.
-- [ ] Add housekeeping workflow: file completed plans (docs/completed-plans), update SPEC / ARCHITECTURE / README, and document the process.
-- [ ] Create Windsurf workflow to run the housekeeping checklist on demand.
+- [ ] Create Windsurf workflow to file completed plans (move plan files to docs/completed-plans and update COMPLETED_PHASES.md) and update SPEC / ARCHITECTURE / README to make sure documentation accurately reflects the current state of the app.
 
 ## 8. Governance & Open Questions
 

@@ -148,68 +148,48 @@ Start Redis with `docker compose up -d redis` and reload the page.
 
 ## 🧪 Testing
 
-### Unit & Integration Tests
+### Core Commands
 
 ```bash
-# Run Jest tests
-npm test
+# Lint + type-check + unit tests
+npm run lint
+npx tsc --noEmit
+npm run test:unit
 
-# Watch mode
-npm run test:watch
+# Instrumented BDD E2E tests (collects coverage)
+cross-env INSTRUMENT_CODE=1 npm run test:bdd
 
-# Phase 1 Safety Layer validation
-npm run validate:safety
-```
+# Merge Jest + Playwright coverage (outputs coverage/total/index.html)
+npm run test:merge
 
-Tests use Mock Service Worker (MSW) to intercept network requests.
-
-### End-to-End (BDD) Tests
-
-E2E tests are now authored as Gherkin `.feature` files and executed via **Playwright + playwright-bdd**.
-
-```bash
-# Run all BDD E2E tests (headless)
-npm run test:bdd
-
-# Run with interactive UI
-npm run test:bdd:ui
-
-# View HTML test report
-npx playwright show-report
-```
-
-**Requirement tag enforcement:**
-
-```bash
-# Ensure every .feature file has @REQ-* tags
-npm run test:req-tags
-```
-
-### Mutation Tests (Stryker)
-
-Mutation tests are run manually (on-demand) using Stryker:
-
-```bash
-# Run mutation testing
+# Mutation testing (Stryker)
 npm run test:mutation
 ```
 
-The HTML report is written to:
+- Jest tests run under MSW for deterministic API interception.
+- Playwright uses `playwright-bdd` with `.feature` files + shared steps; reports live in `playwright-report/`.
+- Mutation reports are written to `reports/mutation/index.html`.
 
-- `reports/mutation/index.html`
+### Windsurf Workflows
 
-### Legacy Playwright Specs
+Run these helper workflows from the command palette (⌘K):
 
-Some Playwright `.spec.ts` suites may still exist during migration (e.g., smoke tests). New E2E coverage should be added via `.feature` files under:
+1. **`/test-stack`** – docker Redis → lint → `tsc` → unit → instrumented BDD → coverage merge → open report.
+2. **`/mutation-scan`** – redis pre-check → unit smoke → `npm run test:mutation` → open mutation report.
+3. **`/bdd-fix`** – rerun failing feature/scenario via `--grep`, open Playwright report, optional `codegen`.
+4. **`/file-completed-plan`** – archive finished plans and update docs (COMPLETED_PHASES, SPEC, ARCHITECTURE, README).
 
-- `tests/e2e/features/**`
-- `tests/e2e/steps/**`
+These workflows mirror CI so local runs catch issues early.
 
-**Requirements:**
-- Dev server must be running (Playwright will start it automatically)
-- HTTPS certificates must be generated (`mkcert localhost`)
-- Redis must be running (`docker compose up -d redis`)
-- Mock Auth mode recommended for reliable testing
+### CI Automation
+
+| Workflow | Trigger | Purpose |
+| --- | --- | --- |
+| **CI – Tests** (`.github/workflows/ci-test.yml`) | Pull requests, manual | Lint → `tsc` → unit → instrumented BDD → coverage merge → upload artifacts |
+| **CI – Mutation Testing** (`ci-mutation.yml`) | Nightly 02:00 UTC, manual | Unit smoke → `npm run test:mutation` → publish mutation score/report |
+| **CI – Deploy** (`ci-deploy.yml`) | Release, manual | Build after CI – Tests succeeds, upload build artifact for deployment |
+
+Branch protection should require CI – Tests; mutation + deploy workflows surface quality gates and release readiness.
 
 ## 🛠️ Development
 

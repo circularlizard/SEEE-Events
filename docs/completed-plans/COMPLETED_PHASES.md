@@ -199,6 +199,29 @@ Reference documentation for all completed implementation phases. For active/futu
 
 ### **Phase 2.6: E2E Testing ✅**
 
+---
+
+## **Phase 2.7: Tiered Testing (Coverage + BDD + Mutation) ✅ COMPLETE**
+
+**Goal:** Establish a tiered testing strategy with requirement traceability, numerical coverage (unit + E2E), BDD functional coverage, and manual mutation testing.
+
+**Completed Items:**
+* ✅ Tier 0: Requirement IDs added to `docs/SPECIFICATION.md` (`REQ-<DOMAIN>-<NN>`)
+* ✅ Tier 1: Numerical coverage
+  * Jest coverage output (`coverage/unit`)
+  * Playwright instrumented coverage capture (`coverage/e2e`)
+  * NYC merge pipeline (`coverage/total/index.html`)
+* ✅ Tier 2: Functional coverage (BDD)
+  * Playwright-BDD runner (`npm run test:bdd`) with feature files under `tests/e2e/features/**`
+  * Shared steps under `tests/e2e/steps/**`
+  * REQ tag enforcement (`npm run test:req-tags`)
+  * Legacy `.spec.ts` removed for migrated flows
+* ✅ Tier 3: Mutation coverage
+  * Stryker config + manual trigger (`npm run test:mutation`)
+  * Report output `reports/mutation/index.html`
+
+**Output:** Tier 0–3 testing pipeline implemented; Tier 4 housekeeping planned.
+
 **Completed Items:**
 * ✅ Installed @playwright/test and Chromium browser
 * ✅ Created playwright.config.ts:
@@ -231,6 +254,22 @@ Reference documentation for all completed implementation phases. For active/futu
 **Output:** Complete homepage scaffold with dashboard navigation and settings page.
 
 **Overall Phase 2 Status:** ✅ COMPLETE - All 7 sub-phases implemented and tested.
+
+---
+
+## **Phase 2.8: Tiered Testing Automation & Reporting ✅ COMPLETE (Dec 21, 2025)**
+
+**Plan:** [seee-testing-plan-completed-2025-12-21.md](./seee-testing-plan-completed-2025-12-21.md)
+
+**Summary:** Automated the entire tiered testing strategy (numerical, functional, mutation) and documented repeatable workflows so contributors and CI pipelines maintain consistent coverage reporting.
+
+**Key Deliverables:**
+- GitHub Actions workflows for CI Tests, Mutation Testing, and Deploy gates.
+- Instrumented BDD Playwright runs wired into coverage merge + artifact uploads.
+- Windsurf workflows for `/test-stack`, `/mutation-scan`, `/bdd-fix`, and `/file-completed-plan`.
+- Updated testing rules referencing the new workflows and governance targets.
+
+**Output:** Every test tier is now automated locally and in CI, and documentation clearly explains how to audit coverage, triage failures, and archive future plans.
 
 ---
 

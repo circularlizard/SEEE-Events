@@ -393,14 +393,24 @@ To ensure speed for the user and protection for the API (Section 5.1), the appli
   * **Simulate Block:** Force an X-Blocked header response to verify the "Circuit Breaker" (Section 5.8) activates and locks the system.  
   * **Simulate Rate Limit:** Force X-RateLimit-Remaining: 0 to verify that Bottleneck queues or pauses requests correctly.
 
-### **11.3 End-to-End (E2E) Testing**
+### **11.3 End-to-End & Mutation Testing**
 
-* **Stack:** **Playwright**.  
+* **Stack:** **Playwright + playwright-bdd** for functional scenarios; **Stryker** for mutation coverage.  
 * **Focus:**  
-  * **Auth Flow:** Verify the "Section Selection" modal appears for multi-section users.  
-  * **Admin features:** Verify that the "Reset Defaults" button successfully re-seeds the Vercel KV store from the file system.
+  * **Auth Flow & Dashboard Navigation:** Scenario outlines ensure both admin and standard roles reach the correct routes.  
+  * **Section Selection Gating:** Background steps assert the selector renders before the shell when no section is chosen.  
+  * **Admin features:** Verify that the "Reset Defaults" button successfully re-seeds the Vercel KV store from the file system.  
+  * **Mutation Sweeps:** Nightly Stryker runs target `src/lib/**` and `src/utils/**`, surfacing gaps where tests fail to kill mutants.
 
-### **11.4 Local Infrastructure Emulation (New)**
+### **11.4 Test Automation Workflows (New)**
+
+* **CI Pipelines:**  
+  * **CI – Tests:** Lint → TypeScript → Jest (`npm run test:unit`) → Playwright-BDD with instrumentation (`cross-env INSTRUMENT_CODE=1 npm run test:bdd`) → coverage merge → upload artifacts.  
+  * **CI – Mutation Testing:** Unit smoke → `npm run test:mutation` with HTML report + mutation score enforcement (warn <80%).  
+  * **CI – Deploy:** Depends on CI – Tests success before running `npm run build` and publishing artifacts.
+* **Local Windsurf workflows:** `/test-stack`, `/mutation-scan`, `/bdd-fix`, `/file-completed-plan` mirror CI to keep developer machines aligned with automation.
+
+### **11.5 Local Infrastructure Emulation (New)**
 
 Since the application relies on Vercel KV (Redis) for critical functions (Rate Limiting, Config, Caching), local testing must duplicate this environment.
 

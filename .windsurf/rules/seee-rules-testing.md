@@ -9,6 +9,8 @@ trigger: always_on
 - **Unit & component tests:** Jest + React Testing Library.
 - **Integration tests:** Jest against API routes and the safety layer (proxy, bottleneck, Redis, Zod parsing).
 - **End-to-end tests:** Playwright (desktop + mobile profiles, HTTPS dev server).
+- **BDD tests:** Playwright with `playwright-bdd` for Gherkin-based scenarios.
+- **Mutation testing:** Stryker for detecting test gaps.
 - **Mocking network:** MSW (Mock Service Worker) for simulating OSM API behavior and safety-layer scenarios.
   - Prefer MSW handlers over global `fetch` mocks. Do **not** globally mock `fetch` when MSW can intercept the request.
 - **Requirement traceability:** All tests (unit, integration, E2E) should reference the relevant `REQ-<domain>-<nn>` identifiers from `docs/SPECIFICATION.md`. Feature files use `@REQ-...` tags; unit/integration tests include the ID in the `describe`/`it` names.
@@ -110,3 +112,96 @@ trigger: always_on
   - When refactoring the safety layer or auth:
     - Update or add tests first.
     - Run the full safety validation script (`npm run validate:safety`) where appropriate.
+
+## 11. Testing Workflows
+
+### 11.1 Windsurf Workflows
+
+The following Windsurf workflows are available for local testing:
+
+- **`/test-stack`** - Run the full test stack locally
+  - Executes: lint → TypeScript check → unit tests → BDD E2E tests (instrumented) → coverage merge
+  - Opens merged coverage report in browser
+  - Location: `.windsurf/workflows/test-stack.md`
+
+- **`/mutation-scan`** - Run mutation testing
+  - Executes: unit tests → Stryker mutation testing
+  - Opens mutation report in browser
+  - Identifies surviving mutants and test gaps
+  - Location: `.windsurf/workflows/mutation-scan.md`
+
+- **`/bdd-fix`** - Debug failing BDD scenarios
+  - Run specific feature or scenario by tag
+  - View Playwright report with traces
+  - Optional: Use `playwright codegen` for selector discovery
+  - Location: `.windsurf/workflows/bdd-fix.md`
+
+- **`/test-fix`** - Run tests and fix common issues
+  - Quick test execution and common fix patterns
+  - Location: `.windsurf/workflows/test-fix.md`
+
+- **`/file-completed-plan`** - Archive completed plans
+  - Move plan files to `docs/completed-plans/`
+  - Update `COMPLETED_PHASES.md`
+  - Update `SPECIFICATION.md`, `ARCHITECTURE.md`, `README.md`
+  - Location: `.windsurf/workflows/file-completed-plan.md`
+
+### 11.2 GitHub Actions Workflows
+
+The following CI/CD workflows are configured:
+
+- **`CI – Tests`** (`.github/workflows/ci-test.yml`)
+  - Trigger: Pull requests, manual dispatch
+  - Steps: lint → TypeScript check → unit tests → BDD E2E tests → coverage merge
+  - Artifacts: Coverage reports (unit, E2E, merged), Playwright reports
+  - Required for PR approval
+
+- **`CI – Mutation Testing`** (`.github/workflows/ci-mutation.yml`)
+  - Trigger: Nightly cron (2 AM), manual dispatch
+  - Steps: unit tests → Stryker mutation testing
+  - Artifacts: Mutation report with score
+  - Optional (reports blockers)
+
+- **`CI – Deploy`** (`.github/workflows/ci-deploy.yml`)
+  - Trigger: Release published, manual dispatch
+  - Steps: lint → TypeScript check → build
+  - Artifacts: Build output
+  - Depends on CI – Tests success
+
+### 11.3 Test Commands
+
+```bash
+# Unit tests
+npm run test:unit
+
+# BDD E2E tests
+npm run test:bdd
+
+# BDD E2E tests with instrumentation
+cross-env INSTRUMENT_CODE=1 npm run test:bdd
+
+# Merge coverage
+npm run test:merge
+
+# Mutation testing
+npm run test:mutation
+
+# Full test stack (local)
+npm run lint && npx tsc --noEmit && npm run test:unit && cross-env INSTRUMENT_CODE=1 npm run test:bdd && npm run test:merge
+```
+
+### 11.4 Coverage Targets
+
+- **Numerical coverage**: ≥80% line coverage (unit + E2E merged)
+- **Mutation score**: ≥80% killed mutants
+- **BDD coverage**: All `REQ-*` requirements have at least one scenario
+- **Safety layer**: 100% coverage for proxy, bottleneck, rate limiting
+
+### 11.5 Workflow Best Practices
+
+- Use `/test-stack` before committing to verify all tests pass locally
+- Use `/mutation-scan` weekly or before major releases to find test gaps
+- Use `/bdd-fix` when BDD scenarios fail to quickly debug and fix
+- Use `/file-completed-plan` after completing major features to keep documentation current
+- Review CI – Mutation Testing reports to prioritize test improvements
+- Ensure all new features include BDD scenarios with `@REQ-*` tags
