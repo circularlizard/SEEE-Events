@@ -37,20 +37,22 @@ Stabilize the SEEE Expedition Dashboard before investing in multi-application wo
 6. TanStack Query retry policy hardened in `src/components/QueryProvider.tsx`.
 
 ### 2.3 UI & Responsiveness Polish
-**Status:** 🟡 In progress
+**Status:** ✅ Complete
 
 1. Apply shared spacing/typography tokens (tables, cards, headers). ✅
 2. Finalize mobile vs desktop layouts for events, attendance, upcoming dashboard. ✅ (events, attendance, members)
 3. Add responsive regression tests (Playwright BDD scenarios for desktop/mobile viewports). ✅ (events list, members list, attendance-by-person, event detail, member issues)
-4. Audit shadcn theme + color usage; align with `REQ-NFR-01`. ⏳
+4. Audit shadcn theme + color usage; align with `REQ-NFR-01`. ✅ (decision: defer status-token refactor pending agreed mapping)
 
 **2.3.4 Audit note:** The main layouts now consistently use shadcn/Tailwind tokens (`bg-primary`, `text-primary-foreground`, `bg-muted`, `text-muted-foreground`). Some status indicators still use hard-coded semantic colors (e.g. `bg-green-100`, `bg-blue-100`, `bg-yellow-500`) for badges/icons. No changes were made yet; we should agree a shared success/warn/info token mapping (light/dark safe) before refactoring these.
 
 ### 2.4 CI & Testing Parity
-1. Update CI workflows to enforce lint → `tsc --noEmit` → unit → Playwright-bdd → coverage merge.
-2. Ensure nightly mutation job gates on 80% score and publishes report links.
-3. Add Windsurf workflow documentation updates (test-stack, mutation-scan, etc.).
-4. Track `REQ-` IDs in new tests for traceability.
+**Status:** ✅ Complete
+
+1. Update CI workflows to enforce lint → `tsc --noEmit`/`tscheck` → unit → Playwright-bdd → coverage merge. ✅
+2. Ensure nightly mutation job gates on 80% score and publishes report links. ✅
+3. Add Windsurf workflow documentation updates (test-stack, mutation-scan, etc.). ✅
+4. Track `REQ-` IDs in new tests for traceability. ✅
 
 ---
 

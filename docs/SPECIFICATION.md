@@ -109,7 +109,7 @@ To support offline analysis and physical record-keeping during expeditions:
 ### **3.8 Testing Automation & Reporting**
 
 * **Automated Test Stack (REQ-QA-01):** Every pull request must run lint, TypeScript check, unit tests, BDD Playwright tests (instrumented), and coverage merge in CI (`CI – Tests` workflow).
-* **Mutation Coverage Monitoring (REQ-QA-02):** Nightly mutation testing must run via `CI – Mutation Testing`, publishing HTML reports and warning when mutation score falls below 80%.
+* **Mutation Coverage Monitoring (REQ-QA-02):** Nightly mutation testing must run via `CI – Mutation Testing`, publishing HTML reports and failing when mutation score falls below 80%.
 * **Deployment Gate (REQ-QA-03):** Production/staging builds may only run after `CI – Tests` succeeds; build artifacts must be generated via `CI – Deploy`.
 * **Local Workflow Parity (REQ-QA-04):** Developers must have Windsurf workflows (`/test-stack`, `/mutation-scan`, `/bdd-fix`, `/file-completed-plan`) that mirror CI steps for consistent local verification.
 * **Documentation Sync (REQ-QA-05):** Testing rules (`.windsurf/rules/seee-rules-testing.md`) must reference all available workflows and coverage targets so contributors can trace expectations.

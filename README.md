@@ -186,7 +186,7 @@ These workflows mirror CI so local runs catch issues early.
 | Workflow | Trigger | Purpose |
 | --- | --- | --- |
 | **CI – Tests** (`.github/workflows/ci-test.yml`) | Pull requests, manual | Lint → `tsc` → unit → instrumented BDD → coverage merge → upload artifacts |
-| **CI – Mutation Testing** (`ci-mutation.yml`) | Nightly 02:00 UTC, manual | Unit smoke → `npm run test:mutation` → publish mutation score/report |
+| **CI – Mutation Testing** (`ci-mutation.yml`) | Nightly 02:00 UTC, manual | Unit smoke → `npm run test:mutation` → publish report and fail if mutation score < 80% |
 | **CI – Deploy** (`ci-deploy.yml`) | Release, manual | Build after CI – Tests succeeds, upload build artifact for deployment |
 
 Branch protection should require CI – Tests; mutation + deploy workflows surface quality gates and release readiness.

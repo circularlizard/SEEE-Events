@@ -72,7 +72,7 @@ Reference documentation for all completed implementation phases. For active/futu
   * Redis quota tracking: remaining, limit, reset timestamps
 
 * ✅ **1.6 Proxy Route**
-  * Built app/api/proxy/[...path]/route.ts
+  * Built `app/api/proxy/[...path]/route.ts`
   * Standardized error format with error codes and retryAfter
   * Read-Through Cache pattern: Check Redis → Fetch → Write Redis
   * Integrated rate limiting, circuit breaker, validation
@@ -102,7 +102,7 @@ Reference documentation for all completed implementation phases. For active/futu
   * Token refresh logic with automatic expiry detection
   * Full section data stored in Redis (24hr TTL)
   * Session stored in JWT (section IDs only to avoid size limits)
-  * nextauth route handlers at app/api/auth/[...nextauth]/route.ts
+  * nextauth route handlers at `app/api/auth/[...nextauth]/route.ts`
 * ✅ Middleware protection for /dashboard routes (redirect to login if unauthenticated)
 * ✅ Manual testing: OAuth flow works, tokens rotate correctly, session persists
 * ✅ Real API testing with actual OSM credentials (rate limiting verified)
@@ -270,6 +270,23 @@ Reference documentation for all completed implementation phases. For active/futu
 - Updated testing rules referencing the new workflows and governance targets.
 
 **Output:** Every test tier is now automated locally and in CI, and documentation clearly explains how to audit coverage, triage failures, and archive future plans.
+
+---
+
+## **Platform Hardening (Dec 2025) ✅ COMPLETE (Dec 22, 2025)**
+
+**Plan:** [platform-hardening-plan-completed-2025-12-22.md](./platform-hardening-plan-completed-2025-12-22.md)
+
+**Summary:** Hardened the platform across session stability, proxy safety, UI responsiveness polish, and CI parity so the dashboard is stable before multi-app work.
+
+**Key Deliverables:**
+1. Session timeout behavior verified via BDD scenarios (callbackUrl preserved and inactivity logout supported).
+2. Proxy safety headers standardized (rate limit headers + Retry-After) with additional integration coverage.
+3. Rate-limit telemetry endpoint + client warning banner.
+4. UI polish for table/card responsiveness with viewport-aware BDD regression coverage.
+5. CI parity improvements including mutation testing **gate** at 80% and standardized TypeScript checks.
+
+**Notes:** Theme/token audit completed; refactor of hard-coded status colors is deferred pending an agreed success/warn/info token mapping.
 
 ---
 
