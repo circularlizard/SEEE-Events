@@ -197,8 +197,8 @@ Authoring plan:
 
 ### 7.2 Tier 1 – Numerical Coverage
 
-- [ ] Configure coverage instrumentation in Jest + Next.js.
-- [ ] Implement coverage merge scripts and ensure CI uploads reports.
+- [x] Configure coverage instrumentation in Jest + Next.js.
+- [x] Implement coverage merge scripts and ensure CI uploads reports.
 
 ### 7.3 Tier 2 – Functional Coverage (BDD)
 
