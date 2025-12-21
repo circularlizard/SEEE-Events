@@ -202,8 +202,8 @@ Authoring plan:
 - [x] Convert first high-value flow to `.feature` (Auth/Login).
 - [x] Make BDD runner green in CI-style run (`npm run test:bdd`).
 - [x] Convert high-value flows (Dashboard, Members, Member Issues) to `.feature` files.
-- [ ] Remove legacy `.spec.ts` equivalents once BDD tests pass.
-- [ ] Enforce `REQ-` tags via lint rule or CI check.
+- [x] Remove legacy `.spec.ts` equivalents once BDD tests pass.
+- [x] Enforce `REQ-` tags via lint rule or CI check.
 
 ### 7.4 Tier 3 – Mutation Coverage
 

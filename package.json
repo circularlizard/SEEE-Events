@@ -20,6 +20,7 @@
     "test:bdd": "npm run test:bdd:gen && cross-env INSTRUMENT_CODE=1 playwright test -c playwright.bdd.config.ts",
     "test:bdd:ui": "playwright test -c playwright.bdd.config.ts --ui",
     "test:bdd:coverage": "npm run test:unit && npm run test:bdd && npm run test:merge",
+    "test:req-tags": "bash ./scripts/check_req_tags.sh",
     "pretest:merge": "mkdir -p coverage/merged",
     "test:merge": "nyc merge coverage/unit coverage/merged/unit.json && nyc merge coverage/e2e coverage/merged/e2e.json && nyc merge coverage/merged coverage/merged/coverage.json",
     "posttest:merge": "nyc report --reporter=html --reporter=text --temp-dir=coverage/merged --report-dir=coverage/total",

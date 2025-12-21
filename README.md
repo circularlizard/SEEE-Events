@@ -163,40 +163,42 @@ npm run validate:safety
 
 Tests use Mock Service Worker (MSW) to intercept network requests.
 
-### End-to-End (E2E) Tests
+### End-to-End (BDD) Tests
 
-E2E tests use Playwright to test the full application flow in a real browser:
+E2E tests are now authored as Gherkin `.feature` files and executed via **Playwright + playwright-bdd**.
 
 ```bash
-# Run all E2E tests (headless)
-npm run test:e2e
+# Run all BDD E2E tests (headless)
+npm run test:bdd
 
 # Run with interactive UI
-npm run test:e2e:ui
-
-# Debug mode (step through tests)
-npm run test:e2e:debug
+npm run test:bdd:ui
 
 # View HTML test report
-npm run test:e2e:report
+npx playwright show-report
 ```
 
-**E2E Test Coverage:**
-- **Login Flow:** Unauthenticated redirect, OAuth trigger, post-auth navigation
-- **Section Picker:** Multi-section modal, selection persistence (skipped - requires multi-section mock data)
-- **Events List:** Loading states, desktop table view, mobile card view, responsive layout
+**Requirement tag enforcement:**
+
+```bash
+# Ensure every .feature file has @REQ-* tags
+npm run test:req-tags
+```
+
+**Note:** Legacy `.spec.ts` files have been removed for flows that have been migrated to BDD.
+
+### Legacy Playwright Specs
+
+Some Playwright `.spec.ts` suites may still exist during migration (e.g., smoke tests). New E2E coverage should be added via `.feature` files under:
+
+- `tests/e2e/features/**`
+- `tests/e2e/steps/**`
 
 **Requirements:**
 - Dev server must be running (Playwright will start it automatically)
 - HTTPS certificates must be generated (`mkcert localhost`)
 - Redis must be running (`docker compose up -d redis`)
 - Mock Auth mode recommended for reliable testing
-
-**Browsers Tested:**
-- Chromium (Desktop Chrome)
-- Mobile Chrome (Pixel 5 emulation)
-
-**Note:** Some section picker tests are skipped pending multi-section mock data configuration.
 
 ## 🛠️ Development
 
