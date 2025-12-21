@@ -386,95 +386,97 @@ export function MembersClient() {
       </div>
       
       {/* Desktop table view */}
-      <div className="hidden md:block overflow-x-auto">
-        <table className="w-full text-sm">
-          <thead>
-            <tr className="border-b">
-              <th className="text-center py-3 px-2 w-16">
-                <SortableHeader 
-                  label="Status" 
-                  field="status" 
-                  currentSort={sortConfig} 
-                  onSort={handleSort}
-                  className="justify-center"
-                />
-              </th>
-              <th className="text-left py-3 px-2">
-                <SortableHeader 
-                  label="Name" 
-                  field="name" 
-                  currentSort={sortConfig} 
-                  onSort={handleSort} 
-                />
-              </th>
-              <th className="text-left py-3 px-2">
-                <SortableHeader 
-                  label="Age" 
-                  field="age" 
-                  currentSort={sortConfig} 
-                  onSort={handleSort} 
-                />
-              </th>
-              <th className="text-left py-3 px-2">
-                <SortableHeader 
-                  label="DOB" 
-                  field="dob" 
-                  currentSort={sortConfig} 
-                  onSort={handleSort} 
-                />
-              </th>
-              <th className="text-center py-3 px-2">
-                Details
-              </th>
-              <th className="text-left py-3 px-2">
-                <SortableHeader 
-                  label="Patrol" 
-                  field="patrol" 
-                  currentSort={sortConfig} 
-                  onSort={handleSort} 
-                />
-              </th>
-              <th className="text-left py-3 px-2">Sections</th>
-            </tr>
-          </thead>
-          <tbody>
-            {sortedMembers.map((member) => {
-              const age = calculateAge(member.dateOfBirth)
-              return (
-                <tr 
-                  key={member.id} 
-                  className="border-b hover:bg-muted/50 transition-colors"
-                >
-                  <td className="py-3 px-2 text-center">
-                    <MemberLoadingState state={member.loadingState} />
-                  </td>
-                  <td className="py-3 px-2 font-medium">
-                    {member.lastName}, {member.firstName}
-                  </td>
-                  <td className="py-3 px-2">
-                    {age !== null ? `${age}` : '—'}
-                  </td>
-                  <td className="py-3 px-2 text-muted-foreground">
-                    {formatDob(member.dateOfBirth)}
-                  </td>
-                  <td className="py-3 px-2 text-center">
-                    <MemberStatusIcons member={member} />
-                  </td>
-                  <td className="py-3 px-2">
-                    {member.patrolName}
-                  </td>
-                  <td className="py-3 px-2 text-muted-foreground text-sm">
-                    {member.otherSections.length > 0 ? (
-                      member.otherSections.join(', ')
-                    ) : (
-                      <span className="text-muted-foreground/50">—</span>
-                    )}
-                  </td>
-                </tr>
-              )
-            })}
-          </tbody>
-        </table>
+      <div className="hidden md:block">
+        <div className="border rounded-lg overflow-hidden">
+          <table className="w-full text-sm">
+            <thead className="bg-muted">
+              <tr className="border-b">
+                <th className="text-center p-4 font-semibold w-16">
+                  <SortableHeader 
+                    label="Status" 
+                    field="status" 
+                    currentSort={sortConfig} 
+                    onSort={handleSort}
+                    className="justify-center"
+                  />
+                </th>
+                <th className="text-left p-4 font-semibold">
+                  <SortableHeader 
+                    label="Name" 
+                    field="name" 
+                    currentSort={sortConfig} 
+                    onSort={handleSort} 
+                  />
+                </th>
+                <th className="text-left p-4 font-semibold">
+                  <SortableHeader 
+                    label="Age" 
+                    field="age" 
+                    currentSort={sortConfig} 
+                    onSort={handleSort} 
+                  />
+                </th>
+                <th className="text-left p-4 font-semibold">
+                  <SortableHeader 
+                    label="DOB" 
+                    field="dob" 
+                    currentSort={sortConfig} 
+                    onSort={handleSort} 
+                  />
+                </th>
+                <th className="text-center p-4 font-semibold">
+                  Details
+                </th>
+                <th className="text-left p-4 font-semibold">
+                  <SortableHeader 
+                    label="Patrol" 
+                    field="patrol" 
+                    currentSort={sortConfig} 
+                    onSort={handleSort} 
+                  />
+                </th>
+                <th className="text-left p-4 font-semibold">Sections</th>
+              </tr>
+            </thead>
+            <tbody>
+              {sortedMembers.map((member) => {
+                const age = calculateAge(member.dateOfBirth)
+                return (
+                  <tr 
+                    key={member.id} 
+                    className="border-b last:border-b-0 hover:bg-muted/50 transition-colors"
+                  >
+                    <td className="p-4 text-center">
+                      <MemberLoadingState state={member.loadingState} />
+                    </td>
+                    <td className="p-4 font-medium">
+                      {member.lastName}, {member.firstName}
+                    </td>
+                    <td className="p-4">
+                      {age !== null ? `${age}` : '—'}
+                    </td>
+                    <td className="p-4 text-muted-foreground">
+                      {formatDob(member.dateOfBirth)}
+                    </td>
+                    <td className="p-4 text-center">
+                      <MemberStatusIcons member={member} />
+                    </td>
+                    <td className="p-4">
+                      {member.patrolName}
+                    </td>
+                    <td className="p-4 text-muted-foreground">
+                      {member.otherSections.length > 0 ? (
+                        member.otherSections.join(', ')
+                      ) : (
+                        <span className="text-muted-foreground/50">—</span>
+                      )}
+                    </td>
+                  </tr>
+                )
+              })}
+            </tbody>
+          </table>
+        </div>
       </div>
       
       {/* Mobile card view */}
