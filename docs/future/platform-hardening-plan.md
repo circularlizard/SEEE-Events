@@ -37,10 +37,12 @@ Stabilize the SEEE Expedition Dashboard before investing in multi-application wo
 6. TanStack Query retry policy hardened in `src/components/QueryProvider.tsx`.
 
 ### 2.3 UI & Responsiveness Polish
-1. Apply shared spacing/typography tokens (tables, cards, headers).
-2. Finalize mobile vs desktop layouts for events, attendance, upcoming dashboard.
-3. Add responsive regression tests (Playwright BDD scenarios for desktop/mobile viewports).
-4. Audit shadcn theme + color usage; align with `REQ-NFR-01`.
+**Status:** 🟡 In progress
+
+1. Apply shared spacing/typography tokens (tables, cards, headers). ✅
+2. Finalize mobile vs desktop layouts for events, attendance, upcoming dashboard. ✅ (events, attendance, members)
+3. Add responsive regression tests (Playwright BDD scenarios for desktop/mobile viewports). ✅ (events list, members list, attendance-by-person, event detail, member issues)
+4. Audit shadcn theme + color usage; align with `REQ-NFR-01`. ⏳
 
 ### 2.4 CI & Testing Parity
 1. Update CI workflows to enforce lint → `tsc --noEmit` → unit → Playwright-bdd → coverage merge.
