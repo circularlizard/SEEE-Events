@@ -136,6 +136,64 @@ describe('Proxy Route Integration', () => {
     expect(setCachedResponse).toHaveBeenCalled()
   })
 
+  it('treats corrupted cache as MISS and fetches from upstream', async () => {
+    const { getCachedResponse, setCachedResponse } = jest.requireMock('@/lib/redis')
+    ;(getCachedResponse as jest.Mock).mockResolvedValueOnce('<html>not json</html>')
+
+    const mockBody = { ok: true, source: 'upstream-after-corrupt-cache' }
+    const headers = new Headers({
+      'content-type': 'application/json',
+      'x-ratelimit-remaining': '500',
+      'x-ratelimit-limit': '1000',
+      'x-ratelimit-reset': String(Math.floor(Date.now() / 1000) + 3600),
+    })
+    const mockResponse = {
+      ok: true,
+      status: 200,
+      headers,
+      json: async () => mockBody,
+    } as any
+    const fetchSpy = jest.spyOn(global, 'fetch' as any).mockResolvedValueOnce(mockResponse)
+
+    const res = await GET(makeRequest('GET', `${base}/osmc/members`), {
+      params: Promise.resolve({ path: ['osmc', 'members'] }),
+    })
+    expect(res.status).toBe(200)
+    const json = await res.json()
+    expect(json.source).toBe('upstream-after-corrupt-cache')
+    expect(res.headers.get('X-Cache')).toBe('MISS')
+    expect(fetchSpy).toHaveBeenCalled()
+    expect(setCachedResponse).toHaveBeenCalled()
+  })
+
+  it('propagates Retry-After on upstream error responses', async () => {
+    const { getCachedResponse } = jest.requireMock('@/lib/redis')
+    ;(getCachedResponse as jest.Mock).mockResolvedValueOnce(null)
+
+    const headers = new Headers({
+      'retry-after': '12',
+      'x-ratelimit-remaining': '400',
+      'x-ratelimit-limit': '1000',
+      'x-ratelimit-reset': String(Math.floor(Date.now() / 1000) + 3600),
+    })
+    const mockResponse = {
+      ok: false,
+      status: 503,
+      headers,
+      text: async () => 'service unavailable',
+    } as any
+    jest.spyOn(global, 'fetch' as any).mockResolvedValueOnce(mockResponse)
+
+    const res = await GET(makeRequest('GET', `${base}/osmc/members`), {
+      params: Promise.resolve({ path: ['osmc', 'members'] }),
+    })
+    expect(res.status).toBe(503)
+    expect(res.headers.get('Retry-After')).toBe('12')
+    expect(res.headers.get('X-Cache')).toBe('MISS')
+    const body = await res.json()
+    expect(body.retryAfter).toBe(12)
+  })
+
   it('triggers hard lock when upstream sends X-Blocked', async () => {
     const { setHardLock } = jest.requireMock('@/lib/redis')
     const headers = new Headers({ 'x-blocked': 'true' })
