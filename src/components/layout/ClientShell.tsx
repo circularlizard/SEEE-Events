@@ -5,6 +5,7 @@ import { useEffect } from "react";
 import Header from "./Header";
 import Sidebar from "./Sidebar";
 import { DataLoadingBanner } from "./DataLoadingBanner";
+import { RateLimitTelemetryBanner } from "./RateLimitTelemetryBanner";
 import { useSessionTimeout } from "@/hooks/useSessionTimeout";
 import { useMembers } from "@/hooks/useMembers";
 import { useEvents } from "@/hooks/useEvents";
@@ -68,6 +69,7 @@ export default function ClientShell({ children }: { children: React.ReactNode })
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
+      {!isSectionPickerPage && hasSection && <RateLimitTelemetryBanner />}
       {!isSectionPickerPage && hasSection && <DataLoadingBanner />}
       <div className="flex flex-1">
         {!isSectionPickerPage && <Sidebar />}

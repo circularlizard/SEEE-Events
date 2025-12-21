@@ -90,6 +90,36 @@ export type OAuthResourceData = z.infer<typeof OAuthResourceDataSchema>
 export type OAuthResource = z.infer<typeof OAuthResourceSchema>
 
 // ============================================================================
+// TELEMETRY SCHEMAS (Platform Observability)
+// ============================================================================
+
+export const RateLimitQuotaSchema = z
+  .object({
+    remaining: z.number(),
+    limit: z.number(),
+    reset: z.number(),
+  })
+  .nullable()
+
+export const RateLimitQueueSchema = z
+  .object({
+    queued: z.number(),
+    running: z.number(),
+    executing: z.number(),
+    done: z.number(),
+  })
+  .nullable()
+
+export const RateLimitTelemetrySchema = z.object({
+  hardLocked: z.boolean(),
+  softLocked: z.boolean(),
+  quota: RateLimitQuotaSchema,
+  queue: RateLimitQueueSchema,
+})
+
+export type RateLimitTelemetry = z.infer<typeof RateLimitTelemetrySchema>
+
+// ============================================================================
 // TIER 1: STRICT SCHEMAS (Critical Data - Must Be Valid)
 // ============================================================================
 

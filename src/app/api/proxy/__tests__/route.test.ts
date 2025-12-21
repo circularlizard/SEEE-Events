@@ -94,6 +94,11 @@ describe('Proxy Route Integration', () => {
     expect(res.status).toBe(200)
     const json = await res.json()
     expect(json.source).toBe('cache')
+    expect(res.headers.get('X-Cache')).toBe('HIT')
+    expect(res.headers.get('X-Upstream-URL')).toBeTruthy()
+    expect(res.headers.get('X-RateLimit-Remaining')).toBeTruthy()
+    expect(res.headers.get('X-RateLimit-Limit')).toBeTruthy()
+    expect(res.headers.get('X-RateLimit-Reset')).toBeTruthy()
     expect(setCachedResponse).not.toHaveBeenCalled()
   })
 
@@ -121,6 +126,12 @@ describe('Proxy Route Integration', () => {
     expect(res.status).toBe(200)
     const json = await res.json()
     expect(json.source).toBe('upstream')
+    expect(res.headers.get('X-Cache')).toBe('MISS')
+    expect(res.headers.get('X-Upstream-URL')).toBeTruthy()
+    // Prefer upstream headers when present
+    expect(res.headers.get('X-RateLimit-Remaining')).toBeTruthy()
+    expect(res.headers.get('X-RateLimit-Limit')).toBeTruthy()
+    expect(res.headers.get('X-RateLimit-Reset')).toBeTruthy()
     expect(fetchSpy).toHaveBeenCalled()
     expect(setCachedResponse).toHaveBeenCalled()
   })
@@ -139,6 +150,8 @@ describe('Proxy Route Integration', () => {
     const res = await GET(makeRequest('GET', `${base}/osmc/members`), { params: Promise.resolve({ path: ['osmc','members'] }) })
     expect(res.status).toBe(503)
     expect(setHardLock).toHaveBeenCalled()
+    expect(res.headers.get('Retry-After')).toBe('300')
+    expect(res.headers.get('X-Upstream-URL')).toBeTruthy()
   })
 
   it('returns 429 when soft locked', async () => {
@@ -146,6 +159,8 @@ describe('Proxy Route Integration', () => {
     ;(isSoftLocked as jest.Mock).mockResolvedValueOnce(true)
     const res = await GET(makeRequest('GET', `${base}/osmc/members`), { params: Promise.resolve({ path: ['osmc','members'] }) })
     expect(res.status).toBe(429)
+    expect(res.headers.get('Retry-After')).toBe('60')
+    expect(res.headers.get('X-Cache')).toBe('BYPASS')
   })
 
   it('returns 503 when hard locked', async () => {
@@ -153,5 +168,7 @@ describe('Proxy Route Integration', () => {
     ;(isHardLocked as jest.Mock).mockResolvedValueOnce(true)
     const res = await GET(makeRequest('GET', `${base}/osmc/members`), { params: Promise.resolve({ path: ['osmc','members'] }) })
     expect(res.status).toBe(503)
+    expect(res.headers.get('Retry-After')).toBe('300')
+    expect(res.headers.get('X-Cache')).toBe('BYPASS')
   })
 })

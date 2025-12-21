@@ -7,6 +7,7 @@ import {
   getCachedResponse,
   setCachedResponse,
   getCacheKey,
+  getQuota,
 } from '@/lib/redis'
 import { logProxyRequest, logCache } from '@/lib/logger'
 import { logApiRequest, logApiResponse, logApiError } from '@/lib/api-debug-logger'
@@ -91,6 +92,62 @@ const USE_MSW = process.env.NEXT_PUBLIC_USE_MSW === 'true'
 
 // Cache TTL (5 minutes)
 const CACHE_TTL = 300
+
+async function getRateLimitHeadersFallback(): Promise<Record<string, string>> {
+  const quota = await getQuota().catch(() => null)
+  if (!quota) return {}
+
+  return {
+    'X-RateLimit-Remaining': String(quota.remaining),
+    'X-RateLimit-Limit': String(quota.limit),
+    'X-RateLimit-Reset': String(quota.reset),
+  }
+}
+
+function pickIfPresent(headers: Headers, key: string): string | undefined {
+  const v = headers.get(key)
+  if (!v) return undefined
+  return v
+}
+
+async function buildSafetyHeaders(params: {
+  targetUrl: string
+  cache: 'HIT' | 'MISS' | 'BYPASS'
+  upstreamHeaders?: Headers
+  upstreamRequestHeaders?: Record<string, string>
+}): Promise<Record<string, string>> {
+  const { targetUrl, cache, upstreamHeaders, upstreamRequestHeaders } = params
+
+  const fromUpstream: Record<string, string> = {}
+  if (upstreamHeaders) {
+    const remaining = pickIfPresent(upstreamHeaders, 'X-RateLimit-Remaining')
+    const limit = pickIfPresent(upstreamHeaders, 'X-RateLimit-Limit')
+    const reset = pickIfPresent(upstreamHeaders, 'X-RateLimit-Reset')
+    const retryAfter = pickIfPresent(upstreamHeaders, 'Retry-After')
+    const blocked = pickIfPresent(upstreamHeaders, 'X-Blocked')
+
+    if (remaining) fromUpstream['X-RateLimit-Remaining'] = remaining
+    if (limit) fromUpstream['X-RateLimit-Limit'] = limit
+    if (reset) fromUpstream['X-RateLimit-Reset'] = reset
+    if (retryAfter) fromUpstream['Retry-After'] = retryAfter
+    if (blocked) fromUpstream['X-Blocked'] = blocked
+  }
+
+  const rateLimitFallback = await getRateLimitHeadersFallback()
+
+  const merged: Record<string, string> = {
+    'X-Cache': cache,
+    'X-Upstream-URL': targetUrl,
+    ...rateLimitFallback,
+    ...fromUpstream,
+  }
+
+  if (upstreamRequestHeaders) {
+    merged['X-Upstream-Request-Headers'] = JSON.stringify(upstreamRequestHeaders)
+  }
+
+  return merged
+}
 
 /**
  * Find mock data for a given request path and query params
@@ -192,6 +249,7 @@ export async function GET(
     resolvedParams = await params
     // Check for hard lock (global halt)
     if (await isHardLocked()) {
+      const targetUrl = request.nextUrl.pathname
       return NextResponse.json(
         {
           error: 'SYSTEM_HALTED',
@@ -199,19 +257,32 @@ export async function GET(
             'System is temporarily unavailable due to API blocking. Please contact administrator.',
           retryAfter: 300,
         },
-        { status: 503 }
+        {
+          status: 503,
+          headers: {
+            ...(await buildSafetyHeaders({ targetUrl, cache: 'BYPASS' })),
+            'Retry-After': '300',
+          },
+        }
       )
     }
 
     // Check for soft lock (cooldown period)
     if (await isSoftLocked()) {
+      const targetUrl = request.nextUrl.pathname
       return NextResponse.json(
         {
           error: 'RATE_LIMITED',
           message: 'System is cooling down. Please try again in a moment.',
           retryAfter: 60,
         },
-        { status: 429 }
+        {
+          status: 429,
+          headers: {
+            ...(await buildSafetyHeaders({ targetUrl, cache: 'BYPASS' })),
+            'Retry-After': '60',
+          },
+        }
       )
     }
 
@@ -255,7 +326,7 @@ export async function GET(
           status: 200,
           headers: {
             'X-Mock': 'true',
-            'X-Cache': 'BYPASS',
+            ...(await buildSafetyHeaders({ targetUrl, cache: 'BYPASS' })),
           },
         })
       } else {
@@ -294,10 +365,7 @@ export async function GET(
         logApiResponse('GET', path, 200, Date.now() - startTime, true, parsed)
         return NextResponse.json(parsed, {
           status: 200,
-          headers: {
-            'X-Cache': 'HIT',
-            'X-Upstream-URL': targetUrl,
-          },
+          headers: await buildSafetyHeaders({ targetUrl, cache: 'HIT' }),
         })
       } catch (e) {
         // Corrupted cache (e.g., HTML accidentally stored). Treat as miss.
@@ -337,7 +405,18 @@ export async function GET(
           message: 'API access has been blocked. System halted for 5 minutes.',
           retryAfter: 300,
         },
-        { status: 503 }
+        {
+          status: 503,
+          headers: {
+            ...(await buildSafetyHeaders({
+              targetUrl,
+              cache: 'MISS',
+              upstreamHeaders: response.headers,
+              upstreamRequestHeaders: { ...upstreamRequestHeaders, Authorization: 'Bearer REDACTED' },
+            })),
+            'Retry-After': '300',
+          },
+        }
       )
     }
 
@@ -345,13 +424,26 @@ export async function GET(
     if (!response.ok) {
       const errorText = await response.text()
       console.error(`[Proxy] API error: ${response.status} - ${errorText}`)
+
+      const retryAfter = response.headers.get('Retry-After')
       return NextResponse.json(
         {
           error: 'API_ERROR',
           message: `OSM API returned ${response.status}`,
           details: errorText,
+          retryAfter: retryAfter ? Number(retryAfter) : undefined,
         },
-        { status: response.status, headers: { 'X-Upstream-URL': targetUrl, 'X-Upstream-Request-Headers': JSON.stringify({ ...upstreamRequestHeaders, Authorization: 'Bearer REDACTED' }) } }
+        {
+          status: response.status,
+          headers: {
+            ...(await buildSafetyHeaders({
+              targetUrl,
+              cache: 'MISS',
+              upstreamHeaders: response.headers,
+              upstreamRequestHeaders: { ...upstreamRequestHeaders, Authorization: 'Bearer REDACTED' },
+            })),
+          },
+        }
       )
     }
 
@@ -373,24 +465,30 @@ export async function GET(
 
     return NextResponse.json(data, {
       status: 200,
-      headers: {
-        'X-Cache': 'MISS',
-        'X-RateLimit-Remaining': response.headers.get('X-RateLimit-Remaining') || '',
-        'X-RateLimit-Limit': response.headers.get('X-RateLimit-Limit') || '',
-        'X-Upstream-URL': targetUrl,
-        'X-Upstream-Request-Headers': JSON.stringify({ ...upstreamRequestHeaders, Authorization: 'Bearer REDACTED' }),
-      },
+      headers: await buildSafetyHeaders({
+        targetUrl,
+        cache: 'MISS',
+        upstreamHeaders: response.headers,
+        upstreamRequestHeaders: { ...upstreamRequestHeaders, Authorization: 'Bearer REDACTED' },
+      }),
     })
   } catch (error) {
     const duration = Date.now() - startTime
     const errorMessage = error instanceof Error ? error.message : 'Unknown error'
     const pathFromUrl = resolvedParams ? resolvedParams.path.join('/') : request.nextUrl.pathname.replace(/^\/?api\/proxy\//, '')
+    const targetUrl = request.nextUrl.pathname
 
     if (error instanceof Error && error.message.includes('RATE_LIMITED')) {
       logProxyRequest({ method: 'GET', path: pathFromUrl, status: 429, duration, error: errorMessage })
       return NextResponse.json(
         { error: 'RATE_LIMITED', message: error.message, retryAfter: 60 },
-        { status: 429 }
+        {
+          status: 429,
+          headers: {
+            ...(await buildSafetyHeaders({ targetUrl, cache: 'BYPASS' })),
+            'Retry-After': '60',
+          },
+        }
       )
     }
 
@@ -398,7 +496,10 @@ export async function GET(
     logApiError('GET', pathFromUrl, errorMessage)
     return NextResponse.json(
       { error: 'INTERNAL_ERROR', message: errorMessage },
-      { status: 500 }
+      {
+        status: 500,
+        headers: await buildSafetyHeaders({ targetUrl, cache: 'BYPASS' }),
+      }
     )
   }
 }
