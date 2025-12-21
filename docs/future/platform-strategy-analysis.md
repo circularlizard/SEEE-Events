@@ -115,7 +115,7 @@ We effectively operate **three parallel applications** today, expressed via role
 ## 6. Recommended Sequencing
 
 1. **Platform Hardening (in-flight)**  
-   - Execute the dedicated stabilization plan (`platform-hardening-plan.md`).  
+   - Execute the dedicated stabilization plan (`docs/completed-plans/platform-hardening-plan-completed-2025-12-22.md`).  
    - Goals: session timeout fixes, rate-limit telemetry, access-config enforcement, responsive polish, CI parity.
 
 2. **Formalize Current Apps**  

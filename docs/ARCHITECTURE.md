@@ -12,7 +12,8 @@ This document defines the technical architecture for the SEEE Expedition Dashboa
 
 1. **Strict Read-Only/No-DB Policy:** No personal data is stored persistently outside of OSM.  
 2. **Aggressive Rate Limiting:** The application acts as a "safety shield" between the user and the OSM API.  
-3. **Modern Aesthetics:** Fulfilling the requirement for a "clean, classy" interface with theming support.
+3. **Modern Aesthetics:** Fulfilling the requirement for a "clean, classy" interface with theming support.  
+4. **Multi-App Platform Alignment:** A single Next.js platform now hosts multiple application experiences (SEEE Event Planning, SEEE Expedition Viewer, Multi-Section Viewer, Platform Admin Console) that share the proxy/auth stack while exposing app-specific navigation, defaults, and scopes.
 
 ## **2\. Core Framework & Language**
 
@@ -20,6 +21,19 @@ This document defines the technical architecture for the SEEE Expedition Dashboa
 | :---- | :---- | :---- |
 | **Framework** | **Next.js 14+ (App Router)** | Provides a unified architecture for both the Frontend (UI) and the Backend (API Proxy). Its server-side capabilities are essential for hiding API tokens and enforcing rate limits. |
 | **Language** | **TypeScript** | **Critical for Section 5.5 (Error Handling).** Strong typing ensures that unexpected data structures from OSM are caught at compile-time or runtime validation, rather than causing silent UI failures. |
+
+### **2.1 Multi-App Platform Layout**
+
+To reflect the strategy in `docs/future/platform-strategy-analysis.md` §3 and §6, the platform formalizes four application shells inside one codebase:
+
+| Application | Audience | Route Group | Default Section Behavior | Primary Responsibilities |
+| --- | --- | --- | --- | --- |
+| **SEEE Event Planning** | SEEE core admin team | `/dashboard/(planning)` | Hard-coded SEEE section ID (configurable default) | Patrol/member hydration tooling, data quality investigations, expedition setup helpers, readiness pilots. |
+| **SEEE Expedition Viewer** | SEEE expedition leaders | `/dashboard/(expedition)` | Hard-coded SEEE section ID | Read-only expedition dashboards (events, logistics, attendance, exports). |
+| **Multi-Section Viewer** | Future external sections | `/dashboard/(multi)` | Reintroduces section selector & access strategies | Generalized expedition dashboards with patrol/event restrictions per user. |
+| **Platform Admin Console** | Platform operators | `/dashboard/(platform-admin)` | Access to configured SEEE section plus inspection tools | Cache priming, section ID management, developer tools, log viewer, audit events. |
+
+Applications share the same auth providers, proxy, rate limiting, and providers but set `{ currentApp, role, section }` in the Zustand session store to drive navigation, feature flags, and route guards.
 
 ## **3\. User Interface & Experience (UI/UX)**
 
@@ -42,34 +56,25 @@ This document defines the technical architecture for the SEEE Expedition Dashboa
 
 * **Role:** Consistent, lightweight iconography for the interface (e.g., Status indicators, Tent icons, Kit icons).
 
-### **3.4 Admin Management UI**
+### **3.4 Admin & Platform Consoles**
 
-* **Role:** A dedicated, secure section for Administrators to manage the **Access Control List** without redeploying the app.  
-* **Features:**  
-  * **User Management Table:** Add/Remove email addresses.  
-  * **Permission Editor:** Toggle between "Patrol-Based" and "Event-Based" strategies for each user.  
-  * **Configuration Editor:** Interface to map "Business IDs" (e.g., Badge ID for 'First Aid') without touching code.  
-  * **Factory Reset:** A "Reset to Defaults" action to restore the Business Rules to their original state if the configuration becomes corrupted.  
-  * **Visual Feedback:** Toast notifications (via Sonner/shadcn) for successful updates.
+* **SEEE Event Planning UI (Admin App):** Hosts member issue lists, patrol refresh controls, and expedition preparation tooling for SEEE-only workflows. Existing ACL/UI requirements land here.
+* **Platform Admin Console:** A new route group focused on operational controls:
+  * **Patrol Cache Board:** Shows last refresh timestamps, queued hydration jobs, and retry buttons wired to KV-backed tasks.
+  * **SEEE Section Configuration:** Displays the canonical SEEE section ID with an inline editor that persists the value to Redis (default provided via config file).
+  * **Developer Tools Drawer:** Safe toggles for MSW, rate-limit simulation, proxy inspector, and feature-flag previews without redeploying.
+  * **Log Viewer:** Streams structured proxy logs (pino) with filters for severity, endpoint, and request ID.
+  * **Audit Timeline:** Lists console actions (who, what, when) for compliance and incident response.
 
-### **3.5 Login & Section Selection Flow (Req 3.1)**
+### **3.5 Login, Application & Section Selection Flow (Req 3.1)**
 
-* **Login Flow:** At the start of the login process, the user is presented with a choice to select their intended role ("Administrator" or "Standard Viewer"). This selection determines which OAuth provider is used for authentication.
-  * **Implementation:** The application registers **two separate OAuth providers** with NextAuth:
-    * `osm-admin` - Requests 4 scopes: `section:event:read`, `section:member:read`, `section:programme:read`, `section:flexirecord:read`
-    * `osm-standard` - Requests 1 scope: `section:event:read`
-  * **Flow:** When user clicks "Sign in with OSM", the frontend calls `signIn('osm-admin')` or `signIn('osm-standard')` based on their role selection
-  * **OAuth Callbacks:** Each provider has a unique callback URL that must be whitelisted in OSM:
-    * Administrator: `/api/auth/callback/osm-admin`
-    * Standard Viewer: `/api/auth/callback/osm-standard`
-  * **Role Persistence:** The selected role is embedded in the user profile during OAuth callback and stored in the JWT token
-* **Section Selection:** The application uses a single active section (`currentSection`).
-  - If `currentSection` is present (persisted), the dashboard shell renders immediately and data loads for that section.
-  - If `currentSection` is missing, the section selector must render immediately and the normal dashboard shell must not render first (no-flash gating).
-* **Components:**
-  - **Full-screen section selector**: used only when there is no selected section.
-  - **Inline dropdown section switcher**: used when a section is already selected (instead of a full-screen modal).
-* **Persistence:** The selected `section_id` and the determined `userRole` are stored in the **Zustand Session Store** (see 4.2) to persist across reloads.
+* **Role & Scope Selection:** Users still choose "Administrator" vs "Standard Viewer" to determine OAuth provider (`osm-admin`, `osm-standard`).
+* **Application Selection Modal:** Immediately after role selection (or post-login callback), users pick the target application. The choice determines the route group mounted, feature flags enabled, and whether the section selector is shown.
+* **Section Handling:**  
+  - **SEEE Apps:** Auto-load the configured SEEE section ID from Redis; section selector stays hidden unless the ID is missing or overridden.  
+  - **Multi-Section Viewer:** Always show the selector first and persist the chosen section per user.  
+  - **Platform Admin Console:** Shows the SEEE default but allows read-only visibility into other sections for diagnostics when scopes permit.
+* **Persistence:** The Zustand session store now tracks `{ currentApp, currentSection, userRole }`, ensuring SSR/CSR parity and enabling app-aware navigation, query keys, and breadcrumbs.
 
 ### **3.6 Mobile Responsiveness Strategy (Req 6\)**
 
@@ -140,14 +145,12 @@ graph TD
 ### **4.2 Client State: Zustand**
 
 * **Purpose:** Manages local user preferences and ephemeral configuration.  
-* **Specific Use Cases:**  
-  * **Session Context:** Stores `currentSection` (selected section) and `userRole` (Admin/Standard).
-    - `currentSection` is persisted (non-sensitive) to support restoring the user’s last selection on refresh.
-    - When `currentSection` is absent, the UI must gate the dashboard shell and render the section selector immediately (no-flash).
-    - The `userRole` determined during login is critical for driving UI visibility of Admin controls and influencing data sourcing strategies.
-  * **Column Mapping (Section 3.3):** Stores the user's manual mapping of "Walking Grp" columns for the current session.  
-  * **Readiness Filters (Section 3.5):** Remembers that the user wants to see "Patrol A" and "Bronze Events" so the view doesn't reset on refresh.  
-* **Persistence:** Configured to persist to localStorage for **non-sensitive** settings so preferences survive a page reload.
+* **Session Context Store:** Tracks `{ currentApp, currentSection, userRole }`.
+  - **currentApp:** Determines which route group mounts, the sidebar menu, and TanStack Query namespace (e.g., `['expedition', 'events']`).  
+  - **currentSection:** Behaves as before but can now be pre-seeded from Platform Admin defaults; SEEE apps hydrate it automatically.  
+  - **userRole:** Drives visibility of admin-only controls and developer tooling.
+* **Preferences Store:** Continues to handle column mappings, readiness filters, and theme settings scoped to the selected application.
+* **Persistence:** Non-sensitive preferences persist via localStorage, but `currentApp` and `currentSection` are also mirrored in memory-only providers to ensure SSR parity and server components can render the correct shell.
 
 **Important**: Server-derived datasets containing sensitive information (e.g., member contact/medical data) must not be persisted to localStorage.
 
@@ -207,37 +210,33 @@ graph LR
 * **Role:** Acts as the intermediary. It holds the OAuth Client Secret.  
 * **Method Whitelist:** API Routes interacting with OSM are strictly **GET** only (Read-Only). The only POST routes allowed are for internal Admin Configuration updates.
 
-### **5.2 Rate Limiting Engine: Bottleneck**
+### **5.2 Security & Access Control – Multi-App Platform Alignment**
 
-* **Role:** Job scheduler and rate limiter.  
-* **Internal Throttling:** Caps outgoing requests to 80% of OSM's allowed limit.  
-* **Retry-After:** Automatically detects 429 headers and pauses execution.
+Formalizing the platform into discrete applications allows us to treat access control as an application-routing problem backed by OSM’s own authorization. Each route group declares its required role and app, and the login flow captures both before issuing the appropriate OSM scopes.
 
-### **5.3 Data Validation: Tiered Strategy (Resolving Req 3.3 vs 5.5)**
+* **Application Guard Matrix**
+  * **SEEE Event Planning** – Admin-only shell that auto-loads the configured SEEE section ID and exposes hydration/data-quality tooling.
+  * **SEEE Expedition Viewer** – Shared shell for admins and standard viewers; admin-only controls simply don’t render when `role=standard`.
+  * **Multi-Section Viewer** – Future-facing shell that reintroduces the section selector; OSM scopes determine which sections the user can read, so no extra patrol/event slicing is performed inside our platform.
+  * **Platform Admin Console** – Admin-only plus membership in a Redis-backed `platform:allowedOperators` allowlist; surfaces cache controls, developer toggles, and log viewers.
 
-To balance "Fail Fast" with "Graceful Degradation":
+| Application | NextAuth Provider | OSM Scopes | Section Behavior |
+| --- | --- | --- | --- |
+| SEEE Event Planning | `osm-admin` (existing admin provider) | `section:event:read`, `section:member:read`, `section:programme:read`, `section:flexirecord:read` | Auto-inject configured SEEE section ID, selector hidden. |
+| SEEE Expedition Viewer | `osm-standard` (existing standard provider) | `section:event:read` | Auto-inject SEEE section ID, selector hidden, admin controls suppressed unless `role=admin`. |
+| Platform Admin Console | `osm-admin` + `platform:allowedOperators` allowlist | Same scopes as Event Planning | Auto-inject SEEE section ID, exposes infrastructure controls. |
+| Multi-Section Viewer (future) | `osm-multisection` (new provider once GA) | Minimum `section:event:read` plus any future-readiness scopes | Selector visible; OSM scopes determine accessible section IDs. |
 
-* **Tier 1: Strict Core Schema:** (Event ID, Member Name, Patrol). If these are invalid/missing, Zod throws an error and the UI displays a "Data Error" state. This satisfies Req 5.5.  
-* **Tier 2: Permissive Logistics Schema:** (Tent Group, Walking Group). These fields are marked optional() or nullable(). If data is missing or malformed, Zod returns null, and the UI simply hides that column. This satisfies Req 3.3.
-
-### **5.2 Security & Access Control**
-
-* **User Roles:** The system will distinguish between two classes of users:  
-  * **Administrator:** A user explicitly defined in the configuration who has authority to **set** access limits. Administrators have unrestricted view of all events and patrols by default. **Upon successful login, an Administrator will also trigger an automatic refresh of the cached Patrol and Member structure data (see Section 7).**
-  * **Standard Viewer:** A user whose view is restricted by the limits defined by an Administrator.  
-* **Access Control Strategies:** The configuration must support two distinct restriction models for Standard Viewers:  
-  * **Strategy A: Patrol-Based Restriction (Vertical Slicing):**  
-    * *Use Case:* Unit Leaders who need to see their own members across all events.  
-    * *Behavior:* The user can see **All Events**, but the participant list is permanently filtered to show **only members of specific Patrols** (e.g., "Borestane ESU").  
-  * **Strategy B: Event-Based Restriction (Horizontal Slicing):**  
-    * *Use Case:* An Expedition Leader running a specific trip who needs to see all attendees regardless of Unit.  
-    * *Behavior:* The user can see **All Patrols/Members**, but only for **specific Events** (e.g., "Bronze Practice 2025").  
-* **Configuration Mechanism:**  
-  * The mapping of User \-\> Strategy \-\> `Patrol IDs OR Event IDs` will be stored in the internal **User Configuration List** (JSON config/Environment Variable).  
-  * If a user is not listed in the configuration, they are denied access by default (Whitelist approach).
-
-* **Storage:** The **User Configuration List** is stored in **Vercel KV (Redis)**.  
-* **Role Propagation:** When the Access List is read, the backend returns the User's Role (admin or viewer). This is stored in Zustand to conditionally render the "Admin Settings" button in the UI.
+* **Scope & Section Handling**
+  * Each app maps to a NextAuth provider configuration so OSM scopes align with the app’s needs (e.g., Event Planning/Platform Admin include member and flexi scopes; Expedition Viewer requests event-only).
+  * SEEE-only apps always inject the configured SEEE section ID server-side; the multi-section viewer surfaces the selector but relies on OSM to enforce cross-section permissions.
+  * **TODO – Phase 3 Part 3:** Define the concrete `osm-multisection` provider + hydration guarantees in tandem with the generalized hydrator work tracked in `docs/future/platform-strategy-analysis.md` §6.
+* **Configuration Keys**
+  * Minimal platform metadata (`platform:seeeSectionId`, `platform:allowedOperators`, developer-tool toggles) lives in Vercel KV.
+  * On login, these keys seed the Zustand session store with `{ currentApp, userRole, currentSection }`, ensuring SSR/CSR parity for gated navigation and TanStack Query namespaces.
+* **Operational Hooks & Audit**
+  * Mounting any SEEE-specific shell (Event Planning, Expedition Viewer, Platform Admin) triggers cache hydration jobs so downstream views consume cached members/patrols instead of calling high-scope endpoints. Multi-Section Viewer will reuse the same mechanism once its generalized hydrators land (tracked alongside the TODO above).
+  * Every console action (cache loads, section edits, dev-tool toggles) emits an audit entry (user, timestamp, payload summary) stored alongside proxy logs for incident response.
 
 ### **5.6 Logging & Observability (Req 5.4)**
 

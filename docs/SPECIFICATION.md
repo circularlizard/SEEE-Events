@@ -24,25 +24,39 @@ Before final implementation, the following strategic decisions must be resolved:
 
 **Target Audience:** Unit Leaders (viewing data for their specific Explorers) and SEEE Administrators (managing the data).
 
-## **3. Functional Requirements**
+### **2.1 Multi-Application Platform Direction**
+
+The platform now formalizes the three application experiences defined in `docs/future/platform-strategy-analysis.md` §3—with an additional platform-admin console—to prepare for Phase 3 Part 3 work:
+
+1. **SEEE Event Planning** – replaces the legacy “Administrator” role experience and focuses on expedition setup, patrol refresh tooling, and member data quality investigations for the SEEE section.
+2. **SEEE Expedition Viewer** – replaces the “Standard Viewer” role and provides read-only dashboards for expedition leaders once the section is hydrated.
+3. **Multi-Section Viewer (future)** – shares the expedition viewer UI but reintroduces the section selector so other Edinburgh sections can adopt the tooling.
+4. **Platform Admin Console (new)** – provides operational controls (section defaults, patrol cache priming, developer instrumentation, log access) that underpin the other apps.
+
+All applications share the same proxy/auth/rate-limit safety layer, UI shell, TanStack Query providers, and Zustand stores. Requirements in the following sections are now grouped by platform-wide capabilities and per-application scope so we can iteratively port existing functionality into explicit apps.
+
+## **3. Application Portfolio & Functional Requirements**
 
 ### 3.0 Requirement ID Scheme
 
 All requirements in this specification carry unique identifiers using the pattern `REQ-<domain>-<nn>`. Domains align with major feature areas (e.g., `AUTH`, `EVENTS`, `LOGISTICS`, `TRAINING`, `SUMMARY`, `REPORTING`, `ADMIN`, `DATA`, `ARCH`, `NFR`). These IDs provide stable references for BDD features, tests, and documentation. Any new requirement must receive the next sequential number within its domain.
 
-### **3.1 Authentication & Section Selection**
+### **3.1 Platform-Wide Capabilities**
+
+#### **3.1.1 Authentication, Application & Section Selection**
 
 * **Protocol (REQ-AUTH-01):** The application will use **OSM OAuth 2.0 (Authorization Code Flow)**.  
   * *Rationale:* This is the mandatory standard for multi-user applications interfacing with OSM.  
 * **Login Method (REQ-AUTH-02):** Users must authenticate using their existing **Personal OSM Credentials**.  
 * **Role Selection (REQ-AUTH-03):** At the start of the login process, the user must select their intended role ("Administrator" or "Standard Viewer") to determine requested OAuth scopes.
+* **Application Selection (REQ-AUTH-13):** After selecting a role, the user must select which application experience to open (SEEE Event Planning, SEEE Expedition Viewer, Multi-Section Viewer, Platform Admin). The selection drives route group entry, default section assumptions, and any additional scopes required by that app.
 * **Administrator Scopes (REQ-AUTH-04):** Administrators require `section:event:read`, `section:member:read`, `section:programme:read`, `section:flexirecord:read`.
 * **Standard Viewer Scopes (REQ-AUTH-05):** Standard viewers require `section:event:read` only.
-* **Active Section Model (REQ-AUTH-06):** The application must operate with a single active section at a time (`currentSection`).
-  - **Persisted Selection (REQ-AUTH-07):** If a section exists in the persisted session store, the application must load it immediately without showing the full selector.
-  - **Selector-first Rendering (REQ-AUTH-08):** If no section is selected, the section selector must render **before** the normal dashboard UI to avoid flash.
-  - **Selection Persistence (REQ-AUTH-09):** After a user selects a section, that selection must be persisted and subsequent data loads must target that section.
-* **Section Switch UX (REQ-AUTH-10):** When a section is already selected, switching must occur via a compact dropdown control in the sidebar (desktop) with a mobile affordance in the header.
+* **Active Section Model (REQ-AUTH-06):** The platform must operate with a single active section at a time (`currentSection`).  
+  - **Persisted Selection (REQ-AUTH-07):** If a section exists in the persisted session store, the application must load it immediately without showing the full selector.  
+  - **Selector-first Rendering (REQ-AUTH-08):** If no section is selected, the section selector must render **before** the normal dashboard UI to avoid flash.  
+  - **Selection Persistence (REQ-AUTH-09):** After a user selects a section, that selection must be persisted and subsequent data loads must target that section.  
+* **Section Switch UX (REQ-AUTH-10):** When a section is already selected, switching must occur via a compact dropdown control in the sidebar (desktop) with a mobile affordance in the header. Multi-section viewer flows must keep this selector visible, while the SEEE-only apps hide it by default.
 
 **Implementation alignment (Dec 2025)** references the requirements above:
 
@@ -50,48 +64,24 @@ All requirements in this specification carry unique identifiers using the patter
 * `REQ-AUTH-10` defines the primary control location (sidebar dropdown).
 * `REQ-AUTH-08` guarantees the no-flash requirement.
 
-### **3.1.1 Session timeout**
+#### **3.1.2 Session timeout**
 
 * **Timeout Enforcement (REQ-AUTH-11):** If the user is inactive for 15 minutes and their NextAuth/OSM session expires, they must be redirected to login.
 * **Post-login Callback (REQ-AUTH-12):** After re-authentication, the user must return to the page they were on (respect `callbackUrl`).
 
-### **3.2 Event Dashboard**
+#### **3.1.3 Testing Automation & Reporting**
 
-* **Scope (REQ-EVENTS-01):** Display **active and future events only**; historical data is out of scope.  
-* **Event Listing (REQ-EVENTS-02):** Show upcoming expedition events fetched from the selected section.  
-* **Participant Status (REQ-EVENTS-03):** For each event display participant name and invitation status (Invited/Accepted/Declined).  
-* **Unit Filtering (REQ-EVENTS-04):** Provide a "Unit Filter" dropdown that filters participants based on their Patrol (Unit/ESU name).  
-* **Attendance Route (REQ-EVENTS-05):** Attendance view lives at `/dashboard/events/attendance`; main events list at `/dashboard/events`.
+* **Automated Test Stack (REQ-QA-01):** Every pull request must run lint, TypeScript check, unit tests, BDD Playwright tests (instrumented), and coverage merge in CI (`CI – Tests` workflow).
+* **Mutation Coverage Monitoring (REQ-QA-02):** Nightly mutation testing must run via `CI – Mutation Testing`, publishing HTML reports and failing when mutation score falls below 80%.
+* **Deployment Gate (REQ-QA-03):** Production/staging builds may only run after `CI – Tests` succeeds; build artifacts must be generated via `CI – Deploy`.
+* **Local Workflow Parity (REQ-QA-04):** Developers must have Windsurf workflows (`/test-stack`, `/mutation-scan`, `/bdd-fix`, `/file-completed-plan`) that mirror CI steps for consistent local verification.
+* **Documentation Sync (REQ-QA-05):** Testing rules (`.windsurf/rules/seee-rules-testing.md`) must reference all available workflows and coverage targets so contributors can trace expectations.
 
-### **3.3 Expedition Logistics View**
+### **3.2 SEEE Event Planning Application (Administrator Experience)**
 
-For each event, the dashboard must display logistical details.
+The SEEE Event Planning app replaces the legacy "Administrator" role UI. It assumes the SEEE section, hides the section selector, and provides tooling to hydrate patrols/members, review data quality, and prepare expeditions.
 
-* **Dynamic Column Mapping (REQ-LOGISTICS-01):** Since custom columns in OSM vary per event, the system must allow users to map available OSM columns (Walking Group, Tent Group, etc.) whenever automatic detection fails.
-* **Graceful Degradation (REQ-LOGISTICS-02):** When required columns are missing/unmapped, the app must continue to show participant lists/invitation status and simply hide/gray-out unavailable logistics fields.
-* **Displayed Fields (REQ-LOGISTICS-03):** For every participant show Expedition Group, Tent Group, Group Gear Provider (free text), and Additional Info (free text).
-* **First Aid Summary (REQ-LOGISTICS-04):** **Deferred** – see Section 7 (Future Scope) for the postponed First Aid reporting requirement.
-
-### 
-
-### **3.4 Readiness & Training View (Deferred)**
-
-All training and First Aid requirements (REQ-TRAINING-01 → REQ-TRAINING-03) are deferred to the Future Scope outlined in Section 7.
-
-### **3.5 Member Participation & Readiness Summary View (Deferred)**
-
-The cross-event readiness matrix (REQ-SUMMARY-01 → REQ-SUMMARY-10) is deferred alongside the training features. See Section 7 for the retained specification.
-
-### **3.6 Reporting & Export**
-
-To support offline analysis and physical record-keeping during expeditions:
-
-* **CSV/XLS Export (REQ-REPORTING-01):** Users must be able to download the currently displayed data (Event Dashboard or Summary) as CSV or Excel.
-* **Filter Fidelity (REQ-REPORTING-02):** All exports must respect the currently applied filters (e.g., Patrol, Event, Readiness).
-* **PDF Export (REQ-REPORTING-03):** Users must be able to generate a well-formatted PDF report suitable for printing.
-* **PDF Formatting (REQ-REPORTING-04):** PDF exports must include readable table layouts, clear headers, and reflect applied filters/access controls.
-
-### **3.7 Admin: Members views & data quality**
+#### **3.2.1 Admin: Members views & data quality**
 
 * **Scope (REQ-ADMIN-01):** Provide administrator-only views for exploring member datasets and identifying data quality issues.
 * **Members List (REQ-ADMIN-02):** Admins must see a sortable member list per section.
@@ -106,13 +96,67 @@ To support offline analysis and physical record-keeping during expeditions:
 * Members list: `/dashboard/members`
 * Member data issues: `/dashboard/members/issues`
 
-### **3.8 Testing Automation & Reporting**
+Future Phase 3 deliverables (patrol refresh tooling, logistics adapters, readiness pipelines) will be anchored in this application and reuse the same REQ identifiers.
 
-* **Automated Test Stack (REQ-QA-01):** Every pull request must run lint, TypeScript check, unit tests, BDD Playwright tests (instrumented), and coverage merge in CI (`CI – Tests` workflow).
-* **Mutation Coverage Monitoring (REQ-QA-02):** Nightly mutation testing must run via `CI – Mutation Testing`, publishing HTML reports and failing when mutation score falls below 80%.
-* **Deployment Gate (REQ-QA-03):** Production/staging builds may only run after `CI – Tests` succeeds; build artifacts must be generated via `CI – Deploy`.
-* **Local Workflow Parity (REQ-QA-04):** Developers must have Windsurf workflows (`/test-stack`, `/mutation-scan`, `/bdd-fix`, `/file-completed-plan`) that mirror CI steps for consistent local verification.
-* **Documentation Sync (REQ-QA-05):** Testing rules (`.windsurf/rules/seee-rules-testing.md`) must reference all available workflows and coverage targets so contributors can trace expectations.
+### **3.3 SEEE Expedition Viewer Application (Standard Experience)**
+
+The SEEE Expedition Viewer app is a read-only experience for expedition leaders. It assumes the SEEE section, disables destructive actions, and surfaces per-event dashboards.
+
+#### **3.3.1 Event Dashboard**
+
+* **Scope (REQ-EVENTS-01):** Display **active and future events only**; historical data is out of scope.  
+* **Event Listing (REQ-EVENTS-02):** Show upcoming expedition events fetched from the selected section.  
+* **Participant Status (REQ-EVENTS-03):** For each event display participant name and invitation status (Invited/Accepted/Declined).  
+* **Unit Filtering (REQ-EVENTS-04):** Provide a "Unit Filter" dropdown that filters participants based on their Patrol (Unit/ESU name).  
+* **Attendance Route (REQ-EVENTS-05):** Attendance view lives at `/dashboard/events/attendance`; main events list at `/dashboard/events`.
+
+#### **3.3.2 Expedition Logistics View**
+
+For each event, the dashboard must display logistical details.
+
+* **Dynamic Column Mapping (REQ-LOGISTICS-01):** Since custom columns in OSM vary per event, the system must allow users to map available OSM columns (Walking Group, Tent Group, etc.) whenever automatic detection fails.
+* **Graceful Degradation (REQ-LOGISTICS-02):** When required columns are missing/unmapped, the app must continue to show participant lists/invitation status and simply hide/gray-out unavailable logistics fields.
+* **Displayed Fields (REQ-LOGISTICS-03):** For every participant show Expedition Group, Tent Group, Group Gear Provider (free text), and Additional Info (free text).
+* **First Aid Summary (REQ-LOGISTICS-04):** **Deferred** – see Section 7 (Future Scope) for the postponed First Aid reporting requirement.
+
+#### **3.3.3 Readiness & Training View (Deferred)**
+
+All training and First Aid requirements (REQ-TRAINING-01 → REQ-TRAINING-03) are deferred to the Future Scope outlined in Section 7.
+
+#### **3.3.4 Member Participation & Readiness Summary View (Deferred)**
+
+The cross-event readiness matrix (REQ-SUMMARY-01 → REQ-SUMMARY-10) is deferred alongside the training features. See Section 7 for the retained specification.
+
+#### **3.3.5 Reporting & Export**
+
+To support offline analysis and physical record-keeping during expeditions:
+
+* **CSV/XLS Export (REQ-REPORTING-01):** Users must be able to download the currently displayed data (Event Dashboard or Summary) as CSV or Excel.
+* **Filter Fidelity (REQ-REPORTING-02):** All exports must respect the currently applied filters (e.g., Patrol, Event, Readiness).
+* **PDF Export (REQ-REPORTING-03):** Users must be able to generate a well-formatted PDF report suitable for printing.
+* **PDF Formatting (REQ-REPORTING-04):** PDF exports must include readable table layouts, clear headers, and reflect applied filters/access controls.
+
+### **3.4 Multi-Section Viewer Application (Future Scope)**
+
+The Multi-Section Viewer mirrors the Expedition Viewer UI but reintroduces the section selector, per-user access strategies, and generalized schemas so other sections can opt in.
+
+* **Access Strategy Alignment:** Must honor Patrol-based vs Event-based restrictions defined in `REQ-ACCESS-04` → `REQ-ACCESS-08`.
+* **Schema Flexibility:** Event/member schemas must support section-specific flexi columns without assuming SEEE naming conventions.
+* **Progressive Enablement:** Multi-section audiences cannot view SEEE-only admin tools, patrol refreshers, or platform admin controls.
+* **Documentation:** When this app is enabled, onboarding material must explain when to hydrate caches and how to request access.
+
+Detailed readiness/logistics requirements continue to reference Section 7 until the multi-section viewer is funded.
+
+### **3.5 Platform Admin Console**
+
+The new Platform Admin Console centralizes operational controls required to keep the multi-app platform healthy.
+
+* **Operational Access (REQ-CONSOLE-01):** Only SEEE platform owners (subset of administrators) may access the console via a dedicated app entry point and route group (`/dashboard/(platform-admin)`).
+* **Patrol Cache Management (REQ-CONSOLE-02):** Provide controls to trigger patrol/member hydration runs, inspect last refresh timestamps, and re-queue failed jobs without redeploying the app.
+* **SEEE Section ID Configuration (REQ-CONSOLE-03):** Surface the canonical SEEE section ID with an editable field, default value, and write-back to Vercel KV/Redis so SEEE apps can assume the correct section automatically.
+* **Developer Tools (REQ-CONSOLE-04):** Include safe developer utilities (e.g., proxy inspector, rate-limit simulator toggles, MSW enable/disable) to diagnose issues without SSH access.
+* **Log Viewer (REQ-CONSOLE-05):** Provide read-only access to recent proxy/safety layer logs with filters for severity, OSM endpoint, and request ID to accelerate incident response.
+* **Audit Trail (REQ-CONSOLE-06):** All actions taken in the console must be logged with timestamp, user, action, and payload summary for compliance.
 
 ## **4. Data Management Strategy**
 
