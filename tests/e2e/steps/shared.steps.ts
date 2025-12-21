@@ -116,7 +116,16 @@ When('I click the button {string}', async ({ page }, buttonName: string) => {
 
 // Assertion steps
 Then('I should see {string}', async ({ page }, text: string) => {
-  await expect(page.locator(`text=${text}`)).toBeVisible()
+  const loc = page.getByText(text)
+  const count = await loc.count()
+
+  for (let i = 0; i < count; i += 1) {
+    if (await loc.nth(i).isVisible().catch(() => false)) {
+      return
+    }
+  }
+
+  await expect(loc.first()).toBeVisible()
 })
 
 Then('I should be on {string}', async ({ page }, path: string) => {
