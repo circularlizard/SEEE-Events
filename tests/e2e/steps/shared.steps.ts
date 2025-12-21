@@ -173,6 +173,28 @@ When('I click the button {string}', async ({ page }, buttonName: string) => {
   await page.locator(`role=button[name="${buttonName}"]`).click()
 })
 
+When('my session expires', async ({ page }) => {
+  // Simulate expiry by clearing cookies and persisted client state.
+  // The dashboard should detect unauthenticated/session-expired state and redirect to login.
+  await page.context().clearCookies()
+  await page.evaluate(() => {
+    try {
+      window.localStorage.clear()
+    } catch {
+      // ignore
+    }
+    try {
+      window.sessionStorage.clear()
+    } catch {
+      // ignore
+    }
+  })
+
+  // Trigger client-side guards to run on the current page.
+  await page.reload()
+  await page.waitForLoadState('networkidle')
+})
+
 // Assertion steps
 Then('I should see {string}', async ({ page }, text: string) => {
   const roleLocators = [
@@ -203,6 +225,12 @@ Then('I should see {string}', async ({ page }, text: string) => {
 
 Then('I should be on {string}', async ({ page }, path: string) => {
   await expect(page).toHaveURL(new RegExp(path))
+})
+
+Then('the callbackUrl should be {string}', async ({ page }, expectedPath: string) => {
+  const url = new URL(page.url())
+  const callbackUrl = url.searchParams.get('callbackUrl')
+  expect(callbackUrl).toBe(expectedPath)
 })
 
 Then('I should not see {string}', async ({ page }, text: string) => {

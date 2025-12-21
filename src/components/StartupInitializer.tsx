@@ -51,7 +51,8 @@ export default function StartupInitializer() {
     const sessionError = (session as { error?: string } | null)?.error
     if (status === 'unauthenticated' || sessionError === 'SessionExpired') {
       hasInitialized.current = false
-      router.replace('/')
+      const callbackUrl = typeof window !== 'undefined' ? window.location.pathname + window.location.search : '/dashboard'
+      router.replace(`/?callbackUrl=${encodeURIComponent(callbackUrl)}`)
     }
   }, [pathname, router, session, status])
 

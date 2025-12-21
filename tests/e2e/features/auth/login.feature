@@ -36,3 +36,14 @@ Feature: Authentication and Login Flow
     Then I should be on "/dashboard"
     When I navigate to "/dashboard/events"
     Then I should be on "/dashboard/events"
+
+  @REQ-AUTH-11 @REQ-AUTH-12
+  Scenario: Session expiry redirects to login and returns to intended page after re-login
+    Given I am logged in as an admin
+    When I navigate to "/dashboard/events"
+    And my session expires
+    Then I should be on "/"
+    And the callbackUrl should be "/dashboard/events"
+    When I click "Administrator"
+    And I click the button "Sign in with OSM"
+    Then I should be on "/dashboard/events"
