@@ -207,7 +207,7 @@ Authoring plan:
 
 ### 7.4 Tier 3 – Mutation Coverage
 
-- [ ] Add Stryker config and document manual trigger (`npm run test:mutation` or similar) for on-demand runs.
+- [x] Add Stryker config and document manual trigger (`npm run test:mutation`) for on-demand runs (report: `reports/mutation/index.html`).
 
 ### 7.5 Tier 4 – Automation & Workflows
 

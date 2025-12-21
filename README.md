@@ -185,7 +185,18 @@ npx playwright show-report
 npm run test:req-tags
 ```
 
-**Note:** Legacy `.spec.ts` files have been removed for flows that have been migrated to BDD.
+### Mutation Tests (Stryker)
+
+Mutation tests are run manually (on-demand) using Stryker:
+
+```bash
+# Run mutation testing
+npm run test:mutation
+```
+
+The HTML report is written to:
+
+- `reports/mutation/index.html`
 
 ### Legacy Playwright Specs
 

@@ -1,0 +1,27 @@
+{
+  "$schema": "./node_modules/@stryker-mutator/core/schema/stryker-schema.json",
+  "testRunner": "command",
+  "reporters": ["html", "clear-text", "progress"],
+  "coverageAnalysis": "off",
+  "mutate": [
+    "src/lib/**/*.ts",
+    "src/store/**/*.ts",
+    "!src/lib/schemas.ts",
+    "!src/lib/logger.ts",
+    "!src/lib/redis.ts"
+  ],
+  "ignorePatterns": [
+    "tests/e2e/**",
+    "playwright-report/**",
+    "test-results/**",
+    ".next/**",
+    "coverage/**"
+  ],
+  "commandRunner": {
+    "command": "npx jest --config jest.config.cjs"
+  },
+  "tempDirName": ".stryker-tmp",
+  "htmlReporter": {
+    "fileName": "reports/mutation/index.html"
+  }
+}

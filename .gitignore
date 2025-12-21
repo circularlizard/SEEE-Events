@@ -14,6 +14,10 @@ reference_data/
 # Testing
 /coverage
 
+# Mutation testing (Stryker)
+/.stryker-tmp/
+/reports/mutation/
+
 # Next.js
 /.next/
 /out/
