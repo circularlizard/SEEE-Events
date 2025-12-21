@@ -118,7 +118,16 @@ function LoginContent() {
                 Sign in with OSM
               </Button>
               {mockEnabled && (
-                <Button variant="secondary" onClick={() => signIn("credentials", { callbackUrl })}>
+                <Button
+                  variant="secondary"
+                  onClick={() =>
+                    signIn('credentials', {
+                      callbackUrl,
+                      username: selectedRole,
+                      roleSelection: selectedRole,
+                    })
+                  }
+                >
                   Dev: Mock Login
                 </Button>
               )}

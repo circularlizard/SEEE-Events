@@ -1,7 +1,61 @@
 import { createBdd } from 'playwright-bdd'
 import { expect } from '@playwright/test'
+import type { Page } from '@playwright/test'
 
 const { Given, When, Then } = createBdd()
+
+async function ensureSectionSelected(page: Page) {
+  await page.waitForLoadState('networkidle')
+
+  const pickerHeading = page.getByRole('heading', { name: /Select Your Section/i })
+  const continueButton = page.getByRole('button', { name: /^Continue$/i })
+  const preferredSection = page.getByRole('button', { name: /Explorer Unit Alpha/i })
+
+  // The section picker can render on /dashboard after hydration, or on /dashboard/section-picker.
+  // Wait briefly for it to appear before deciding it's not present.
+  for (let i = 0; i < 12; i += 1) {
+    const url = page.url()
+    const isPickerRoute = url.includes('/dashboard/section-picker')
+    const pickerVisible = await pickerHeading.isVisible().catch(() => false)
+    const continueVisible = await continueButton.isVisible().catch(() => false)
+    const preferredVisible = await preferredSection.isVisible().catch(() => false)
+
+    if (isPickerRoute || pickerVisible || continueVisible || preferredVisible) {
+      break
+    }
+
+    await page.waitForTimeout(250)
+  }
+
+  const url = page.url()
+  const isPickerRoute = url.includes('/dashboard/section-picker')
+  const pickerVisible = await pickerHeading.isVisible().catch(() => false)
+  const continueVisible = await continueButton.isVisible().catch(() => false)
+  const preferredVisible = await preferredSection.isVisible().catch(() => false)
+
+  if (!(isPickerRoute || pickerVisible || continueVisible || preferredVisible)) {
+    return
+  }
+
+  if (await preferredSection.isVisible().catch(() => false)) {
+    await preferredSection.click()
+  } else {
+    const anyOption = page.getByRole('button').filter({ hasText: /Unit/i }).first()
+    if (await anyOption.isVisible().catch(() => false)) {
+      await anyOption.click()
+    }
+  }
+
+  if (await continueButton.isVisible().catch(() => false)) {
+    await continueButton.click()
+    // Wait for the picker to complete its redirect.
+    await page
+      .waitForURL((u) => !u.toString().includes('/dashboard/section-picker'), { timeout: 10000 })
+      .catch(() => null)
+    await page.waitForLoadState('networkidle')
+    await pickerHeading.waitFor({ state: 'hidden', timeout: 5000 }).catch(() => null)
+  }
+}
 
 /**
  * Shared Step Definitions
@@ -29,6 +83,7 @@ Given('I am logged in as an admin', async ({ page }) => {
   }
 
   await page.waitForURL(/\/dashboard(\/|$)/, { timeout: 10000 })
+  await ensureSectionSelected(page)
 })
 
 Given('I am logged in as a standard viewer', async ({ page }) => {
@@ -47,6 +102,7 @@ Given('I am logged in as a standard viewer', async ({ page }) => {
   }
 
   await page.waitForURL(/\/dashboard(\/|$)/, { timeout: 10000 })
+  await ensureSectionSelected(page)
 })
 
 Given('I am on the login page', async ({ page }) => {
@@ -68,6 +124,7 @@ Given('I have selected the {string} section', async ({ page }, sectionName: stri
 When('I navigate to {string}', async ({ page }, path: string) => {
   await page.goto(path)
   await page.waitForLoadState('networkidle')
+  await ensureSectionSelected(page)
 })
 
 When('I click {string}', async ({ page }, text: string) => {
@@ -107,6 +164,8 @@ When('I click the button {string}', async ({ page }, buttonName: string) => {
         await page.goto(callbackPath)
         await page.waitForLoadState('networkidle')
       }
+
+      await ensureSectionSelected(page)
       return
     }
   }
@@ -116,16 +175,30 @@ When('I click the button {string}', async ({ page }, buttonName: string) => {
 
 // Assertion steps
 Then('I should see {string}', async ({ page }, text: string) => {
-  const loc = page.getByText(text)
-  const count = await loc.count()
+  const roleLocators = [
+    page.getByRole('heading', { name: text, exact: true }),
+    page.getByRole('button', { name: text, exact: true }),
+    page.getByRole('link', { name: text, exact: true }),
+    page.getByRole('cell', { name: text, exact: true }),
+  ]
 
-  for (let i = 0; i < count; i += 1) {
-    if (await loc.nth(i).isVisible().catch(() => false)) {
+  for (const loc of roleLocators) {
+    if (await loc.isVisible().catch(() => false)) {
       return
     }
   }
 
-  await expect(loc.first()).toBeVisible()
+  const textLoc = page.getByText(text)
+  const count = await textLoc.count()
+  for (let i = 0; i < count; i += 1) {
+    if (await textLoc.nth(i).isVisible().catch(() => false)) {
+      return
+    }
+  }
+
+  throw new Error(
+    `No visible element found for text "${text}" (matched ${count} nodes, all hidden or not present).`
+  )
 })
 
 Then('I should be on {string}', async ({ page }, path: string) => {
