@@ -1,6 +1,9 @@
 {
   "$schema": "./node_modules/@stryker-mutator/core/schema/stryker-schema.json",
   "testRunner": "command",
+  "concurrency": 6,
+  "timeoutMS": 20000,
+  "timeoutFactor": 3,
   "reporters": ["html", "clear-text", "progress"],
   "coverageAnalysis": "off",
   "mutate": [
@@ -18,7 +21,7 @@
     "coverage/**"
   ],
   "commandRunner": {
-    "command": "npx jest --config jest.config.ts"
+    "command": "npx jest --config jest.config.ts --maxWorkers=2 src/lib src/store"
   },
   "tempDirName": ".stryker-tmp",
   "htmlReporter": {
