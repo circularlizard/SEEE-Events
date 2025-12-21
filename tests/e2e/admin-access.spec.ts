@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test'
+import { test, expect } from './fixtures'
 
 test.describe('Admin Access', () => {
   test('admin user can access /dashboard/admin', async ({ page }) => {

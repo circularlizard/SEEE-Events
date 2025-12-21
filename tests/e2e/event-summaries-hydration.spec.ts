@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test'
+import { test, expect } from './fixtures'
 
 test.describe('Phase 3.0: Progressive Event Summary Hydration', () => {
   test('prefetches summaries on viewport/queue and detail loads with header', async ({ page }) => {
