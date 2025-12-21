@@ -79,6 +79,8 @@ export default defineConfig({
       NEXT_PUBLIC_MOCK_AUTH_ENABLED: 'true',
       // Enable MSW for mock API responses
       NEXT_PUBLIC_USE_MSW: 'true',
+      // Speed up inactivity timeout in E2E (production default is 15 minutes)
+      NEXT_PUBLIC_INACTIVITY_TIMEOUT_MS: '5000',
     },
   },
 })

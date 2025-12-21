@@ -35,10 +35,12 @@ describe('useSessionTimeout', () => {
   beforeEach(() => {
     jest.clearAllMocks()
     jest.setSystemTime(0)
+    process.env.NEXT_PUBLIC_INACTIVITY_TIMEOUT_MS = String(INACTIVITY_MS)
     ;(useSession as jest.Mock).mockReturnValue({ status: 'authenticated', data: { user: { id: 'u1' } } })
   })
 
   afterEach(() => {
+    delete process.env.NEXT_PUBLIC_INACTIVITY_TIMEOUT_MS
     jest.runOnlyPendingTimers()
   })
 

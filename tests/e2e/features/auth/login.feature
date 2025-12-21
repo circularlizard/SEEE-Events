@@ -47,3 +47,11 @@ Feature: Authentication and Login Flow
     When I click "Administrator"
     And I click the button "Sign in with OSM"
     Then I should be on "/dashboard/events"
+
+  @REQ-AUTH-11
+  Scenario: Inactivity triggers a hard logout
+    Given I am logged in as an admin
+    When I navigate to "/dashboard"
+    And I wait 6000 ms
+    Then I should be on "/"
+    And I should see "Sign in with OSM"

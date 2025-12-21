@@ -127,6 +127,10 @@ When('I navigate to {string}', async ({ page }, path: string) => {
   await ensureSectionSelected(page)
 })
 
+When('I wait {int} ms', async ({ page }, ms: number) => {
+  await page.waitForTimeout(ms)
+})
+
 When('I click {string}', async ({ page }, text: string) => {
   await page.click(`text=${text}`)
 })

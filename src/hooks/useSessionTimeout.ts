@@ -4,7 +4,16 @@ import { useEffect, useRef } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
-const INACTIVITY_MS = 15 * 60 * 1000; // 15 minutes
+const DEFAULT_INACTIVITY_MS = 15 * 60 * 1000; // 15 minutes
+
+function getInactivityMs(): number {
+  const raw = process.env.NEXT_PUBLIC_INACTIVITY_TIMEOUT_MS;
+  if (!raw) return DEFAULT_INACTIVITY_MS;
+  const parsed = Number(raw);
+  if (!Number.isFinite(parsed)) return DEFAULT_INACTIVITY_MS;
+  // Minimum 1s to avoid accidental immediate logout in misconfigured environments.
+  return Math.max(1000, Math.floor(parsed));
+}
 
 interface TimeoutRefs {
   lastActive: number;
@@ -39,6 +48,8 @@ export function useSessionTimeoutWithOptions(options: {
 }) {
   const { status, router, refs, onTimeout } = options;
 
+  const inactivityMs = getInactivityMs();
+
   useEffect(() => {
     if (status !== "authenticated") {
       // If the user is not authenticated, do not start inactivity tracking.
@@ -55,15 +66,15 @@ export function useSessionTimeoutWithOptions(options: {
       if (refs.current.timeoutId) {
         clearTimeout(refs.current.timeoutId);
       }
-      refs.current.timeoutId = setTimeout(checkInactivity, INACTIVITY_MS);
+      refs.current.timeoutId = setTimeout(checkInactivity, inactivityMs);
     };
 
     const checkInactivity = async () => {
       const now = Date.now();
       const idleFor = now - refs.current.lastActive;
-      if (idleFor < INACTIVITY_MS) {
+      if (idleFor < inactivityMs) {
         // User became active again; schedule next check from now.
-        refs.current.timeoutId = setTimeout(checkInactivity, INACTIVITY_MS - idleFor);
+        refs.current.timeoutId = setTimeout(checkInactivity, inactivityMs - idleFor);
         return;
       }
 
@@ -106,5 +117,5 @@ export function useSessionTimeoutWithOptions(options: {
         refs.current.timeoutId = null;
       }
     };
-  }, [onTimeout, refs, router, status]);
+  }, [inactivityMs, onTimeout, refs, router, status]);
 }
