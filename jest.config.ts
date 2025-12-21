@@ -15,6 +15,9 @@ const config: Config = {
     '^@/(.*)$': '<rootDir>/src/$1',
   },
   testPathIgnorePatterns: ['<rootDir>/tests/e2e/'],
+  collectCoverage: true,
+  coverageDirectory: '<rootDir>/coverage/unit',
+  coverageReporters: ['json', 'html', 'text'],
 }
 
 // createJestConfig is exported this way to ensure that next/jest can load the Next.js config which is async
