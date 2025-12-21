@@ -181,39 +181,41 @@ export default function AttendanceByPersonPage() {
             <div className="hidden md:block">
               {groupMode === 'single' && (
                 // Single list - table layout
-                <div className="table w-full border rounded-lg overflow-hidden text-sm">
-                  <div className="table-header-group bg-muted">
-                    <div className="table-row">
-                      <div className="table-cell p-4 font-semibold text-left">Name</div>
-                      <div className="table-cell p-4 font-semibold text-left">Patrol</div>
-                      <div className="table-cell p-4 font-semibold text-left">Yes Events</div>
-                    </div>
-                  </div>
-                  <div className="table-row-group">
-                    {sortedData.map((p) => (
-                      <div key={p.memberId} className="table-row border-b last:border-b-0 hover:bg-muted/50 transition-colors">
-                        <div className="table-cell p-4">{p.name}</div>
-                        <div className="table-cell p-4 text-muted-foreground">{getPatrolName(p.patrolId)}</div>
-                        <div className="table-cell p-4">
-                          <ul className="list-disc pl-5 text-muted-foreground space-y-1">
-                            {p.events.map((e) => (
-                              <li key={`${p.memberId}-${e.id}`}>
-                                <div className="font-medium text-foreground">{e.name}</div>
-                                <div className="text-xs text-muted-foreground">
-                                  {e.startDate && e.endDate ? (
-                                    <span>
-                                      {new Date(e.startDate).toLocaleDateString()} — {new Date(e.endDate).toLocaleDateString()}
-                                    </span>
-                                  ) : null}
-                                  {e.location ? <span> • {e.location}</span> : null}
-                                </div>
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
+                <div className="border rounded-lg overflow-hidden">
+                  <table className="w-full text-sm">
+                    <thead className="bg-muted">
+                      <tr className="border-b">
+                        <th className="p-4 font-semibold text-left">Name</th>
+                        <th className="p-4 font-semibold text-left">Patrol</th>
+                        <th className="p-4 font-semibold text-left">Yes Events</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {sortedData.map((p) => (
+                        <tr key={p.memberId} className="border-b last:border-b-0 hover:bg-muted/50 transition-colors">
+                          <td className="p-4">{p.name}</td>
+                          <td className="p-4 text-muted-foreground">{getPatrolName(p.patrolId)}</td>
+                          <td className="p-4">
+                            <ul className="list-disc pl-5 text-muted-foreground space-y-1">
+                              {p.events.map((e) => (
+                                <li key={`${p.memberId}-${e.id}`}>
+                                  <div className="font-medium text-foreground">{e.name}</div>
+                                  <div className="text-xs text-muted-foreground">
+                                    {e.startDate && e.endDate ? (
+                                      <span>
+                                        {new Date(e.startDate).toLocaleDateString()} — {new Date(e.endDate).toLocaleDateString()}
+                                      </span>
+                                    ) : null}
+                                    {e.location ? <span> • {e.location}</span> : null}
+                                  </div>
+                                </li>
+                              ))}
+                            </ul>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
                 </div>
               )}
               
@@ -238,37 +240,39 @@ export default function AttendanceByPersonPage() {
                         </span>
                       </CollapsibleTrigger>
                       <CollapsibleContent>
-                        <div className="table w-full border rounded-lg overflow-hidden text-sm mt-2">
-                          <div className="table-header-group bg-muted/30">
-                            <div className="table-row">
-                              <div className="table-cell p-3 font-semibold text-left">Name</div>
-                              <div className="table-cell p-3 font-semibold text-left">Yes Events</div>
-                            </div>
-                          </div>
-                          <div className="table-row-group">
-                            {persons.map((p) => (
-                              <div key={`${patrolKey}-${p.memberId}`} className="table-row border-b last:border-b-0 hover:bg-muted/50 transition-colors">
-                                <div className="table-cell p-3">{p.name}</div>
-                                <div className="table-cell p-3">
-                                  <ul className="list-disc pl-5 text-muted-foreground space-y-1">
-                                    {p.events.map((e) => (
-                                      <li key={`${p.memberId}-${e.id}`}>
-                                        <div className="font-medium text-foreground">{e.name}</div>
-                                        <div className="text-xs text-muted-foreground">
-                                          {e.startDate && e.endDate ? (
-                                            <span>
-                                              {new Date(e.startDate).toLocaleDateString()} — {new Date(e.endDate).toLocaleDateString()}
-                                            </span>
-                                          ) : null}
-                                          {e.location ? <span> • {e.location}</span> : null}
-                                        </div>
-                                      </li>
-                                    ))}
-                                  </ul>
-                                </div>
-                              </div>
-                            ))}
-                          </div>
+                        <div className="border rounded-lg overflow-hidden text-sm mt-2">
+                          <table className="w-full text-sm">
+                            <thead className="bg-muted/30">
+                              <tr className="border-b">
+                                <th className="p-4 font-semibold text-left">Name</th>
+                                <th className="p-4 font-semibold text-left">Yes Events</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {persons.map((p) => (
+                                <tr key={`${patrolKey}-${p.memberId}`} className="border-b last:border-b-0 hover:bg-muted/50 transition-colors">
+                                  <td className="p-4">{p.name}</td>
+                                  <td className="p-4">
+                                    <ul className="list-disc pl-5 text-muted-foreground space-y-1">
+                                      {p.events.map((e) => (
+                                        <li key={`${p.memberId}-${e.id}`}>
+                                          <div className="font-medium text-foreground">{e.name}</div>
+                                          <div className="text-xs text-muted-foreground">
+                                            {e.startDate && e.endDate ? (
+                                              <span>
+                                                {new Date(e.startDate).toLocaleDateString()} — {new Date(e.endDate).toLocaleDateString()}
+                                              </span>
+                                            ) : null}
+                                            {e.location ? <span> • {e.location}</span> : null}
+                                          </div>
+                                        </li>
+                                      ))}
+                                    </ul>
+                                  </td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
                         </div>
                       </CollapsibleContent>
                     </Collapsible>
@@ -322,19 +326,21 @@ export default function AttendanceByPersonPage() {
                                 </span>
                               </CollapsibleTrigger>
                               <CollapsibleContent>
-                                <div className="table w-full border rounded-lg overflow-hidden text-sm mt-1 ml-2">
-                                  <div className="table-header-group bg-muted/30">
-                                    <div className="table-row">
-                                      <div className="table-cell p-2 font-semibold text-left">Name</div>
-                                    </div>
-                                  </div>
-                                  <div className="table-row-group">
-                                    {event.people.map((p) => (
-                                      <div key={`${eventKey}-${p.memberId}`} className="table-row border-b last:border-b-0 hover:bg-muted/50 transition-colors">
-                                        <div className="table-cell p-2">{p.name}</div>
-                                      </div>
-                                    ))}
-                                  </div>
+                                <div className="border rounded-lg overflow-hidden text-sm mt-1 ml-2">
+                                  <table className="w-full text-sm">
+                                    <thead className="bg-muted/30">
+                                      <tr className="border-b">
+                                        <th className="p-4 font-semibold text-left">Name</th>
+                                      </tr>
+                                    </thead>
+                                    <tbody>
+                                      {event.people.map((p) => (
+                                        <tr key={`${eventKey}-${p.memberId}`} className="border-b last:border-b-0 hover:bg-muted/50 transition-colors">
+                                          <td className="p-4">{p.name}</td>
+                                        </tr>
+                                      ))}
+                                    </tbody>
+                                  </table>
                                 </div>
                               </CollapsibleContent>
                             </Collapsible>
