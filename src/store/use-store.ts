@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import type { NormalizedMember, Event } from '@/lib/schemas'
+import type { AppKey } from '@/types/app'
 
 /**
  * User Role Types
@@ -37,6 +38,10 @@ interface SessionState {
   // Multiple selected sections
   selectedSections: Section[]
   setSelectedSections: (sections: Section[]) => void
+
+  // Current app context (planning, expedition, platform-admin, multi)
+  currentApp: AppKey | null
+  setCurrentApp: (app: AppKey | null) => void
 
   // User role (determined from startup data)
   userRole: UserRole | null
@@ -266,6 +271,9 @@ export const useStore = create<StoreState>()(
       selectedSections: [],
       setSelectedSections: (sections) => set({ selectedSections: sections }),
 
+      currentApp: null,
+      setCurrentApp: (currentApp) => set({ currentApp }),
+
       userRole: null,
       setUserRole: (role) => set({ userRole: role }),
 
@@ -279,6 +287,7 @@ export const useStore = create<StoreState>()(
         set({
           currentSection: null,
           selectedSections: [],
+          currentApp: null,
           userRole: null,
           availableSections: [],
         }),
@@ -414,6 +423,7 @@ export const useStore = create<StoreState>()(
       partialize: (state) => ({
         currentSection: state.currentSection,
         selectedSections: state.selectedSections,
+        currentApp: state.currentApp,
         userRole: state.userRole,
         accessControlStrategy: state.accessControlStrategy,
         allowedPatrolIds: state.allowedPatrolIds,
@@ -432,10 +442,19 @@ export const useStore = create<StoreState>()(
  */
 
 export const useCurrentSection = () => useStore((state) => state.currentSection)
+export const useCurrentApp = () => useStore((state) => state.currentApp)
 export const useUserRole = () => useStore((state) => state.userRole)
 export const useTheme = () => useStore((state) => state.theme)
 export const useBadgeMappings = () => useStore((state) => state.badgeMappings)
 export const useFlexiColumnMappings = () => useStore((state) => state.flexiColumnMappings)
+
+export const useIsPlanningApp = () => useStore((state) => state.currentApp === 'planning')
+export const useIsExpeditionApp = () => useStore((state) => state.currentApp === 'expedition')
+export const useIsPlatformAdminApp = () =>
+  useStore((state) => state.currentApp === 'platform-admin')
+export const useIsMultiApp = () => useStore((state) => state.currentApp === 'multi')
+
+export const getCurrentApp = () => useStore.getState().currentApp
 
 /**
  * @deprecated Use `useMembers` from `@/hooks/useMembers` instead.

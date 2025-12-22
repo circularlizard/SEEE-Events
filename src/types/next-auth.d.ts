@@ -11,6 +11,7 @@ declare module 'next-auth' {
     sectionIds?: number[]
     scopes?: string[]
     roleSelection?: 'admin' | 'standard'
+    appSelection?: import('@/types/app').AppKey
   }
 
   /**
@@ -34,6 +35,7 @@ declare module 'next-auth/jwt' {
     sectionIds?: number[]
     scopes?: string[]
     roleSelection?: 'admin' | 'standard'
+    appSelection?: import('@/types/app').AppKey
     refreshToken?: string
     error?: string
     user?: {

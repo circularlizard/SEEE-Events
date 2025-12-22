@@ -23,9 +23,12 @@ summary: Step-by-step plan to evolve the SEEE dashboard into the multi-applicati
   _Notes:_ README now includes MSW mode table + combined-mode examples; handlers gate data per `MSW_MODE`.
 
 ## 2. Session & State Plumbing
-- [ ] Extend Zustand session store to include `currentApp` alongside `currentSection` and `userRole`.
+- [x] Extend Zustand session store to include `currentApp` alongside `currentSection` and `userRole`.  
+  _Done:_ `src/store/use-store.ts` now persists `currentApp`, wipes it on logout, and exposes `useCurrentApp`.
 - [ ] Mirror `currentApp` in server session helpers so App Router layouts can read it during SSR.
-- [ ] Add selectors/helpers (`isPlanningApp`, `isExpeditionApp`, etc.) used throughout components.
+- [x] Add selectors/helpers (`isPlanningApp`, `isExpeditionApp`, etc.) used throughout components.  
+  _Done:_ `use-store` exports `useIsPlanningApp`, `useIsExpeditionApp`, `useIsPlatformAdminApp`, `useIsMultiApp`, plus `getCurrentApp`.
+- [ ] Wire StartupInitializer + auth callbacks to set `currentApp` immediately after login so `requiredApp` guards have data on first render.
 
 ## 3. Routing & Layout Split
 - [ ] Introduce app-specific route groups under `/dashboard/(planning|expedition|platform-admin|multi)`.
