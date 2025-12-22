@@ -79,6 +79,8 @@ export function usePerPersonAttendance() {
   )
 
   const data: PersonAttendance[] = useMemo(() => {
+    void cacheVersion
+
     const queries = qc.getQueryCache().findAll({ queryKey: ['event-summary'] })
     const summaries = queries
       .map((q) => q.state.data as EventSummary | undefined)

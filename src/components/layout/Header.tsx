@@ -1,4 +1,5 @@
 "use client";
+
 import { useStore } from "@/store/use-store";
 import { useSession } from "next-auth/react";
 import { usePathname } from "next/navigation";
@@ -14,58 +15,65 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { LogOut, TentTree } from "lucide-react";
 import { useLogout } from "@/components/QueryProvider";
+import { APP_LABELS } from "@/types/app";
+import { cn } from "@/lib/utils";
 
 export default function Header() {
   const currentSection = useStore((s) => s.currentSection);
   const selectedSections = useStore((s) => s.selectedSections);
   const availableSections = useStore((s) => s.availableSections);
+  const currentApp = useStore((s) => s.currentApp);
   const selectedSectionName = currentSection?.sectionName ?? null;
-  const multiNames = selectedSections.length > 0 ? selectedSections.map(s => s.sectionName) : [];
+  const multiNames = selectedSections.length > 0 ? selectedSections.map((s) => s.sectionName) : [];
   const { data: session } = useSession();
   const pathname = usePathname();
   const logout = useLogout();
-  
-  // Only show "Change Section" button if user has multiple sections
+
   const showChangeSectionButton = availableSections.length > 1;
-  const changeSectionHref = `/dashboard/section-picker?redirect=${encodeURIComponent(pathname || '/dashboard')}`;
+  const changeSectionHref = `/dashboard/section-picker?redirect=${encodeURIComponent(pathname || "/dashboard")}`;
+  const appLabel = currentApp ? APP_LABELS[currentApp] : APP_LABELS.expedition;
   const initials = (() => {
-    const name = session?.user?.name || '';
+    const name = session?.user?.name || "";
     const parts = name.trim().split(/\s+/);
-    if (parts.length === 0) return 'SU';
-    const first = parts[0]?.[0] || '';
-    const last = parts.length > 1 ? parts[parts.length - 1]?.[0] || '' : '';
+    if (parts.length === 0) return "SU";
+    const first = parts[0]?.[0] || "";
+    const last = parts.length > 1 ? parts[parts.length - 1]?.[0] || "" : "";
     const value = (first + last).toUpperCase();
-    return value || 'SU';
+    return value || "SU";
   })();
+
   return (
     <header className="w-full border-b bg-background">
       <div className="px-4 h-14 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <TentTree className="h-6 w-6 text-primary" aria-hidden />
           <span className="font-semibold tracking-tight text-lg">OSM Dashboard</span>
-          {/* Section summary + change control: mobile only, desktop uses sidebar */}
+          <span
+            className={cn(
+              "hidden md:inline-flex text-[11px] uppercase tracking-wide px-2 py-0.5 rounded-full border",
+              "bg-muted text-muted-foreground"
+            )}
+          >
+            {appLabel}
+          </span>
           <div className="flex items-center gap-2 md:hidden">
             {multiNames.length > 0 ? (
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <span className="text-sm text-muted-foreground truncate max-w-[160px]">• {multiNames.join(', ')}</span>
+                    <span className="text-sm text-muted-foreground truncate max-w-[160px]">
+                      • {multiNames.join(", ")}
+                    </span>
                   </TooltipTrigger>
-                  <TooltipContent>
-                    {multiNames.join(', ')}
-                  </TooltipContent>
+                  <TooltipContent>{multiNames.join(", ")}</TooltipContent>
                 </Tooltip>
               </TooltipProvider>
-            ) : selectedSectionName && (
-              <span className="text-sm text-muted-foreground">• {selectedSectionName}</span>
+            ) : (
+              selectedSectionName && <span className="text-sm text-muted-foreground">• {selectedSectionName}</span>
             )}
             {showChangeSectionButton && (
               <Link href={changeSectionHref}>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="ml-1"
-                >
+                <Button variant="outline" size="sm" className="ml-1">
                   Change Section
                 </Button>
               </Link>

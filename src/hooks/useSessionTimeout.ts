@@ -51,30 +51,32 @@ export function useSessionTimeoutWithOptions(options: {
   const inactivityMs = getInactivityMs();
 
   useEffect(() => {
+    const refsCurrent = refs.current;
+
     if (status !== "authenticated") {
       // If the user is not authenticated, do not start inactivity tracking.
       // Any existing timeout is cleared.
-      if (refs.current.timeoutId) {
-        clearTimeout(refs.current.timeoutId);
-        refs.current.timeoutId = null;
+      if (refsCurrent.timeoutId) {
+        clearTimeout(refsCurrent.timeoutId);
+        refsCurrent.timeoutId = null;
       }
       return;
     }
 
     const updateLastActive = () => {
-      refs.current.lastActive = Date.now();
-      if (refs.current.timeoutId) {
-        clearTimeout(refs.current.timeoutId);
+      refsCurrent.lastActive = Date.now();
+      if (refsCurrent.timeoutId) {
+        clearTimeout(refsCurrent.timeoutId);
       }
-      refs.current.timeoutId = setTimeout(checkInactivity, inactivityMs);
+      refsCurrent.timeoutId = setTimeout(checkInactivity, inactivityMs);
     };
 
     const checkInactivity = async () => {
       const now = Date.now();
-      const idleFor = now - refs.current.lastActive;
+      const idleFor = now - refsCurrent.lastActive;
       if (idleFor < inactivityMs) {
         // User became active again; schedule next check from now.
-        refs.current.timeoutId = setTimeout(checkInactivity, inactivityMs - idleFor);
+        refsCurrent.timeoutId = setTimeout(checkInactivity, inactivityMs - idleFor);
         return;
       }
 
@@ -112,9 +114,9 @@ export function useSessionTimeoutWithOptions(options: {
       activityEvents.forEach((event) => {
         window.removeEventListener(event, updateLastActive as EventListener);
       });
-      if (refs.current.timeoutId) {
-        clearTimeout(refs.current.timeoutId);
-        refs.current.timeoutId = null;
+      if (refsCurrent.timeoutId) {
+        clearTimeout(refsCurrent.timeoutId);
+        refsCurrent.timeoutId = null;
       }
     };
   }, [inactivityMs, onTimeout, refs, router, status]);

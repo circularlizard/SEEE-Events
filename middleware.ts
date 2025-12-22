@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import { getToken } from 'next-auth/jwt'
+import type { AppKey } from '@/types/app'
+import { getDefaultPathForApp, getRequiredAppForPath, getRequiredRoleForPath, isRoleAllowed } from '@/lib/app-route-guards'
 
 /**
  * Middleware for route protection and authentication
@@ -20,6 +22,14 @@ export default async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl
   const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET })
   const isAuthenticated = !!token
+  const tokenApp = (token as { appSelection?: AppKey } | null)?.appSelection ?? null
+  const tokenRoleRaw = (token as { roleSelection?: string; userRole?: string } | null)?.roleSelection ??
+    (token as { roleSelection?: string; userRole?: string } | null)?.userRole ??
+    null
+  const tokenRole =
+    tokenRoleRaw === 'admin' || tokenRoleRaw === 'standard' || tokenRoleRaw === 'readonly'
+      ? tokenRoleRaw
+      : null
 
   // Protected dashboard routes
   if (pathname.startsWith('/dashboard')) {
@@ -28,6 +38,20 @@ export default async function middleware(req: NextRequest) {
       const signInUrl = new URL('/', req.url)
       signInUrl.searchParams.set('callbackUrl', pathname)
       return NextResponse.redirect(signInUrl)
+    }
+
+    const requiredApp = getRequiredAppForPath(pathname)
+    if (requiredApp && tokenApp && requiredApp !== tokenApp) {
+      const redirectUrl = new URL(getDefaultPathForApp(tokenApp), req.url)
+      redirectUrl.searchParams.set('app', tokenApp)
+      redirectUrl.searchParams.set('redirectedFrom', pathname)
+      return NextResponse.redirect(redirectUrl)
+    }
+
+    const requiredRole = getRequiredRoleForPath(pathname)
+    if (requiredRole && !isRoleAllowed(requiredRole, tokenRole)) {
+      const forbiddenUrl = new URL('/forbidden', req.url)
+      return NextResponse.redirect(forbiddenUrl)
     }
 
     // Admin-only guard for /dashboard/admin/**

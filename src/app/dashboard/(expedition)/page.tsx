@@ -9,11 +9,12 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { SectionSelector } from "@/components/SectionSelector";
 import { useStore } from "@/store/use-store";
-import type { AppKey } from "@/types/app";
-export const requiredApp: AppKey = 'expedition';
 import { useEvents } from "@/hooks/useEvents";
 import { CalendarDays, MapPin, Users, CheckCircle2, XCircle, Clock } from "lucide-react";
 import type { Event } from "@/lib/schemas";
+import type { AppKey } from "@/types/app";
+
+export const requiredApp: AppKey = 'expedition';
 
 /** Format date range for display */
 function formatDateRange(startDate: string, endDate: string): string {
@@ -94,7 +95,6 @@ export default function DashboardPage() {
   
   const currentSection = useStore((s) => s.currentSection);
   const selectedSections = useStore((s) => s.selectedSections);
-  const availableSections = useStore((s) => s.availableSections);
   const hasHydrated = useStore((s) => s._hasHydrated);
   
   // Use React Query hook - single source of truth for events data

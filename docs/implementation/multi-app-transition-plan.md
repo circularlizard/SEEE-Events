@@ -8,7 +8,7 @@ summary: Step-by-step plan to evolve the SEEE dashboard into the multi-applicati
 ## 1. Preconditions & Hardening
 - [x] Complete Platform Hardening backlog (section picker fix, hydration stability, logging/telemetry gaps) — tracked in @docs/completed-plans/platform-hardening-plan-completed-2025-12-22.md.
 - [x] Confirm Redis keys (`platform:seeeSectionId`, `platform:allowedOperators`) exist with safe defaults.  
-  _Recommended defaults:_ `platform:seeeSectionId = "43105"` (SEEE canonical section ID) and `platform:allowedOperators = ["david.strachan@mac.com"]`. Store values as JSON strings in Vercel KV so the Platform Admin console can edit them later.
+  _Recommended defaults:_ `platform:seeeSectionId = "43105"` (SEEE canonical section ID) and `platform:allowedOperators = ["operator@example.com"]`. Store values as JSON strings in Vercel KV so the Platform Admin console can edit them later.
 - [x] Audit MSW fixtures to ensure admin vs standard flows can be tested independently.  
   _Audit outcome:_ existing handlers provide a single data shape; add variant fixtures before multi-app rollout — (1) standard viewer dataset limited to allowed patrols/events, (2) platform-admin telemetry/cache endpoints, (3) document flag in README for switching fixtures during Playwright runs.
 
@@ -33,9 +33,13 @@ summary: Step-by-step plan to evolve the SEEE dashboard into the multi-applicati
   _Done:_ `StartupInitializer` consumes `session.appSelection` and hydrates the store; auth callbacks hydrate `token.appSelection`.
 
 ## 3. Routing & Layout Split
-- [ ] Introduce app-specific route groups under `/dashboard/(planning|expedition|platform-admin|multi)`.
-- [ ] Update shared dashboard layout to render app-aware navigation: unique sidebar links per app, shared header components.
-- [ ] Add route metadata (e.g., `export const requiredApp = 'planning'`) consumed by middleware/guards.
+- [x] Introduce app-specific route groups under `/dashboard/(planning|expedition|platform-admin|multi)`.
+- [x] Update shared dashboard layout to render app-aware navigation: unique sidebar links per app, shared header components.
+- [x] Add route metadata (e.g., `export const requiredApp = 'planning'`) consumed by middleware/guards.
+
+_Notes:_
+- `requiredApp` is exported from each app route page and enforced by `middleware.ts` + `src/components/layout/ClientShell.tsx` using helpers in `src/lib/app-route-guards.ts`.
+- A minimal Planning landing page exists at `/dashboard/planning` to support app-default redirects.
 
 ### Route mapping tracker
 We will migrate one feature slice at a time so that each app surface lives entirely within its route group. This table captures the current/target locations; mark entries as complete once the code is moved and imports updated.
@@ -44,6 +48,7 @@ We will migrate one feature slice at a time so that each app surface lives entir
 | --- | --- | --- | --- |
 | ✅ | `/dashboard/page.tsx` | `/dashboard/(expedition)/page.tsx` | Expedition landing exports `requiredApp = 'expedition'`. |
 | ✅ | `/dashboard/events/**` | `/dashboard/(expedition)/events/**` | Includes detail + attendance routes. |
+| ✅ | `/dashboard/planning` (new) | `/dashboard/(planning)/planning` | Planning landing exports `requiredApp = 'planning'`. |
 | ✅ | `/dashboard/api-browser/**` | `/dashboard/(platform-admin)/api-browser/**` | Platform consoles own API explorer. |
 | ✅ | `/dashboard/debug/**` | `/dashboard/(platform-admin)/debug/**` | Queue + OAuth debug panels move under Platform Admin. |
 | ✅ | `/dashboard/members/**` | `/dashboard/(multi)/members/**` | Multi viewer exposes shared member roster. |
@@ -62,7 +67,7 @@ We will migrate one feature slice at a time so that each app surface lives entir
   - Expedition Viewer → `osm-standard`
   - Multi-Section Viewer → placeholder `osm-multisection` (flagged TODO until ready)
 - [ ] Persist `{ currentApp, currentSection }` immediately after login; ensure redirect/callback honors both values.
-- [ ] Update middleware + client guards to enforce `requiredApp` and `requiredRole` before rendering routes.
+- [x] Update middleware + client guards to enforce `requiredApp` and `requiredRole` before rendering routes.
 
 ## 5. State & Data Layer Adjustments
 - [ ] Namespace TanStack Query keys per app (`['planning', 'events']`, `['expedition', 'summaries']`).

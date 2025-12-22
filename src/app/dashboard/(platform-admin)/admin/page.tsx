@@ -4,6 +4,9 @@ import { Users } from 'lucide-react'
 import { getAuthConfig } from '@/lib/auth'
 import { PatrolManagement } from './PatrolManagement'
 import { PlatformCacheStatusPanel } from './PlatformCacheStatusPanel'
+import type { AppKey } from '@/types/app'
+
+export const requiredApp: AppKey = 'platform-admin'
 
 export default async function AdminPage() {
   const authOptions = await getAuthConfig()

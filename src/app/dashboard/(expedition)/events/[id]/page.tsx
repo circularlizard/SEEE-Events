@@ -1,6 +1,9 @@
 import { getServerSession } from 'next-auth'
 import { getAuthConfig } from '@/lib/auth'
 import EventDetailClient from './EventDetailClient'
+import type { AppKey } from '@/types/app'
+
+export const requiredApp: AppKey = 'expedition'
 
 export default async function EventDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const authOptions = await getAuthConfig()

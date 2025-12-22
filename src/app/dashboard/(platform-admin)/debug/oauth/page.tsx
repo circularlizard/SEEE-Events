@@ -3,6 +3,9 @@
 import { useEffect, useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
+import type { AppKey } from '@/types/app'
+
+export const requiredApp: AppKey = 'platform-admin'
 
 type OAuthData = Record<string, unknown>
 

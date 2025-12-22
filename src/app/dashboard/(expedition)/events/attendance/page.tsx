@@ -1,15 +1,18 @@
 'use client'
-
-import { useState, useMemo } from 'react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { useMemo, useState } from 'react'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Label } from '@/components/ui/label'
-import { cn } from '@/lib/utils'
 import { usePerPersonAttendance } from '@/hooks/usePerPersonAttendance'
 import { usePatrolMap } from '@/hooks/usePatrolMap'
-import { Skeleton } from '@/components/ui/skeleton'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { cn } from '@/lib/utils'
 import { ChevronDown, ChevronRight, Users as UsersIcon } from 'lucide-react'
+import type { AppKey } from '@/types/app'
+
+import { Skeleton } from '@/components/ui/skeleton'
+
+export const requiredApp: AppKey = 'expedition'
 
 type PersonAttendance = ReturnType<typeof usePerPersonAttendance>['data'][number]
 

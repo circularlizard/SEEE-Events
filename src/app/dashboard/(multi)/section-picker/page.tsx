@@ -3,6 +3,9 @@
 import { Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { SectionSelector } from '@/components/SectionSelector'
+import type { AppKey } from '@/types/app'
+
+export const requiredApp: AppKey = 'multi'
 
 /**
  * Section Picker Page Content

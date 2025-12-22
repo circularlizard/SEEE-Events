@@ -8,7 +8,6 @@ import {
   getMemberIssues,
   getMembersWithIssues,
   getIssueCounts,
-  type MemberIssue,
 } from '@/lib/member-issues'
 import type { NormalizedMember } from '@/lib/schemas'
 

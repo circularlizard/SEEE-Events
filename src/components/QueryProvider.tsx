@@ -1,7 +1,7 @@
 'use client'
 
 import { QueryClient, QueryClientProvider, useQueryClient } from '@tanstack/react-query'
-import { ReactNode, useState, createContext, useContext, useCallback } from 'react'
+import { ReactNode, useState, useCallback } from 'react'
 import { signOut } from 'next-auth/react'
 import { APIError } from '@/lib/api'
 import { useStore } from '@/store/use-store'

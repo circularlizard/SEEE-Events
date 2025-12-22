@@ -11,7 +11,7 @@ import {
   getMembersWithIssues,
   getIssueCounts,
 } from '../member-issues'
-import type { NormalizedMember, NormalizedContact, NormalizedConsents } from '../schemas'
+import type { NormalizedMember, NormalizedContact } from '../schemas'
 
 let contactCounter = 0
 const createContact = (overrides?: Partial<NormalizedContact>): NormalizedContact => {

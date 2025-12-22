@@ -14,7 +14,7 @@
 
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useSession } from 'next-auth/react'
-import { useEffect, useRef, useCallback } from 'react'
+import { useEffect, useRef, useCallback, useMemo } from 'react'
 import { getMembers, getMemberIndividual, getMemberCustomData } from '@/lib/api'
 import { useStore } from '@/store/use-store'
 import {
@@ -103,7 +103,7 @@ export function useMembers() {
     refetchOnWindowFocus: false,
   })
 
-  const members = query.data ?? []
+  const members = useMemo(() => query.data ?? [], [query.data])
 
   /**
    * Abort any in-flight enrichment

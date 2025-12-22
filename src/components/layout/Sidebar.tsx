@@ -4,32 +4,37 @@ import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { usePathname } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
-import { Shield, CalendarDays, Users as UsersIcon, AlertTriangle } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useStore } from "@/store/use-store";
+import { getNavSections } from "./nav-config";
+import { cn } from "@/lib/utils";
 
 export default function Sidebar() {
   const { data: session } = useSession();
   const queryClient = useQueryClient();
-  const isAdmin = (session as { roleSelection?: string } | null)?.roleSelection === "admin";
+  const pathname = usePathname();
   const currentSection = useStore((s) => s.currentSection);
   const selectedSections = useStore((s) => s.selectedSections);
   const availableSections = useStore((s) => s.availableSections);
   const setCurrentSection = useStore((s) => s.setCurrentSection);
   const setSelectedSections = useStore((s) => s.setSelectedSections);
   const clearQueue = useStore((s) => s.clearQueue);
-  const pathname = usePathname();
+  const currentApp = useStore((s) => s.currentApp);
+  const userRole = useStore((s) => s.userRole);
+
+  const isAdmin = (session as { roleSelection?: string } | null)?.roleSelection === "admin" || userRole === "admin";
+  const navSections = getNavSections(currentApp);
 
   const hasMultiSelection = selectedSections.length > 0;
   const sectionLabel = hasMultiSelection
     ? selectedSections.map((s) => s.sectionName).join(", ")
     : currentSection?.sectionName ?? "No section selected";
 
-  // Show dropdown when user has more than one available section
+  const showSectionContext = availableSections.length > 0 && currentApp !== "platform-admin";
   const showSectionDropdown = availableSections.length > 1;
 
   const handleSectionChange = (sectionId: string) => {
-    const selected = availableSections.find(s => s.sectionId === sectionId);
+    const selected = availableSections.find((s) => s.sectionId === sectionId);
     if (!selected) return;
 
     setCurrentSection({
@@ -41,118 +46,85 @@ export default function Sidebar() {
     setSelectedSections([]);
     clearQueue();
 
-    // Clear cached data for old section
-    queryClient.removeQueries({ queryKey: ['events'] });
-    queryClient.removeQueries({ queryKey: ['event-summary'] });
-    queryClient.removeQueries({ queryKey: ['attendance'] });
-    queryClient.removeQueries({ queryKey: ['per-person-attendance'] });
-    queryClient.removeQueries({ queryKey: ['members'] });
+    queryClient.removeQueries({ queryKey: ["events"] });
+    queryClient.removeQueries({ queryKey: ["event-summary"] });
+    queryClient.removeQueries({ queryKey: ["attendance"] });
+    queryClient.removeQueries({ queryKey: ["per-person-attendance"] });
+    queryClient.removeQueries({ queryKey: ["members"] });
 
-    if (process.env.NODE_ENV !== 'production') {
-      console.debug('[Sidebar] Section changed, cleared cached queries');
+    if (process.env.NODE_ENV !== "production") {
+      console.debug("[Sidebar] Section changed, cleared cached queries");
     }
+  };
+
+  const isActive = (href: string) => {
+    if (href === "/dashboard") {
+      return pathname === "/dashboard";
+    }
+    return pathname.startsWith(href);
+  };
+
+  const canShowItem = (requiresAdmin?: boolean) => {
+    if (!requiresAdmin) return true;
+    return isAdmin;
   };
 
   return (
     <aside className="hidden md:block w-60 border-r bg-muted min-h-screen p-4">
-      <nav className="space-y-2 text-sm">
-        {/* Section summary */}
-        <div className="mb-4">
-          <p className="px-2 text-xs font-semibold text-muted-foreground uppercase mb-1">
-            Section
-          </p>
-          {showSectionDropdown && currentSection ? (
-            <Select value={currentSection.sectionId} onValueChange={handleSectionChange}>
-              <SelectTrigger className="w-full mt-1">
-                <SelectValue placeholder="Select section" />
-              </SelectTrigger>
-              <SelectContent>
-                {availableSections.map((section) => (
-                  <SelectItem key={section.sectionId} value={section.sectionId}>
-                    {section.sectionName}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          ) : (
-            <div className="px-2 text-sm text-muted-foreground truncate">
-              {sectionLabel}
-            </div>
-          )}
-        </div>
-
-        <Link className="block px-2 py-1 rounded-md hover:bg-accent hover:text-accent-foreground" href="/dashboard">
-          Overview
-        </Link>
-
-        {/* Events section */}
-        <div className="border-t my-4 pt-4">
-          <p className="px-2 text-xs font-semibold text-muted-foreground uppercase mb-2">
-            Events
-          </p>
-          <Link className="flex items-center gap-2 px-2 py-1 rounded-md hover:bg-accent hover:text-accent-foreground" href="/dashboard/events">
-            <CalendarDays className="h-4 w-4" />
-            <span>Events</span>
-          </Link>
-          <Link className="flex items-center gap-2 px-2 py-1 rounded-md hover:bg-accent hover:text-accent-foreground" href="/dashboard/events/attendance">
-            <UsersIcon className="h-4 w-4" />
-            <span>Attendance by Person</span>
-          </Link>
-        </div>
-
-        {/* Admin section - only visible to administrators */}
-        {isAdmin && (
-          <div className="border-t my-4 pt-4">
-            <p className="px-2 text-xs font-semibold text-muted-foreground uppercase mb-2">
-              Members
-            </p>
-            <Link
-              className="flex items-center gap-2 px-2 py-1 rounded-md hover:bg-accent hover:text-accent-foreground"
-              href="/dashboard/members"
-            >
-              <UsersIcon className="h-4 w-4" />
-              Members
-            </Link>
-            <Link
-              className="flex items-center gap-2 px-2 py-1 rounded-md hover:bg-accent hover:text-accent-foreground"
-              href="/dashboard/members/issues"
-            >
-              <AlertTriangle className="h-4 w-4" />
-              Member Data Issues
-            </Link>
-            <Link
-              className="flex items-center gap-2 px-2 py-1 rounded-md hover:bg-accent hover:text-accent-foreground"
-              href="/dashboard/admin"
-            >
-              <Shield className="h-4 w-4" />
-              Patrol data
-            </Link>
+      <nav className="space-y-6 text-sm">
+        {showSectionContext && (
+          <div>
+            <p className="px-2 text-xs font-semibold text-muted-foreground uppercase mb-1">Section</p>
+            {showSectionDropdown && currentSection ? (
+              <Select value={currentSection.sectionId} onValueChange={handleSectionChange}>
+                <SelectTrigger className="w-full mt-1">
+                  <SelectValue placeholder="Select section" />
+                </SelectTrigger>
+                <SelectContent>
+                  {availableSections.map((section) => (
+                    <SelectItem key={section.sectionId} value={section.sectionId}>
+                      {section.sectionName}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            ) : (
+              <div className="px-2 text-sm text-muted-foreground truncate">{sectionLabel}</div>
+            )}
           </div>
         )}
 
-        <div className="border-t my-4 pt-4">
-          <p className="px-2 text-xs font-semibold text-muted-foreground uppercase mb-2">
-            Developer Tools
-          </p>
-          <Link
-            className="block px-2 py-1 rounded-md hover:bg-accent hover:text-accent-foreground text-muted-foreground"
-            href="/dashboard/api-browser"
-          >
-            API Browser
-          </Link>
-          <Link
-            className="block px-2 py-1 rounded-md hover:bg-accent hover:text-accent-foreground text-muted-foreground"
-            href="/dashboard/debug/queue"
-          >
-            Queue Debug
-          </Link>
-          <Link
-            className="block px-2 py-1 rounded-md hover:bg-accent hover:text-accent-foreground text-muted-foreground"
-            href="/dashboard/debug/oauth"
-          >
-            OAuth Resource
-          </Link>
-        </div>
+        {navSections.map((section, idx) => {
+          const visibleItems = section.items.filter((item) => canShowItem(item.requiresAdmin));
+          if (visibleItems.length === 0) {
+            return null;
+          }
+
+          return (
+            <div key={section.title ?? idx} className="space-y-2">
+              {section.title && (
+                <p className="px-2 text-xs font-semibold text-muted-foreground uppercase">{section.title}</p>
+              )}
+              <div className="space-y-1">
+                {visibleItems.map((item) => (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className={cn(
+                      "flex items-center gap-2 px-2 py-1 rounded-md transition-colors",
+                      isActive(item.href)
+                        ? "bg-accent text-accent-foreground"
+                        : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                    )}
+                  >
+                    <item.icon className="h-4 w-4" aria-hidden />
+                    <span>{item.label}</span>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          );
+        })}
       </nav>
     </aside>
   );

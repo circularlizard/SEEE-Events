@@ -10,6 +10,9 @@ import { ApiHistory } from '@/components/api-browser/ApiHistory';
 import { useApiRequest } from '@/hooks/useApiRequest';
 import { useApiHistory } from '@/hooks/useApiHistory';
 import type { ApiEndpoint, ApiRequestConfig } from '@/types/api-browser';
+import type { AppKey } from '@/types/app';
+
+export const requiredApp: AppKey = 'platform-admin';
 
 export default function ApiBrowserPage() {
   const [selectedEndpoint, setSelectedEndpoint] = useState<ApiEndpoint | null>(null);

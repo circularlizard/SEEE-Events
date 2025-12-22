@@ -1,7 +1,6 @@
 'use server'
 
 import { getSessionVersion, incrementSessionVersion } from './redis'
-import { revalidatePath } from 'next/cache'
 
 /**
  * Invalidate all active sessions by incrementing the session version
