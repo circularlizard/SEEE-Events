@@ -5,6 +5,7 @@ import { useSession } from 'next-auth/react'
 import { useRouter, usePathname } from 'next/navigation'
 import { useStore } from '@/store/use-store'
 import type { OAuthData } from '@/lib/redis'
+import type { AppKey } from '@/types/app'
 
 const REMEMBER_KEY = 'seee.sectionSelection.v1'
 
@@ -39,6 +40,7 @@ export default function StartupInitializer() {
   const setUserRole = useStore((s) => s.setUserRole)
   const setAvailableSections = useStore((s) => s.setAvailableSections)
   const setCurrentSection = useStore((s) => s.setCurrentSection)
+  const setCurrentApp = useStore((s) => s.setCurrentApp)
   const setSelectedSections = useStore((s) => s.setSelectedSections)
   const setAccessControlStrategy = useStore((s) => s.setAccessControlStrategy)
   const setAllowedPatrolIds = useStore((s) => s.setAllowedPatrolIds)
@@ -88,7 +90,11 @@ export default function StartupInitializer() {
         
         // Use roleSelection from session (set during OAuth login based on provider choice)
         // Falls back to permission-based heuristic if not available
-        const sessionRole = (session as { roleSelection?: 'admin' | 'standard' }).roleSelection
+        const { roleSelection: sessionRole, appSelection: sessionApp } = session as {
+          roleSelection?: 'admin' | 'standard'
+          appSelection?: AppKey
+        }
+
         let role: 'admin' | 'standard' | 'readonly'
         
         if (sessionRole === 'admin') {
@@ -103,6 +109,10 @@ export default function StartupInitializer() {
         }
         
         setUserRole(role)
+
+        if (sessionApp) {
+          setCurrentApp(sessionApp)
+        }
         
         if (process.env.NODE_ENV !== 'production') {
           console.debug('[StartupInitializer] User role set to:', role, '(from session:', sessionRole, ')')
@@ -209,7 +219,20 @@ export default function StartupInitializer() {
     }
 
     fetchSections()
-  }, [status, session, pathname, router, setUserRole, setAvailableSections, setCurrentSection, setSelectedSections, setAccessControlStrategy, setAllowedPatrolIds, setAllowedEventIds])
+  }, [
+    status,
+    session,
+    pathname,
+    router,
+    setUserRole,
+    setAvailableSections,
+    setCurrentSection,
+    setCurrentApp,
+    setSelectedSections,
+    setAccessControlStrategy,
+    setAllowedPatrolIds,
+    setAllowedEventIds,
+  ])
 
   return null
 }

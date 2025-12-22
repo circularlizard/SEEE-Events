@@ -3,6 +3,7 @@ import type { JWT as BaseJWT } from 'next-auth/jwt'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import { getMockUser } from '@/mocks/mockSession'
 import { setOAuthData, type OAuthData, getSessionVersion } from './redis'
+import { DEFAULT_APP_FOR_ROLE, type AppKey } from '@/types/app'
 
 /**
  * Extended JWT type with our custom fields
@@ -11,6 +12,7 @@ interface JWT extends BaseJWT {
   roleSelection?: 'admin' | 'standard'
   scopes?: string[]
   sessionVersion?: number
+  appSelection?: AppKey
 }
 
 /**
@@ -21,6 +23,7 @@ export interface ExtendedUser extends DefaultUser {
   sectionIds?: number[]
   scopes?: string[]
   roleSelection?: 'admin' | 'standard'
+  appSelection?: AppKey
 }
 
 /**
@@ -155,6 +158,7 @@ function getProviders(): AuthOptions['providers'] {
             sections: mockUser.sections,
             scopes: getScopesForRole(roleSelection),
             roleSelection,
+            appSelection: DEFAULT_APP_FOR_ROLE[roleSelection],
           }
         },
       }),
@@ -259,6 +263,7 @@ export function getAuthConfig(): AuthOptions {
         token.roleSelection = roleSelection
         token.scopes = scopes
         token.sessionVersion = currentVersion
+        token.appSelection = extUser.appSelection ?? DEFAULT_APP_FOR_ROLE[roleSelection]
         
         console.log(`[JWT] Provider: ${account.provider}, Role: "${roleSelection}", Scopes: ${scopes.join(', ')}`)
       }
@@ -333,6 +338,7 @@ export function getAuthConfig(): AuthOptions {
           sectionIds: extUser.sectionIds || [],
           scopes,
           roleSelection,
+          appSelection: extUser.appSelection ?? DEFAULT_APP_FOR_ROLE[roleSelection],
           sessionVersion: typeof token.sessionVersion === 'number' ? token.sessionVersion : currentVersion,
         }
       }
@@ -364,6 +370,7 @@ export function getAuthConfig(): AuthOptions {
       session.sectionIds = token.sectionIds as number[] | undefined
       session.scopes = token.scopes as string[] | undefined
       session.roleSelection = token.roleSelection as 'admin' | 'standard' | undefined
+      session.appSelection = (token as JWT).appSelection
 
       return session
     },

@@ -25,10 +25,12 @@ summary: Step-by-step plan to evolve the SEEE dashboard into the multi-applicati
 ## 2. Session & State Plumbing
 - [x] Extend Zustand session store to include `currentApp` alongside `currentSection` and `userRole`.  
   _Done:_ `src/store/use-store.ts` now persists `currentApp`, wipes it on logout, and exposes `useCurrentApp`.
-- [ ] Mirror `currentApp` in server session helpers so App Router layouts can read it during SSR.
+- [x] Mirror `currentApp` in server session helpers so App Router layouts can read it during SSR.  
+  _Done:_ NextAuth JWT/session callbacks (`src/lib/auth.ts`) emit `session.appSelection`, and `src/types/next-auth.d.ts` exposes the field.
 - [x] Add selectors/helpers (`isPlanningApp`, `isExpeditionApp`, etc.) used throughout components.  
   _Done:_ `use-store` exports `useIsPlanningApp`, `useIsExpeditionApp`, `useIsPlatformAdminApp`, `useIsMultiApp`, plus `getCurrentApp`.
-- [ ] Wire StartupInitializer + auth callbacks to set `currentApp` immediately after login so `requiredApp` guards have data on first render.
+- [x] Wire StartupInitializer + auth callbacks to set `currentApp` immediately after login so `requiredApp` guards have data on first render.  
+  _Done:_ `StartupInitializer` consumes `session.appSelection` and hydrates the store; auth callbacks hydrate `token.appSelection`.
 
 ## 3. Routing & Layout Split
 - [ ] Introduce app-specific route groups under `/dashboard/(planning|expedition|platform-admin|multi)`.
