@@ -43,8 +43,13 @@ describe('Login Page', () => {
     const spy = jest.spyOn(nextAuthReact, 'signIn').mockResolvedValueOnce(undefined as any)
     render(<Home />)
     fireEvent.click(screen.getByText('Sign in with OSM'))
-    expect(spy).toHaveBeenCalledWith('osm-standard', expect.objectContaining({ callbackUrl: '/dashboard' }))
+    expect(spy).toHaveBeenCalledWith('osm-standard', expect.objectContaining({ callbackUrl: '/dashboard?appSelection=expedition' }))
     fireEvent.click(screen.getByText('Dev: Mock Login'))
-    expect(spy).toHaveBeenCalledWith('credentials', expect.objectContaining({ callbackUrl: '/dashboard' }))
+    expect(spy).toHaveBeenCalledWith('credentials', expect.objectContaining({ 
+      callbackUrl: '/dashboard?appSelection=expedition',
+      username: 'standard',
+      roleSelection: 'standard',
+      appSelection: 'expedition'
+    }))
   })
 })

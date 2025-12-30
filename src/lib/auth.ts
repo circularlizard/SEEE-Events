@@ -187,7 +187,7 @@ function getProviders(): AuthOptions['providers'] {
     },
     clientId: process.env.OSM_CLIENT_ID,
     clientSecret: process.env.OSM_CLIENT_SECRET,
-    async profile(profile: OsmOAuthProfile): Promise<ExtendedUser> {
+    async profile(profile: OsmOAuthProfile, tokens: { access_token?: string }): Promise<ExtendedUser> {
       // OSM returns { status, error, data: { user_id, full_name, email, sections, ... }, meta }
       const data = profile.data || {}
       const userId = String(data.user_id || 'unknown')
@@ -215,6 +215,7 @@ function getProviders(): AuthOptions['providers'] {
         sectionIds: (data.sections || []).map((s: OsmSection) => s.section_id),
         scopes: data.scopes || [],
         roleSelection: role, // Embed role in user profile
+        // appSelection will be set in JWT callback from URL params
       }
     },
   })
@@ -230,12 +231,22 @@ export function getAuthConfig(): AuthOptions {
     providers: getProviders(),
     callbacks: {
     /**
-     * Redirect callback: Intercept the post-OAuth redirect to preserve role selection
-     * The role cookie is available here and will persist to the next request
+     * Redirect callback: Intercept the post-OAuth redirect to preserve app selection
+     * Extract appSelection from callback URL and preserve it in the redirect
      */
     async redirect({ url, baseUrl }) {
-      // Role selection cookie persists automatically via browser
-      // The next request (JWT callback) will read it
+      // Extract appSelection from callback URL if present
+      const callbackUrl = new URL(url.startsWith('http') ? url : `${baseUrl}${url}`)
+      const appSelection = callbackUrl.searchParams.get('appSelection')
+      
+      if (appSelection) {
+        // Preserve appSelection in the final redirect URL
+        const finalUrl = url.startsWith(baseUrl) ? url : baseUrl
+        const finalUrlObj = new URL(finalUrl.startsWith('http') ? finalUrl : `${baseUrl}${finalUrl}`)
+        finalUrlObj.searchParams.set('appSelection', appSelection)
+        return finalUrlObj.toString()
+      }
+      
       return url.startsWith(baseUrl) ? url : baseUrl
     },
 
@@ -249,7 +260,7 @@ export function getAuthConfig(): AuthOptions {
       return true
     },
 
-    async jwt({ token, account, user }) {
+    async jwt({ token, account, user, trigger }) {
       // During OAuth initial sign-in, read role from user profile
       if (account && user && !token.roleSelection) {
         // Role is embedded in user profile by the OAuth provider
@@ -263,9 +274,12 @@ export function getAuthConfig(): AuthOptions {
         token.roleSelection = roleSelection
         token.scopes = scopes
         token.sessionVersion = currentVersion
+        
+        // appSelection comes from the user object if set (mock auth)
+        // or will be set below from trigger data (real OAuth)
         token.appSelection = extUser.appSelection ?? DEFAULT_APP_FOR_ROLE[roleSelection]
         
-        console.log(`[JWT] Provider: ${account.provider}, Role: "${roleSelection}", Scopes: ${scopes.join(', ')}`)
+        console.log(`[JWT] Provider: ${account.provider}, Role: "${roleSelection}", App: "${token.appSelection}", Scopes: ${scopes.join(', ')}`)
       }
       
       // Validate session version on every request
@@ -310,6 +324,7 @@ export function getAuthConfig(): AuthOptions {
             sectionIds: (extUser.sections || []).map((s: OsmSection) => s.section_id),
             scopes: extUser.scopes || [],
             roleSelection: extUser.roleSelection || 'standard',
+            appSelection: extUser.appSelection ?? DEFAULT_APP_FOR_ROLE[extUser.roleSelection || 'standard'],
             sessionVersion: currentVersion,
           }
         }

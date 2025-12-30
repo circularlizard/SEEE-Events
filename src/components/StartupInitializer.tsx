@@ -110,12 +110,29 @@ export default function StartupInitializer() {
         
         setUserRole(role)
 
-        if (sessionApp) {
+        // Check for appSelection in URL query params (from OAuth callback)
+        // or use session value
+        let appToSet: AppKey | null = null
+        if (typeof window !== 'undefined') {
+          const urlParams = new URLSearchParams(window.location.search)
+          const urlApp = urlParams.get('appSelection') as AppKey | null
+          if (urlApp) {
+            appToSet = urlApp
+            // Clean up URL after extracting app selection
+            urlParams.delete('appSelection')
+            const newUrl = `${window.location.pathname}${urlParams.toString() ? '?' + urlParams.toString() : ''}`
+            window.history.replaceState({}, '', newUrl)
+          }
+        }
+        
+        if (appToSet) {
+          setCurrentApp(appToSet)
+        } else if (sessionApp) {
           setCurrentApp(sessionApp)
         }
         
         if (process.env.NODE_ENV !== 'production') {
-          console.debug('[StartupInitializer] User role set to:', role, '(from session:', sessionRole, ')')
+          console.debug('[StartupInitializer] User role set to:', role, '(from session:', sessionRole, '), app:', appToSet || sessionApp)
         }
 
         // Transform OAuth sections to store format
