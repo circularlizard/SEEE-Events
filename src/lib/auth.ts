@@ -187,7 +187,7 @@ function getProviders(): AuthOptions['providers'] {
     },
     clientId: process.env.OSM_CLIENT_ID,
     clientSecret: process.env.OSM_CLIENT_SECRET,
-    async profile(profile: OsmOAuthProfile, tokens: { access_token?: string }): Promise<ExtendedUser> {
+    async profile(profile: OsmOAuthProfile): Promise<ExtendedUser> {
       // OSM returns { status, error, data: { user_id, full_name, email, sections, ... }, meta }
       const data = profile.data || {}
       const userId = String(data.user_id || 'unknown')
@@ -260,7 +260,7 @@ export function getAuthConfig(): AuthOptions {
       return true
     },
 
-    async jwt({ token, account, user, trigger }) {
+    async jwt({ token, account, user }) {
       // During OAuth initial sign-in, read role from user profile
       if (account && user && !token.roleSelection) {
         // Role is embedded in user profile by the OAuth provider

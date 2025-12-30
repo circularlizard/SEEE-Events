@@ -13,13 +13,6 @@ import React from 'react'
 import { useSession } from 'next-auth/react'
 import { useEvents } from '../useEvents'
 import { eventsKeys } from '@/lib/query-keys'
-import { useStore } from '@/store/use-store'
-import * as api from '@/lib/api'
-
-// Mock next-auth
-jest.mock('next-auth/react', () => ({
-  useSession: jest.fn(),
-}))
 
 // Mock the store
 const mockStore = {
@@ -34,12 +27,16 @@ jest.mock('@/store/use-store', () => ({
   useStore: (selector: (state: typeof mockStore) => any) => selector(mockStore),
 }))
 
+// Mock next-auth
+jest.mock('next-auth/react', () => ({
+  useSession: jest.fn(),
+}))
+
 // Mock the API
 const mockGetEvents = jest.fn()
 jest.mock('@/lib/api', () => ({
   getEvents: (...args: any[]) => mockGetEvents(...args),
 }))
-
 
 function createWrapper() {
   const queryClient = new QueryClient({

@@ -302,7 +302,7 @@ export function useMembers() {
     } finally {
       enrichmentRef.current.isEnriching = false
     }
-  }, [sectionId, termId, queryClient, abortEnrichment, updateDataSourceProgress])
+  }, [sectionId, termId, queryClient, app, abortEnrichment, updateDataSourceProgress])
 
   // Start enrichment when Phase 1 data is available
   useEffect(() => {
