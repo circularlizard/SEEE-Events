@@ -1,6 +1,6 @@
-import { dirname } from "path";
-import { fileURLToPath } from "url";
 import { FlatCompat } from "@eslint/eslintrc";
+import { fileURLToPath } from "url";
+import { dirname } from "path";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -9,10 +9,28 @@ const compat = new FlatCompat({
   baseDirectory: __dirname,
 });
 
-const eslintConfig = [
-  ...compat.extends("next/core-web-vitals", "next/typescript"),
+const config = [
+  // Ignore files first
   {
-    files: ["**/*.{ts,tsx,js,jsx,mjs,cjs}"],
+    ignores: [
+      "node_modules/**",
+      ".next/**",
+      "out/**",
+      "build/**",
+      "next-env.d.ts",
+      "public/mockServiceWorker.js",
+      "scripts/**",
+      "server.js",
+      "coverage/**",
+    ],
+  },
+  // Load Next.js recommended + TypeScript rules via compat
+  ...compat.config({
+    extends: ["next/core-web-vitals", "next/typescript"],
+  }),
+  // Custom rules for TypeScript files
+  {
+    files: ["**/*.ts", "**/*.tsx"],
     rules: {
       // Do not introduce server-side databases – this app uses Redis/KV only.
       "no-restricted-imports": [
@@ -36,6 +54,29 @@ const eslintConfig = [
       ],
     },
   },
+  // Disable require imports check for tailwind config
+  {
+    files: ["tailwind.config.ts"],
+    rules: {
+      "@typescript-eslint/no-require-imports": "off",
+    },
+  },
+  // E2E test fixtures can use any and hook patterns
+  {
+    files: ["tests/e2e/**/*.ts"],
+    rules: {
+      "react-hooks/rules-of-hooks": "off",
+      "@typescript-eslint/no-explicit-any": "off",
+      "@typescript-eslint/no-unused-vars": "warn",
+    },
+  },
+  // Jest setup and middleware can use any for global polyfills
+  {
+    files: ["jest.setup.ts", "middleware.ts"],
+    rules: {
+      "@typescript-eslint/no-explicit-any": "off",
+    },
+  },
 ];
 
-export default eslintConfig;
+export default config;

@@ -6,14 +6,14 @@ if (typeof setImmediate === 'undefined') {
     setTimeout(fn, 0, ...args)
 }// Polyfill Web Fetch API for NextRequest usage in tests
 try {
-	// eslint-disable-next-line @typescript-eslint/no-var-requires
+	// eslint-disable-next-line @typescript-eslint/no-require-imports
 	const { fetch, Request, Response, Headers } = require('undici')
 	// Assign if not present
 	if (!(global as any).fetch) (global as any).fetch = fetch
 	if (!(global as any).Request) (global as any).Request = Request
 	if (!(global as any).Response) (global as any).Response = Response
 	if (!(global as any).Headers) (global as any).Headers = Headers
-} catch (e) {
+} catch {
 	// ignore if undici not available
 }
 

@@ -31,9 +31,6 @@ test.describe('React Query Verification', () => {
       await expect(page.getByRole('heading', { name: /Events/i })).toBeVisible()
       await page.waitForTimeout(2000)
       
-      // Check if we have events loaded
-      const initialEventsVisible = await page.locator('table').isVisible().catch(() => false)
-      
       // If there's a section picker available, try changing section
       const changeSectionButton = page.getByRole('link', { name: /Change Section/i })
       if (await changeSectionButton.isVisible().catch(() => false)) {

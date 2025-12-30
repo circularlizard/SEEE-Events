@@ -7,8 +7,8 @@
     "dev:http": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
-    "lint:arch": "next lint",
+    "lint": "eslint .",
+    "lint:arch": "eslint .",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:unit": "jest",
@@ -63,7 +63,6 @@
   "devDependencies": {
     "@babel/core": "^7.28.5",
     "@cucumber/cucumber": "^12.4.0",
-    "@eslint/eslintrc": "^3.3.3",
     "@playwright/test": "^1.57.0",
     "@stryker-mutator/core": "^9.4.0",
     "@stryker-mutator/jest-runner": "^9.4.0",
