@@ -25,12 +25,13 @@ import {
   markMemberError,
 } from '@/lib/member-data-parser'
 import type { NormalizedMember } from '@/lib/schemas'
+import { membersKeys } from '@/lib/query-keys'
 
 /**
- * Members query key factory
- * Provides consistent query keys for members data
+ * @deprecated Use membersKeys from @/lib/query-keys instead
+ * Kept for backward compatibility during migration
  */
-export const membersKeys = {
+export const legacyMembersKeys = {
   all: ['members'] as const,
   section: (sectionId: string, termId: string) => ['members', sectionId, termId] as const,
 }
@@ -59,11 +60,13 @@ export function useMembers() {
   const { status } = useSession()
   const isAuthenticated = status === 'authenticated'
   const queryClient = useQueryClient()
-  
   const currentSection = useStore((state) => state.currentSection)
-  const userRole = useStore((state) => state.userRole)
+  const currentApp = useStore((state) => state.currentApp)
   const updateDataSourceProgress = useStore((state) => state.updateDataSourceProgress)
   
+  // Default to 'planning' if no app is set (members are primarily used in planning)
+  const app = currentApp || 'planning'
+  const userRole = useStore((state) => state.userRole)
   const isAdmin = userRole === 'admin'
   const sectionId = currentSection?.sectionId ?? ''
   const termId = currentSection?.termId ?? ''
@@ -78,7 +81,7 @@ export function useMembers() {
 
   // Phase 1: Fetch member summaries
   const query = useQuery({
-    queryKey: membersKeys.section(sectionId, termId),
+    queryKey: membersKeys.section(app, sectionId, termId),
     queryFn: async ({ signal }): Promise<NormalizedMember[]> => {
       if (!sectionId || !termId) {
         return []
@@ -156,7 +159,7 @@ export function useMembers() {
 
     const total = initialMembers.length
     let completed = 0
-    const queryKey = membersKeys.section(sectionId, termId)
+    const queryKey = membersKeys.section(app, sectionId, termId)
 
     try {
       // Phase 2: Fetch individual data (DOB, history) for each member
@@ -349,8 +352,8 @@ export function useMembers() {
    */
   const refresh = useCallback(() => {
     abortEnrichment()
-    queryClient.invalidateQueries({ queryKey: membersKeys.section(sectionId, termId) })
-  }, [queryClient, sectionId, termId, abortEnrichment])
+    queryClient.invalidateQueries({ queryKey: membersKeys.section(app, sectionId, termId) })
+  }, [queryClient, app, sectionId, termId, abortEnrichment])
 
   return {
     members,

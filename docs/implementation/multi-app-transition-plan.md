@@ -72,7 +72,8 @@ We will migrate one feature slice at a time so that each app surface lives entir
 - [x] Update middleware + client guards to enforce `requiredApp` and `requiredRole` before rendering routes.
 
 ## 5. State & Data Layer Adjustments
-- [ ] Namespace TanStack Query keys per app (`['planning', 'events']`, `['expedition', 'summaries']`).
+- [x] Namespace TanStack Query keys per app (`['planning', 'events']`, `['expedition', 'summaries']`).
+  _Done:_ Created centralized `src/lib/query-keys.ts` with app-namespaced key factories. Updated all hooks (`useEvents`, `useMembers`, `useEventDetail`, `usePrefetchEventSummary`, `useQueueProcessor`) and components (`Sidebar`, `SectionSelector`) to use app-namespaced keys. All unit tests updated and passing (155 tests).
 - [ ] Inject SEEE section ID automatically in planning/expedition/platform-admin data hooks; hide section selector for these apps.
 - [ ] Ensure hydration queues rerun whenever a SEEE app mounts so Expedition Viewer benefits from admin-triggered refreshes.
 - [ ] Feed platform metadata (section ID, allowlists, developer toggles) from Redis into StartupInitializer.

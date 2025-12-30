@@ -4,11 +4,12 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useSession } from 'next-auth/react'
 import { useQueryClient } from '@tanstack/react-query'
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
+import { useStore } from '@/store/use-store'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Label } from '@/components/ui/label'
-import { useStore } from '@/store/use-store'
+import { eventsKeys, eventSummaryKeys, attendanceKeys, membersKeys, perPersonAttendanceKeys } from '@/lib/query-keys'
 import { cn } from '@/lib/utils'
 import { CheckCircle2, Circle } from 'lucide-react'
 
@@ -42,9 +43,11 @@ export function SectionSelector({ redirectTo = '/dashboard', allowSkip = false }
   const availableSections = useStore((s) => s.availableSections)
   const currentSection = useStore((s) => s.currentSection)
   const selectedSections = useStore((s) => s.selectedSections)
+  const currentApp = useStore((s) => s.currentApp)
   const setCurrentSection = useStore((s) => s.setCurrentSection)
   const setSelectedSections = useStore((s) => s.setSelectedSections)
   const clearQueue = useStore((s) => s.clearQueue)
+  const app = currentApp || 'expedition'
   
   // Check if there's a valid existing selection that allows "Skip for now"
   const sectionIds = new Set(availableSections.map(s => s.sectionId))
@@ -122,14 +125,15 @@ export function SectionSelector({ redirectTo = '/dashboard', allowSkip = false }
     
     clearQueue()
     
-    queryClient.removeQueries({ queryKey: ['events'] })
-    queryClient.removeQueries({ queryKey: ['event-summary'] })
-    queryClient.removeQueries({ queryKey: ['attendance'] })
-    queryClient.removeQueries({ queryKey: ['per-person-attendance'] })
-    queryClient.removeQueries({ queryKey: ['members'] })
+    // Clear app-namespaced queries
+    queryClient.removeQueries({ queryKey: eventsKeys.all(app) })
+    queryClient.removeQueries({ queryKey: eventSummaryKeys.all(app) })
+    queryClient.removeQueries({ queryKey: attendanceKeys.all(app) })
+    queryClient.removeQueries({ queryKey: perPersonAttendanceKeys.all(app) })
+    queryClient.removeQueries({ queryKey: membersKeys.all(app) })
     
     if (process.env.NODE_ENV !== 'production') {
-      console.debug('[SectionSelector] Removed cached queries and cleared event queue after section change')
+      console.debug('[SectionSelector] Removed cached queries for app:', app, 'and cleared event queue after section change')
     }
     
     router.replace(redirectTo)

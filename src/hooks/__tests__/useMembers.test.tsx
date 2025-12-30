@@ -20,6 +20,7 @@ jest.mock('next-auth/react', () => ({
 // Mock the store
 const mockStore = {
   currentSection: null as any,
+  currentApp: 'planning' as any,
   userRole: null as string | null,
   updateDataSourceProgress: jest.fn(),
 }
@@ -92,7 +93,8 @@ jest.mock('@/lib/member-data-parser', () => ({
 }))
 
 import { useSession } from 'next-auth/react'
-import { useMembers, membersKeys } from '../useMembers'
+import { useMembers } from '../useMembers'
+import { membersKeys } from '@/lib/query-keys'
 
 function createWrapper(queryClient?: QueryClient) {
   const client = queryClient || new QueryClient({
@@ -121,22 +123,23 @@ describe('useMembers', () => {
   })
 
   describe('membersKeys factory', () => {
-    it('creates unique keys per section and term', () => {
-      const key1 = membersKeys.section('section-1', 'term-1')
-      const key2 = membersKeys.section('section-1', 'term-2')
-      const key3 = membersKeys.section('section-2', 'term-1')
+    it('creates unique keys per app, section and term', () => {
+      const key1 = membersKeys.section('planning', 'section-1', 'term-1')
+      const key2 = membersKeys.section('planning', 'section-1', 'term-2')
+      const key3 = membersKeys.section('planning', 'section-2', 'term-1')
 
-      expect(key1).toEqual(['members', 'section-1', 'term-1'])
-      expect(key2).toEqual(['members', 'section-1', 'term-2'])
-      expect(key3).toEqual(['members', 'section-2', 'term-1'])
+      expect(key1).toEqual(['planning', 'members', 'section-1', 'term-1'])
+      expect(key2).toEqual(['planning', 'members', 'section-1', 'term-2'])
+      expect(key3).toEqual(['planning', 'members', 'section-2', 'term-1'])
 
       // Keys should be different
       expect(key1).not.toEqual(key2)
       expect(key1).not.toEqual(key3)
     })
 
-    it('all key starts with members prefix', () => {
-      expect(membersKeys.all).toEqual(['members'])
+    it('all key is namespaced by app', () => {
+      expect(membersKeys.all('planning')).toEqual(['planning', 'members'])
+      expect(membersKeys.all('expedition')).toEqual(['expedition', 'members'])
     })
   })
 
@@ -266,8 +269,8 @@ describe('useMembers', () => {
       })
 
       // Verify both caches exist independently
-      const cache100 = queryClient.getQueryData(membersKeys.section('100', '200'))
-      const cache200 = queryClient.getQueryData(membersKeys.section('200', '300'))
+      const cache100 = queryClient.getQueryData(membersKeys.section('planning', '100', '200'))
+      const cache200 = queryClient.getQueryData(membersKeys.section('planning', '200', '300'))
 
       expect(cache100).toBeDefined()
       expect(cache200).toBeDefined()
@@ -340,7 +343,7 @@ describe('useMembers', () => {
       })
 
       expect(invalidateSpy).toHaveBeenCalledWith({
-        queryKey: membersKeys.section('123', '456'),
+        queryKey: membersKeys.section('planning', '123', '456'),
       })
     })
   })

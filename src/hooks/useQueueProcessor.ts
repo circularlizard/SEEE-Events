@@ -2,6 +2,7 @@ import { useEffect, useRef, useCallback } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 import { useStore } from '@/store/use-store'
 import { getEventSummary, APIError } from '@/lib/api'
+import { eventSummaryKeys } from '@/lib/query-keys'
 
 /**
  * Central Queue Processor Hook
@@ -24,10 +25,13 @@ export function useQueueProcessor(options?: {
   const queueItems = useStore((s) => s.queueItems)
   const queueRunning = useStore((s) => s.queueRunning)
   const queueTimerActive = useStore((s) => s.queueTimerActive)
+  const currentApp = useStore((s) => s.currentApp)
   const dequeueItem = useStore((s) => s.dequeueItem)
   const setQueueRunning = useStore((s) => s.setQueueRunning)
   const setQueueTimerActive = useStore((s) => s.setQueueTimerActive)
   const enqueueItems = useStore((s) => s.enqueueItems)
+  
+  const app = currentApp || 'expedition'
 
   const concurrency = options?.concurrency ?? 2
   const delayMs = options?.delayMs ?? 800
@@ -46,7 +50,7 @@ export function useQueueProcessor(options?: {
 
     try {
       await queryClient.prefetchQuery({
-        queryKey: ['event-summary', id],
+        queryKey: eventSummaryKeys.detail(app, id),
         queryFn: ({ signal }) => getEventSummary(id, signal),
         staleTime: 5 * 60 * 1000,
         gcTime: 30 * 60 * 1000,

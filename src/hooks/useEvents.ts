@@ -4,12 +4,13 @@ import { useEffect } from 'react'
 import { getEvents } from '@/lib/api'
 import { useStore } from '@/store/use-store'
 import type { EventsResponse, Event } from '@/lib/schemas'
+import { eventsKeys } from '@/lib/query-keys'
 
 /**
- * Events query key factory
- * Provides consistent query keys for events data
+ * @deprecated Use eventsKeys from @/lib/query-keys instead
+ * Kept for backward compatibility during migration
  */
-export const eventsKeys = {
+export const legacyEventsKeys = {
   all: ['events'] as const,
   section: (sectionId: string, termId: string) => ['events', sectionId, termId] as const,
 }
@@ -36,7 +37,11 @@ export function useEvents() {
   const currentSection = useStore((state) => state.currentSection)
   const selectedSections = useStore((state) => state.selectedSections)
   const availableSections = useStore((state) => state.availableSections)
+  const currentApp = useStore((state) => state.currentApp)
   const updateDataSourceProgress = useStore((state) => state.updateDataSourceProgress)
+  
+  // Default to 'expedition' if no app is set (backward compatibility)
+  const app = currentApp || 'expedition'
 
   // If multiple sections are selected, issue parallel queries per section to avoid
   // combining into a single request and to ensure distinct section IDs/terms.
@@ -55,7 +60,7 @@ export function useEvents() {
       const fromStore = availableSections.find((s) => s.sectionId === sec.sectionId)
       const termId = sec.termId || fromStore?.termId || '0'
       return {
-        queryKey: eventsKeys.section(sec.sectionId, termId),
+        queryKey: eventsKeys.section(app, sec.sectionId, termId),
         queryFn: async ({ signal }: { signal: AbortSignal }) => {
           return getEvents({ 
             sectionid: Number(sec.sectionId), 
@@ -106,6 +111,7 @@ export function useEvents() {
   // Fallback to single-section behavior using useQuery if nothing selected yet
   const single = useQuery<EventsResponse>({
     queryKey: eventsKeys.section(
+      app,
       currentSection?.sectionId ?? '', 
       currentSection?.termId ?? ''
     ),

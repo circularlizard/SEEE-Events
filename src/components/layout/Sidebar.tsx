@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useStore } from "@/store/use-store";
 import { getNavSections } from "./nav-config";
 import { cn } from "@/lib/utils";
+import { eventsKeys, eventSummaryKeys, attendanceKeys, membersKeys } from "@/lib/query-keys";
 
 export default function Sidebar() {
   const { data: session } = useSession();
@@ -24,6 +25,7 @@ export default function Sidebar() {
 
   const isAdmin = (session as { roleSelection?: string } | null)?.roleSelection === "admin" || userRole === "admin";
   const navSections = getNavSections(currentApp);
+  const app = currentApp || 'expedition';
 
   const hasMultiSelection = selectedSections.length > 0;
   const sectionLabel = hasMultiSelection
@@ -46,14 +48,14 @@ export default function Sidebar() {
     setSelectedSections([]);
     clearQueue();
 
-    queryClient.removeQueries({ queryKey: ["events"] });
-    queryClient.removeQueries({ queryKey: ["event-summary"] });
-    queryClient.removeQueries({ queryKey: ["attendance"] });
-    queryClient.removeQueries({ queryKey: ["per-person-attendance"] });
-    queryClient.removeQueries({ queryKey: ["members"] });
+    // Clear app-namespaced queries
+    queryClient.removeQueries({ queryKey: eventsKeys.all(app) });
+    queryClient.removeQueries({ queryKey: eventSummaryKeys.all(app) });
+    queryClient.removeQueries({ queryKey: attendanceKeys.all(app) });
+    queryClient.removeQueries({ queryKey: membersKeys.all(app) });
 
     if (process.env.NODE_ENV !== "production") {
-      console.debug("[Sidebar] Section changed, cleared cached queries");
+      console.debug("[Sidebar] Section changed, cleared cached queries for app:", app);
     }
   };
 

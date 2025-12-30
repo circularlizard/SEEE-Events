@@ -10,6 +10,11 @@
 import { renderHook, waitFor, act } from '@testing-library/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import React from 'react'
+import { useSession } from 'next-auth/react'
+import { useEvents } from '../useEvents'
+import { eventsKeys } from '@/lib/query-keys'
+import { useStore } from '@/store/use-store'
+import * as api from '@/lib/api'
 
 // Mock next-auth
 jest.mock('next-auth/react', () => ({
@@ -21,6 +26,7 @@ const mockStore = {
   currentSection: null as any,
   selectedSections: [] as any[],
   availableSections: [] as any[],
+  currentApp: 'expedition' as any,
   updateDataSourceProgress: jest.fn(),
 }
 
@@ -34,8 +40,6 @@ jest.mock('@/lib/api', () => ({
   getEvents: (...args: any[]) => mockGetEvents(...args),
 }))
 
-import { useSession } from 'next-auth/react'
-import { useEvents, eventsKeys } from '../useEvents'
 
 function createWrapper() {
   const queryClient = new QueryClient({
@@ -65,22 +69,23 @@ describe('useEvents', () => {
   })
 
   describe('eventsKeys factory', () => {
-    it('creates unique keys per section and term', () => {
-      const key1 = eventsKeys.section('section-1', 'term-1')
-      const key2 = eventsKeys.section('section-1', 'term-2')
-      const key3 = eventsKeys.section('section-2', 'term-1')
+    it('creates unique keys per app, section and term', () => {
+      const key1 = eventsKeys.section('expedition', 'section-1', 'term-1')
+      const key2 = eventsKeys.section('expedition', 'section-1', 'term-2')
+      const key3 = eventsKeys.section('expedition', 'section-2', 'term-1')
 
-      expect(key1).toEqual(['events', 'section-1', 'term-1'])
-      expect(key2).toEqual(['events', 'section-1', 'term-2'])
-      expect(key3).toEqual(['events', 'section-2', 'term-1'])
+      expect(key1).toEqual(['expedition', 'events', 'section-1', 'term-1'])
+      expect(key2).toEqual(['expedition', 'events', 'section-1', 'term-2'])
+      expect(key3).toEqual(['expedition', 'events', 'section-2', 'term-1'])
 
       // Keys should be different
       expect(key1).not.toEqual(key2)
       expect(key1).not.toEqual(key3)
     })
 
-    it('all key starts with events prefix', () => {
-      expect(eventsKeys.all).toEqual(['events'])
+    it('all key is namespaced by app', () => {
+      expect(eventsKeys.all('expedition')).toEqual(['expedition', 'events'])
+      expect(eventsKeys.all('planning')).toEqual(['planning', 'events'])
     })
   })
 
@@ -189,8 +194,8 @@ describe('useEvents', () => {
       })
 
       // Verify both caches exist independently
-      const cache100 = queryClient.getQueryData(eventsKeys.section('100', '200'))
-      const cache200 = queryClient.getQueryData(eventsKeys.section('200', '300'))
+      const cache100 = queryClient.getQueryData(eventsKeys.section('expedition', '100', '200'))
+      const cache200 = queryClient.getQueryData(eventsKeys.section('expedition', '200', '300'))
 
       expect(cache100).toBeDefined()
       expect(cache200).toBeDefined()
