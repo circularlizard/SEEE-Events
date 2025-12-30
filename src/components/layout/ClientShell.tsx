@@ -94,7 +94,7 @@ export default function ClientShell({ children }: { children: React.ReactNode })
   const isSectionPickerPage = pathname === '/dashboard/section-picker';
 
   const effectiveApp = currentApp ?? 'expedition';
-  const appUsesSectionChrome = effectiveApp === 'expedition' || effectiveApp === 'multi';
+  const appUsesSectionChrome = effectiveApp === 'expedition' || effectiveApp === 'multi' || effectiveApp === 'planning';
   
   // Determine if we should show the banner (has section selected)
   const hasSection = !!currentSection?.sectionId || (selectedSections && selectedSections.length > 0);

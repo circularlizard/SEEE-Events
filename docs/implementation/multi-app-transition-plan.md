@@ -93,9 +93,14 @@ We will migrate one feature slice at a time so that each app surface lives entir
   _Done:_ Platform config API (`/api/admin/platform-config`) logs all changes to Redis `platform:audit` list (last 100 events). Audit log component fetches and displays events via `/api/admin/audit-log` endpoint.
 
 ## 7. Expedition & Planning Shell Refinements
-- [ ] Move existing admin-only tooling (member issues, patrol refresh) under the planning route group.
-- [ ] Keep Expedition Viewer focused on events/logistics/attendance; ensure admin-only buttons hide automatically for standard users.
-- [ ] Ensure both apps share hydration status banners and rate-limit notices.
+- [x] Move existing admin-only tooling (member issues, patrol refresh) under the planning route group.
+  _Done:_ Copied `/dashboard/(multi)/members` and `/dashboard/(multi)/members/issues` to `/dashboard/(planning)/members` with `requiredApp: 'planning'`. Admin-only member management and data quality tools now live in planning app.
+- [x] Keep Expedition Viewer focused on events/logistics/attendance; ensure admin-only buttons hide automatically for standard users.
+  _Done:_ Expedition Viewer (`/dashboard/(expedition)`) has no admin-only features. All admin tooling moved to planning app.
+- [x] Ensure both apps share hydration status banners and rate-limit notices.
+  _Done:_ Updated `ClientShell.tsx` to include 'planning' in apps that use section chrome. Both expedition and planning apps now show `DataLoadingBanner` and `RateLimitTelemetryBanner` when section is selected.
+- [x] Create app-specific default/404 pages for better error handling.
+  _Done:_ Added `not-found.tsx` for each app route group (expedition, planning, platform-admin, multi) with app-specific messaging and navigation links.
 
 ## 8. Multi-Section Viewer Preparation
 - [ ] Create `/dashboard/(multi)` placeholder routes that reuse Expedition Viewer components but leave the section selector enabled.
