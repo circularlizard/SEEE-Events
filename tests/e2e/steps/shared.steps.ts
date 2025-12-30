@@ -73,6 +73,15 @@ Given('I am logged in as an admin', async ({ page }) => {
   
   // Select Administrator role
   await page.click('label:has-text("Administrator")')
+  
+  // Wait for app options to appear (they're filtered by role)
+  await page.waitForTimeout(500)
+  
+  // Select default app for admin (Event Planning)
+  const planningApp = page.getByRole('radio', { name: /Event Planning/i })
+  if (await planningApp.isVisible().catch(() => false)) {
+    await planningApp.click()
+  }
 
   // Prefer mock login when available in E2E
   const mockLoginButton = page.getByRole('button', { name: /Dev: Mock Login/i })
@@ -82,7 +91,7 @@ Given('I am logged in as an admin', async ({ page }) => {
     await page.locator('role=button[name="Sign in with OSM"]').click()
   }
 
-  await page.waitForURL(/\/dashboard(\/|$)/, { timeout: 10000 })
+  await page.waitForURL(/\/dashboard/, { timeout: 10000 })
   await ensureSectionSelected(page)
 })
 
@@ -92,6 +101,15 @@ Given('I am logged in as a standard viewer', async ({ page }) => {
   
   // Select Standard Viewer role
   await page.click('label:has-text("Standard Viewer")')
+  
+  // Wait for app options to appear (they're filtered by role)
+  await page.waitForTimeout(500)
+  
+  // Select default app for standard viewer (Expedition Viewer)
+  const expeditionApp = page.getByRole('radio', { name: /Expedition Viewer/i })
+  if (await expeditionApp.isVisible().catch(() => false)) {
+    await expeditionApp.click()
+  }
 
   // Prefer mock login when available in E2E
   const mockLoginButton = page.getByRole('button', { name: /Dev: Mock Login/i })
@@ -101,7 +119,7 @@ Given('I am logged in as a standard viewer', async ({ page }) => {
     await page.locator('role=button[name="Sign in with OSM"]').click()
   }
 
-  await page.waitForURL(/\/dashboard(\/|$)/, { timeout: 10000 })
+  await page.waitForURL(/\/dashboard/, { timeout: 10000 })
   await ensureSectionSelected(page)
 })
 
