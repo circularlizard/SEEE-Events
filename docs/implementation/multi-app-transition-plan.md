@@ -60,6 +60,8 @@ We will migrate one feature slice at a time so that each app surface lives entir
 **Shared capability guidance:** when a feature (e.g., members) must appear in multiple apps, the canonical data view lives in the “owner” app (Planning for admin consoles). Other apps consume the same underlying components/hooks from `src/components` or `src/features` but expose simplified shells or deep links rather than duplicating routes. If true cross-app navigation is required, create light wrapper routes that import the shared component while still exporting their own `requiredApp` metadata so middleware can enforce context consistently.
 
 ## 4. Auth & Application Selection
+> **Next step:** start by enhancing the role-selection modal so users pick both role and desired app on login; this unblocks the rest of the auth/app-selection tasks below.
+
 //TODO: Consider how that role selection modal should be enhanced to capture desired app
 - [ ] Enhance the role selection modal to capture desired app; default to Expedition Viewer for standard users until other apps GA.
 - [ ] Map `(role, app)` to NextAuth providers:
