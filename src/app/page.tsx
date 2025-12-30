@@ -57,8 +57,8 @@ function LoginContent() {
   
   // Get available apps based on role
   const availableApps: AppKey[] = selectedRole === 'admin' 
-    ? ['planning', 'platform-admin'] 
-    : ['expedition'];
+    ? ['planning', 'platform-admin', 'multi'] 
+    : ['expedition', 'multi'];
 
   return (
     <Card className="w-full max-w-md shadow-2xl">
@@ -143,6 +143,7 @@ function LoginContent() {
                         {app === 'planning' && 'Plan and manage expedition events'}
                         {app === 'expedition' && 'View events and attendance'}
                         {app === 'platform-admin' && 'System administration and configuration'}
+                        {app === 'multi' && 'View data across multiple sections'}
                       </p>
                     </div>
                   </div>

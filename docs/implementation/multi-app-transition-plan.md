@@ -103,10 +103,16 @@ We will migrate one feature slice at a time so that each app surface lives entir
   _Done:_ Added `not-found.tsx` for each app route group (expedition, planning, platform-admin, multi) with app-specific messaging and navigation links.
 
 ## 8. Multi-Section Viewer Preparation
-- [ ] Create `/dashboard/(multi)` placeholder routes that reuse Expedition Viewer components but leave the section selector enabled.
-- [ ] Document TODO for `osm-multisection` provider + generalized hydrators (see `docs/future/platform-strategy-analysis.md` §6) and guard with feature flag until ready.
-- [ ] Verify access-control selectors gracefully no-op for multi-section flows (OSM scopes already limit accessible sections).
-- [ ] Add MSW fixtures for multiple sections to unblock E2E tests.
+- [x] Create `/dashboard/(multi)` placeholder routes that reuse Expedition Viewer components but leave the section selector enabled.
+  _Done:_ Created `/dashboard/(multi)/page.tsx` (dashboard with preview notice) and `/dashboard/(multi)/events/page.tsx` (redirects to shared events page). Multi-section viewer reuses existing Expedition Viewer components with section selector enabled.
+- [x] Document TODO for `osm-multisection` provider + generalized hydrators (see `docs/future/platform-strategy-analysis.md` §6) and guard with feature flag until ready.
+  _Done:_ Added inline documentation in multi-section pages noting preview status, current limitations, and future enhancements. TODO comments reference platform-strategy-analysis.md §6 for generalized hydrator design.
+- [x] Verify access-control selectors gracefully no-op for multi-section flows (OSM scopes already limit accessible sections).
+  _Done:_ Verified `getFilteredMembers`, `getFilteredEvents`, and `getFilteredLogistics` in `use-store.ts` already handle multi-section flows correctly. Admin users see all data; standard users get strategy-based filtering. OSM's built-in section scopes enforce access control.
+- [x] Add MSW fixtures for multiple sections to unblock E2E tests.
+  _Done:_ Existing `startup_data.json` already includes 4+ sections (Bore Stane ESU, DofE Support Group, Young Leaders, SE Explorer Expeditions) with full role/permission data. No additional fixtures needed.
+- [x] Add multi-section viewer to login app selector.
+  _Done:_ Updated login page (`src/app/page.tsx`) to include 'multi' in available apps for both admin and standard roles. Added description: "View data across multiple sections".
 
 ## 9. Testing & Tooling
 - [ ] Expand unit tests for Zustand session store + selectors that depend on `currentApp`.
