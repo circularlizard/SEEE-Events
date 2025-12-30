@@ -40,14 +40,7 @@ export default async function middleware(req: NextRequest) {
       return NextResponse.redirect(signInUrl)
     }
 
-    const requiredApp = getRequiredAppForPath(pathname)
-    if (requiredApp && tokenApp && requiredApp !== tokenApp) {
-      const redirectUrl = new URL(getDefaultPathForApp(tokenApp), req.url)
-      redirectUrl.searchParams.set('app', tokenApp)
-      redirectUrl.searchParams.set('redirectedFrom', pathname)
-      return NextResponse.redirect(redirectUrl)
-    }
-
+    // Check role-based access first (admins can access platform-admin routes regardless of app)
     const requiredRole = getRequiredRoleForPath(pathname)
     if (requiredRole && !isRoleAllowed(requiredRole, tokenRole)) {
       const forbiddenUrl = new URL('/forbidden', req.url)
@@ -61,6 +54,19 @@ export default async function middleware(req: NextRequest) {
         const forbiddenUrl = new URL('/forbidden', req.url)
         return NextResponse.redirect(forbiddenUrl)
       }
+    }
+
+    // App-based route guards: only enforce for non-admin users
+    // Admins can navigate freely between all apps
+    const requiredApp = getRequiredAppForPath(pathname)
+    const isAdmin = tokenRole === 'admin'
+    
+    if (requiredApp && tokenApp && requiredApp !== tokenApp && !isAdmin) {
+      // Non-admin users are restricted to their selected app's routes
+      const redirectUrl = new URL(getDefaultPathForApp(tokenApp), req.url)
+      redirectUrl.searchParams.set('app', tokenApp)
+      redirectUrl.searchParams.set('redirectedFrom', pathname)
+      return NextResponse.redirect(redirectUrl)
     }
   }
 

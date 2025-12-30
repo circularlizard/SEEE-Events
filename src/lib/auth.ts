@@ -144,10 +144,12 @@ function getProviders(): AuthOptions['providers'] {
           username: { label: 'Username', type: 'text', placeholder: 'admin, standard, readonly, or multiSection' },
           password: { label: 'Password', type: 'password' },
           roleSelection: { label: 'Role Selection', type: 'text', placeholder: 'admin or standard' },
+          appSelection: { label: 'App Selection', type: 'text', placeholder: 'planning, expedition, platform-admin, or multi' },
         },
         async authorize(credentials) {
           const username = credentials?.username as string
           const roleSelection = (credentials?.roleSelection || 'standard') as 'admin' | 'standard'
+          const appSelection = (credentials?.appSelection as AppKey | undefined) ?? DEFAULT_APP_FOR_ROLE[roleSelection]
           const mockUser = getMockUser(username)
           
           return {
@@ -158,7 +160,7 @@ function getProviders(): AuthOptions['providers'] {
             sections: mockUser.sections,
             scopes: getScopesForRole(roleSelection),
             roleSelection,
-            appSelection: DEFAULT_APP_FOR_ROLE[roleSelection],
+            appSelection,
           }
         },
       }),
@@ -252,10 +254,16 @@ export function getAuthConfig(): AuthOptions {
 
     /**
      * SignIn callback: Runs during OAuth callback after user authenticates
+     * Extract appSelection from callback URL and store it for the jwt callback
      */
-    async signIn({ account }) {
+    async signIn({ account, profile }) {
       if (account?.provider === 'osm') {
         console.log('[SignIn] OSM authentication successful')
+        
+        // Extract appSelection from the OAuth callback URL if present
+        // NextAuth doesn't expose the full request here, but we can check the profile
+        // which may contain state data. For now, we'll rely on the redirect callback
+        // preserving it in the URL and StartupInitializer extracting it client-side.
       }
       return true
     },
@@ -276,10 +284,11 @@ export function getAuthConfig(): AuthOptions {
         token.sessionVersion = currentVersion
         
         // appSelection comes from the user object if set (mock auth)
-        // or will be set below from trigger data (real OAuth)
+        // For real OAuth, it will be extracted client-side by StartupInitializer from the callback URL
+        // and stored in Zustand. The session will have the default, but the client will override it.
         token.appSelection = extUser.appSelection ?? DEFAULT_APP_FOR_ROLE[roleSelection]
         
-        console.log(`[JWT] Provider: ${account.provider}, Role: "${roleSelection}", App: "${token.appSelection}", Scopes: ${scopes.join(', ')}`)
+        console.log(`[JWT] Provider: ${account.provider}, Role: "${roleSelection}", App: "${token.appSelection}" (will be overridden client-side if URL has appSelection), Scopes: ${scopes.join(', ')}`)
       }
       
       // Validate session version on every request
