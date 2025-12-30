@@ -4,7 +4,7 @@ import type { Page } from '@playwright/test'
 
 const { Given, When, Then } = createBdd()
 
-async function ensureSectionSelected(page: Page) {
+export async function ensureSectionSelected(page: Page) {
   await page.waitForLoadState('networkidle')
 
   const pickerHeading = page.getByRole('heading', { name: /Select Your Section/i })
