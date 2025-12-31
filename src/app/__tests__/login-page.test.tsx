@@ -23,33 +23,45 @@ describe('Login Page', () => {
     jest.resetAllMocks()
   })
 
-  test('renders only OSM button when mock disabled', () => {
+  test('renders app cards and hides mock panel when disabled', () => {
     process.env.NEXT_PUBLIC_MOCK_AUTH_ENABLED = 'false'
     process.env.MOCK_AUTH_ENABLED = 'false'
     render(<Home />)
-    expect(screen.getByText('Sign in with OSM')).toBeInTheDocument()
-    expect(screen.queryByText('Dev: Mock Login')).toBeNull()
+    expect(screen.getByText('Expedition Viewer')).toBeInTheDocument()
+    expect(screen.getByText('Expedition Planner')).toBeInTheDocument()
+    expect(screen.getByText('OSM Data Quality')).toBeInTheDocument()
+    expect(screen.queryByText('Development Mode')).toBeNull()
   })
 
-  test('renders mock button when enabled', () => {
+  test('renders mock panel when enabled', () => {
     process.env.NEXT_PUBLIC_MOCK_AUTH_ENABLED = 'true'
     render(<Home />)
-    expect(screen.getByText('Sign in with OSM')).toBeInTheDocument()
-    expect(screen.getByText('Dev: Mock Login')).toBeInTheDocument()
+    expect(screen.getByText('Development Mode')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Expedition Viewer' })).toBeInTheDocument()
   })
 
   test('calls signIn with providers', () => {
     process.env.NEXT_PUBLIC_MOCK_AUTH_ENABLED = 'true'
-    const spy = jest.spyOn(nextAuthReact, 'signIn').mockResolvedValueOnce(undefined as any)
+    const spy = jest.spyOn(nextAuthReact, 'signIn').mockResolvedValue(undefined as any)
     render(<Home />)
-    fireEvent.click(screen.getByText('Sign in with OSM'))
-    expect(spy).toHaveBeenCalledWith('osm-standard', expect.objectContaining({ callbackUrl: '/dashboard?appSelection=expedition' }))
-    fireEvent.click(screen.getByText('Dev: Mock Login'))
-    expect(spy).toHaveBeenCalledWith('credentials', expect.objectContaining({ 
-      callbackUrl: '/dashboard?appSelection=expedition',
-      username: 'standard',
-      roleSelection: 'standard',
-      appSelection: 'expedition'
-    }))
+
+    // OAuth flow: click expedition card
+    fireEvent.click(screen.getByRole('heading', { name: 'Expedition Viewer' }))
+    expect(spy).toHaveBeenCalledWith(
+      'osm-standard',
+      expect.objectContaining({ callbackUrl: '/dashboard?appSelection=expedition' })
+    )
+
+    // Mock flow: click expedition mock button in dev panel
+    fireEvent.click(screen.getByRole('button', { name: 'Expedition Viewer' }))
+    expect(spy).toHaveBeenCalledWith(
+      'credentials',
+      expect.objectContaining({
+        callbackUrl: '/dashboard?appSelection=expedition',
+        username: 'standard',
+        roleSelection: 'standard',
+        appSelection: 'expedition',
+      })
+    )
   })
 })

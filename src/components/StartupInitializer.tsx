@@ -33,6 +33,8 @@ interface StartupRole {
   [key: string]: unknown
 }
 
+const SEEE_SECTION_ID = '43105'
+
 /**
  * StartupInitializer
  *
@@ -160,16 +162,12 @@ export default function StartupInitializer() {
             termId,
           }
         })
-        setAvailableSections(storeSections)
 
-        // Build a set of valid section IDs for validation
-        const sectionIds = new Set(storeSections.map((s: { sectionId: string }) => s.sectionId))
-        
-        // For SEEE-specific apps (planning, expedition, platform-admin), automatically select SEEE section
-        // This hides the section selector for these apps since they're SEEE-only
-        const seeeApps: AppKey[] = ['planning', 'expedition', 'platform-admin']
+        // Determine app type for section model + permission validation.
+        // SEEE-specific apps are locked to the SEEE section.
         const currentApp = appToSet || sessionApp
-        const isSEEEApp = currentApp && seeeApps.includes(currentApp)
+        const seeeApps: AppKey[] = ['planning', 'expedition']
+        const isSEEEApp = Boolean(currentApp && seeeApps.includes(currentApp))
         
         // Validate permissions for the selected app (REQ-AUTH-16)
         // Fetch startup data to get permissions from globals.roles
@@ -179,50 +177,95 @@ export default function StartupInitializer() {
             if (startupResponse.ok) {
               const startupData = await startupResponse.json()
               const roles = startupData?.globals?.roles as StartupRole[] | undefined
-              
-              // Find the first role with permissions (or SEEE section for SEEE apps)
-              let permissionsToCheck: OsmPermissions | null = null
-              if (roles && roles.length > 0) {
+
+              const rolesWithPermissions = (roles || []).filter((r) => Boolean(r?.permissions))
+              const permissionsBySectionId = new Map<string, OsmPermissions>()
+              for (const r of rolesWithPermissions) {
+                permissionsBySectionId.set(String(r.sectionid), r.permissions as OsmPermissions)
+              }
+
+              // Filter sections to those that are usable for the current app.
+              // - SEEE apps: only SEEE section is usable.
+              // - Multi-section apps: any section where permissions satisfy the app is usable.
+              const permittedSections = (() => {
                 if (isSEEEApp) {
-                  // For SEEE apps, check permissions for SEEE section specifically
-                  const seeeRole = roles.find(r => r.sectionid === '43105')
-                  permissionsToCheck = seeeRole?.permissions || roles[0]?.permissions || null
-                } else {
-                  // For multi-section apps, use first available role's permissions
-                  permissionsToCheck = roles[0]?.permissions || null
+                  const seeeSection = storeSections.find((s: { sectionId: string }) => s.sectionId === SEEE_SECTION_ID)
+                  return seeeSection ? [seeeSection] : []
+                }
+                return storeSections.filter((s: { sectionId: string }) => {
+                  const perms = permissionsBySectionId.get(s.sectionId)
+                  return validateAppPermissions(currentApp, perms).length === 0
+                })
+              })()
+
+              // Decide permission validation outcome.
+              if (isSEEEApp) {
+                const seeePerms = permissionsBySectionId.get(SEEE_SECTION_ID)
+                const missing = validateAppPermissions(currentApp, seeePerms)
+                if (missing.length > 0) {
+                  console.warn('[StartupInitializer] Missing SEEE permissions for app:', currentApp, missing)
+                  setMissingPermissions(missing)
+                  setPermissionValidated(false)
+                  return
+                }
+              } else {
+                if (permittedSections.length === 0) {
+                  // Compute a helpful missing list using the "best" candidate section (fewest missing perms)
+                  const candidates = Array.from(permissionsBySectionId.entries())
+                  let bestMissing: string[] | null = null
+                  for (const [, perms] of candidates) {
+                    const missing = validateAppPermissions(currentApp, perms)
+                    if (!bestMissing || missing.length < bestMissing.length) {
+                      bestMissing = missing
+                    }
+                  }
+                  const missingToShow = bestMissing ?? validateAppPermissions(currentApp, null)
+                  console.warn('[StartupInitializer] Missing permissions on all sections for app:', currentApp, missingToShow)
+                  setMissingPermissions(missingToShow)
+                  setPermissionValidated(false)
+                  return
                 }
               }
-              
-              const missing = validateAppPermissions(currentApp, permissionsToCheck)
-              if (missing.length > 0) {
-                console.warn('[StartupInitializer] Missing permissions for app:', currentApp, missing)
-                setMissingPermissions(missing)
-                setPermissionValidated(false)
-                // Don't proceed with hydration - permission denied screen will be shown
-                return
-              }
-              
+
+              // Permissions OK: publish filtered sections.
+              setAvailableSections(permittedSections)
               setPermissionValidated(true)
               setMissingPermissions([])
               if (process.env.NODE_ENV !== 'production') {
-                console.debug('[StartupInitializer] Permission validation passed for app:', currentApp)
+                console.debug('[StartupInitializer] Permission validation passed for app:', currentApp, 'permittedSections:', permittedSections.length)
               }
+            } else {
+              // If we cannot load startup data, fail open (do not block the user).
+              // This keeps behaviour consistent with the catch branch.
+              setAvailableSections(storeSections)
+              setPermissionValidated(true)
+              setMissingPermissions([])
             }
           } catch (error) {
             console.error('[StartupInitializer] Failed to fetch startup data for permission validation:', error)
             // Continue without permission validation on error - fail open for now
+            setAvailableSections(storeSections)
             setPermissionValidated(true)
             setMissingPermissions([])
           }
         } else {
           // No app selected yet - skip permission validation
+          setAvailableSections(storeSections)
           setPermissionValidated(true)
           setMissingPermissions([])
         }
+
+        // If permissions are still pending (no missing list, not validated yet), don't proceed.
+        // (ClientShell will show the gating UI.)
+        // This is defensive; in normal flow, the branches above set validated/denied.
+        
+        // Build a set of valid section IDs for validation (post-filtering)
+        const currentAvailable = useStore.getState().availableSections
+        const sectionIds = new Set(currentAvailable.map((s: { sectionId: string }) => s.sectionId))
         
         if (isSEEEApp) {
           // Try to find SEEE section (ID 43105) in available sections
-          const seeeSection = storeSections.find((s: { sectionId: string }) => s.sectionId === '43105')
+          const seeeSection = currentAvailable.find((s: { sectionId: string }) => s.sectionId === SEEE_SECTION_ID)
           if (seeeSection) {
             setCurrentSection({
               sectionId: seeeSection.sectionId,
@@ -238,12 +281,12 @@ export default function StartupInitializer() {
         }
         
         // Auto-select when exactly one section is available
-        if (storeSections.length === 1) {
+        if (currentAvailable.length === 1) {
           setCurrentSection({
-            sectionId: storeSections[0].sectionId,
-            sectionName: storeSections[0].sectionName,
-            sectionType: storeSections[0].sectionType,
-            termId: storeSections[0].termId,
+            sectionId: currentAvailable[0].sectionId,
+            sectionName: currentAvailable[0].sectionName,
+            sectionType: currentAvailable[0].sectionType,
+            termId: currentAvailable[0].termId,
           })
           return // No need to check remembered selection or redirect
         }
@@ -266,7 +309,7 @@ export default function StartupInitializer() {
               
               if (validIds.length > 0) {
                 // Hydrate store with remembered selection
-                const selected = storeSections.filter((s: { sectionId: string }) => validIds.includes(s.sectionId))
+                const selected = currentAvailable.filter((s: { sectionId: string }) => validIds.includes(s.sectionId))
                 if (selected.length === 1) {
                   setCurrentSection(selected[0])
                   setSelectedSections([])
@@ -294,7 +337,7 @@ export default function StartupInitializer() {
         
         // Redirect to section picker if multi-section user without remembered selection
         // Skip if already on the section picker page
-        if (storeSections.length > 1 && !rememberedValid && pathname !== '/dashboard/section-picker') {
+        if (currentAvailable.length > 1 && !rememberedValid && pathname !== '/dashboard/section-picker') {
           const redirectTo = pathname?.startsWith('/dashboard') ? pathname : '/dashboard'
           router.replace(`/dashboard/section-picker?redirect=${encodeURIComponent(redirectTo)}`)
           if (process.env.NODE_ENV !== 'production') {

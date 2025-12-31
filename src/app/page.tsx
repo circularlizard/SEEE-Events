@@ -101,21 +101,23 @@ function LoginContent() {
         {PRIMARY_APPS.map((app) => (
           <Card 
             key={app}
-            className={`cursor-pointer transition-all hover:shadow-xl hover:scale-105 ${
+            className={`cursor-pointer transition-all hover:shadow-xl hover:scale-105 flex flex-col ${
               selectedApp === app ? 'ring-2 ring-primary' : ''
             }`}
             onClick={() => handleAppSelect(app)}
           >
-            <CardHeader className="text-center pb-2">
-              <div className="mx-auto mb-3 p-3 rounded-full bg-primary/10 text-primary">
-                {APP_ICONS[app]}
+            <CardHeader className="text-center pb-2 flex-1">
+              <div className="mx-auto w-full rounded-lg bg-muted px-4 py-3 flex items-center justify-center gap-3">
+                <div className="p-3 rounded-full bg-background text-primary">
+                  {APP_ICONS[app]}
+                </div>
+                <CardTitle className="text-lg">{APP_LABELS[app]}</CardTitle>
               </div>
-              <CardTitle className="text-lg">{APP_LABELS[app]}</CardTitle>
-              <CardDescription className="text-sm">
+              <CardDescription className="text-sm mt-3">
                 {APP_DESCRIPTIONS[app]}
               </CardDescription>
             </CardHeader>
-            <CardContent className="pt-0">
+            <CardContent className="pt-0 mt-auto">
               <div className="text-xs text-center text-muted-foreground">
                 {APP_REQUIRES_ADMIN[app] ? (
                   <span className="inline-flex items-center gap-1">

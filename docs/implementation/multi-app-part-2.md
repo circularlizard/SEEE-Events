@@ -12,14 +12,14 @@ This plan outlines the prioritized steps to align the platform with the function
     - Expedition Viewer: Request `section:event:read` only.
     - Expedition Planner & Data Quality Viewer: Request full admin scopes.
     - Platform Admin: Request full admin scopes plus platform verification.
-- [ ] **Add Permission Validation (REQ-AUTH-16):** After OAuth completion, each app must validate the `globals.roles.permissions` object from OSM startup data:
+- [X] **Add Permission Validation (REQ-AUTH-16):** After OAuth completion, each app must validate the `globals.roles.permissions` object from OSM startup data:
     - **SEEE-Specific Apps (Expedition Viewer, Expedition Planner):** Validate permissions specifically for SEEE section (ID 43105). User must have required permissions on SEEE section.
     - **Multi-Section Apps (OSM Data Quality Viewer, Platform Admin):** Validate that user has required permissions on ANY accessible section. Section selector will only show sections with sufficient permissions.
     - Check required permissions exist and have values > 0.
     - Display helpful error message with logout button if validation fails.
     - Prevent any data hydration if permissions insufficient.
-- [ ] **Update Section Picker:** Filter section list to only show sections where user has required permissions for the selected app.
-- [ ] **Fix Login Flash:** Ensure the dashboard shell doesn't render until the app context and section are fully hydrated.
+- [X] **Update Section Picker:** Filter section list to only show sections where user has required permissions for the selected app.
+- [~] **Fix Login Flash:** Ensure the dashboard shell doesn't render until the app context and section are fully hydrated. *Not 100% eliminated, but acceptable for now.*
 
 ## Priority 2: API Resilience & Rate Limiting (Critical Stability)
 - [ ] **Backoff Logic (REQ-ARCH-04):** Fix the bottleneck implementation to properly pause the queue and back off when a 429 (Too Many Requests) is encountered.

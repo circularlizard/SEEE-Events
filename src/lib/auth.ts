@@ -256,7 +256,7 @@ export function getAuthConfig(): AuthOptions {
      * SignIn callback: Runs during OAuth callback after user authenticates
      * Extract appSelection from callback URL and store it for the jwt callback
      */
-    async signIn({ account, profile }) {
+    async signIn({ account }) {
       if (account?.provider === 'osm') {
         console.log('[SignIn] OSM authentication successful')
         

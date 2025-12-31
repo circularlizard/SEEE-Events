@@ -42,7 +42,7 @@ describe('app-route-guards', () => {
     describe('multi-section viewer routes', () => {
       it('detects /dashboard/members routes', () => {
         expect(getRequiredAppForPath('/dashboard/members')).toBe('multi')
-        expect(getRequiredAppForPath('/dashboard/members/issues')).toBe('multi')
+        expect(getRequiredAppForPath('/dashboard/members/issues')).toBe('data-quality')
       })
 
       it('detects /dashboard/section-picker routes', () => {
@@ -98,6 +98,7 @@ describe('app-route-guards', () => {
       expect(isPathAllowedForApp('/dashboard/admin', 'platform-admin')).toBe(true)
       expect(isPathAllowedForApp('/dashboard/planning', 'planning')).toBe(true)
       expect(isPathAllowedForApp('/dashboard/members', 'multi')).toBe(true)
+      expect(isPathAllowedForApp('/dashboard/members/issues', 'data-quality')).toBe(true)
     })
 
     it('blocks mismatched app and path', () => {
@@ -105,6 +106,7 @@ describe('app-route-guards', () => {
       expect(isPathAllowedForApp('/dashboard/admin', 'expedition')).toBe(false)
       expect(isPathAllowedForApp('/dashboard/planning', 'expedition')).toBe(false)
       expect(isPathAllowedForApp('/dashboard/members', 'expedition')).toBe(false)
+      expect(isPathAllowedForApp('/dashboard/members/issues', 'multi')).toBe(false)
     })
 
     it('allows paths with no required app', () => {
