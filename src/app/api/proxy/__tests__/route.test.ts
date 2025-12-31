@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-require-imports */
 jest.mock('next-auth/next', () => ({
-  getServerSession: jest.fn(async () => ({ accessToken: 'test-access-token' })),
+  getServerSession: jest.fn(async () => ({ accessToken: 'test-access-token', user: { id: 'u1' } })),
 }))
 
 jest.mock('next/server', () => ({
@@ -32,10 +32,6 @@ jest.mock('@/lib/redis', () => ({
   setCachedResponse: jest.fn(async () => undefined),
   updateQuota: jest.fn(async () => undefined),
   getQuota: jest.fn(async () => ({ remaining: 800, limit: 1000, reset: Math.floor(Date.now()/1000) + 3600 })),
-  getCacheKey: jest.fn((path: string, params?: Record<string, string>) => {
-    const paramsString = params ? JSON.stringify(params) : ''
-    return `cache:${path}:${paramsString}`
-  }),
 }))
 
 // Mock rate limiter schedule to simply execute immediately
@@ -61,6 +57,9 @@ function makeRequest(method: string, url: string, init?: RequestInit) {
 
 describe('Proxy Route Integration', () => {
   const base = '/api/proxy'
+
+  const cachableUrl = `${base}/ext/events/summary/?action=get&sectionid=37458&termid=1`
+  const cachableParams = { params: Promise.resolve({ path: ['ext', 'events', 'summary'] }) }
 
   beforeEach(() => {
     jest.clearAllMocks()
@@ -90,7 +89,7 @@ describe('Proxy Route Integration', () => {
       JSON.stringify({ ok: true, source: 'cache' })
     )
 
-    const res = await GET(makeRequest('GET', `${base}/osmc/members`), { params: Promise.resolve({ path: ['osmc','members'] }) })
+    const res = await GET(makeRequest('GET', cachableUrl), cachableParams)
     expect(res.status).toBe(200)
     const json = await res.json()
     expect(json.source).toBe('cache')
@@ -122,7 +121,7 @@ describe('Proxy Route Integration', () => {
     } as any
     const fetchSpy = jest.spyOn(global, 'fetch' as any).mockResolvedValueOnce(mockResponse)
 
-    const res = await GET(makeRequest('GET', `${base}/osmc/members`), { params: Promise.resolve({ path: ['osmc','members'] }) })
+    const res = await GET(makeRequest('GET', cachableUrl), cachableParams)
     expect(res.status).toBe(200)
     const json = await res.json()
     expect(json.source).toBe('upstream')
@@ -134,6 +133,8 @@ describe('Proxy Route Integration', () => {
     expect(res.headers.get('X-RateLimit-Reset')).toBeTruthy()
     expect(fetchSpy).toHaveBeenCalled()
     expect(setCachedResponse).toHaveBeenCalled()
+    const setCall = (setCachedResponse as jest.Mock).mock.calls[0]
+    expect(setCall?.[2]).toBe(60 * 60)
   })
 
   it('treats corrupted cache as MISS and fetches from upstream', async () => {
@@ -155,15 +156,45 @@ describe('Proxy Route Integration', () => {
     } as any
     const fetchSpy = jest.spyOn(global, 'fetch' as any).mockResolvedValueOnce(mockResponse)
 
-    const res = await GET(makeRequest('GET', `${base}/osmc/members`), {
-      params: Promise.resolve({ path: ['osmc', 'members'] }),
-    })
+    const res = await GET(makeRequest('GET', cachableUrl), cachableParams)
     expect(res.status).toBe(200)
     const json = await res.json()
     expect(json.source).toBe('upstream-after-corrupt-cache')
     expect(res.headers.get('X-Cache')).toBe('MISS')
     expect(fetchSpy).toHaveBeenCalled()
     expect(setCachedResponse).toHaveBeenCalled()
+  })
+
+  it('bypasses cache when X-Cache-Bypass header is set', async () => {
+    const { getCachedResponse, setCachedResponse } = jest.requireMock('@/lib/redis')
+    ;(getCachedResponse as jest.Mock).mockResolvedValueOnce(JSON.stringify({ ok: true, source: 'cache' }))
+
+    const mockBody = { ok: true, source: 'upstream-bypass' }
+    const headers = new Headers({
+      'content-type': 'application/json',
+      'x-ratelimit-remaining': '700',
+      'x-ratelimit-limit': '1000',
+      'x-ratelimit-reset': String(Math.floor(Date.now() / 1000) + 3600),
+    })
+    const mockResponse = {
+      ok: true,
+      status: 200,
+      headers,
+      json: async () => mockBody,
+    } as any
+    const fetchSpy = jest.spyOn(global, 'fetch' as any).mockResolvedValueOnce(mockResponse)
+
+    const res = await GET(
+      makeRequest('GET', cachableUrl, { headers: { 'X-Cache-Bypass': '1' } }),
+      cachableParams
+    )
+    expect(res.status).toBe(200)
+    const json = await res.json()
+    expect(json.source).toBe('upstream-bypass')
+    expect(res.headers.get('X-Cache')).toBe('BYPASS')
+    expect(fetchSpy).toHaveBeenCalled()
+    expect(getCachedResponse).not.toHaveBeenCalled()
+    expect(setCachedResponse).not.toHaveBeenCalled()
   })
 
   it('propagates Retry-After on upstream error responses', async () => {

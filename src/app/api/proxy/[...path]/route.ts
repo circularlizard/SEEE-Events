@@ -7,7 +7,6 @@ import {
   setSoftLock,
   getCachedResponse,
   setCachedResponse,
-  getCacheKey,
   getQuota,
 } from '@/lib/redis'
 import { logProxyRequest, logCache } from '@/lib/logger'
@@ -91,8 +90,63 @@ interface ApiMapEntry {
 const OSM_API_BASE = process.env.OSM_API_URL || 'https://www.onlinescoutmanager.co.uk'
 const USE_MSW = process.env.NEXT_PUBLIC_USE_MSW === 'true'
 
-// Cache TTL (5 minutes)
-const CACHE_TTL = 300
+const USER_CACHE_TTL_SECONDS = 60 * 60
+
+type CacheKeyScope =
+  | { kind: 'none' }
+  | { kind: 'user'; userId: string; sectionId?: string }
+
+function stableStringifyParams(params: Record<string, string>): string {
+  const entries = Object.entries(params).sort(([a], [b]) => a.localeCompare(b))
+  return JSON.stringify(Object.fromEntries(entries))
+}
+
+function buildUserCacheKey(params: {
+  userId: string
+  sectionId?: string
+  path: string
+  queryParams: Record<string, string>
+}): string {
+  const { userId, sectionId, path, queryParams } = params
+  const paramsString = stableStringifyParams(queryParams)
+  const sectionPart = sectionId ? `:section:${sectionId}` : ''
+  return `cache:user:${userId}${sectionPart}:${path}:${paramsString}`
+}
+
+function pickSectionIdFromQuery(queryParams: Record<string, string>): string | undefined {
+  return queryParams.sectionid || queryParams.section_id
+}
+
+function getCacheKeyScope(params: {
+  path: string
+  queryParams: Record<string, string>
+  userId?: string
+}): CacheKeyScope {
+  const { path, queryParams, userId } = params
+  if (!userId) return { kind: 'none' }
+
+  const action = queryParams.action
+
+  const normalizedPath = `/${path.replace(/^\/+/, '').replace(/\/+$/, '')}`
+  const isMembersList = normalizedPath === '/ext/members/contact' && action === 'getListOfMembers'
+  const isEventsList = normalizedPath === '/ext/events/summary' && action === 'get'
+  const isV3Event = normalizedPath.startsWith('/v3/events/event/')
+
+  if (isMembersList || isEventsList) {
+    return { kind: 'user', userId, sectionId: pickSectionIdFromQuery(queryParams) }
+  }
+
+  if (isV3Event) {
+    return { kind: 'user', userId }
+  }
+
+  return { kind: 'none' }
+}
+
+function getCacheTtlSeconds(params: { scope: CacheKeyScope }): number | null {
+  if (params.scope.kind === 'user') return USER_CACHE_TTL_SECONDS
+  return null
+}
 
 async function getRateLimitHeadersFallback(): Promise<Record<string, string>> {
   const quota = await getQuota().catch(() => null)
@@ -288,7 +342,9 @@ export async function GET(
     }
 
     // Require authenticated session and read access token from NextAuth
-    const session = await getServerSession(getAuthConfig()) as { accessToken?: string } | null
+    const session = await getServerSession(getAuthConfig()) as
+      | { accessToken?: string; user?: { id?: string } }
+      | null
     if (!session || !session.accessToken) {
       return NextResponse.json(
         {
@@ -347,34 +403,50 @@ export async function GET(
     const queryParams = Object.fromEntries(request.nextUrl.searchParams)
     logApiRequest('GET', path, queryParams)
 
-    // Check cache first (read-through pattern)
-    const cacheKey = getCacheKey(path, queryParams)
-    const cachedData = await getCachedResponse(cacheKey)
+    const bypassCache = request.headers.get('X-Cache-Bypass') === '1'
+    const userId = session.user?.id
+    const cacheScope = getCacheKeyScope({ path, queryParams, userId })
+    const cacheTtlSeconds = getCacheTtlSeconds({ scope: cacheScope })
+    const cacheEnabled = Boolean(cacheTtlSeconds && cacheTtlSeconds > 0)
 
-    if (cachedData) {
-      try {
-        const parsed = JSON.parse(cachedData)
-        logCache({ operation: 'hit', key: cacheKey })
-        logProxyRequest({
-          method: 'GET',
-          path,
-          status: 200,
-          duration: Date.now() - startTime,
-          cached: true,
-        })
-        // Log cached response for debugging
-        logApiResponse('GET', path, 200, Date.now() - startTime, true, parsed)
-        return NextResponse.json(parsed, {
-          status: 200,
-          headers: await buildSafetyHeaders({ targetUrl, cache: 'HIT' }),
-        })
-      } catch (e) {
-        // Corrupted cache (e.g., HTML accidentally stored). Treat as miss.
-        console.warn('[Proxy] Cache parse failed, treating as MISS', e)
+    const cacheKey =
+      cacheScope.kind === 'user'
+        ? buildUserCacheKey({
+            userId: cacheScope.userId,
+            sectionId: cacheScope.sectionId,
+            path,
+            queryParams,
+          })
+        : null
+
+    if (!bypassCache && cacheEnabled && cacheKey) {
+      const cachedData = await getCachedResponse(cacheKey)
+
+      if (cachedData) {
+        try {
+          const parsed = JSON.parse(cachedData)
+          logCache({ operation: 'hit', key: cacheKey })
+          logProxyRequest({
+            method: 'GET',
+            path,
+            status: 200,
+            duration: Date.now() - startTime,
+            cached: true,
+          })
+          // Log cached response for debugging
+          logApiResponse('GET', path, 200, Date.now() - startTime, true, parsed)
+          return NextResponse.json(parsed, {
+            status: 200,
+            headers: await buildSafetyHeaders({ targetUrl, cache: 'HIT' }),
+          })
+        } catch (e) {
+          // Corrupted cache (e.g., HTML accidentally stored). Treat as miss.
+          console.warn('[Proxy] Cache parse failed, treating as MISS', e)
+        }
       }
-    }
 
-    logCache({ operation: 'miss', key: cacheKey })
+      logCache({ operation: 'miss', key: cacheKey })
+    }
 
     // Schedule request through rate limiter
     // Build upstream request headers (mask sensitive values when echoing back)
@@ -490,8 +562,10 @@ export async function GET(
 
     // Parse and cache successful response
     const data = await response.json()
-    await setCachedResponse(cacheKey, JSON.stringify(data), CACHE_TTL)
-    logCache({ operation: 'set', key: cacheKey, ttl: CACHE_TTL })
+    if (!bypassCache && cacheEnabled && cacheKey && cacheTtlSeconds) {
+      await setCachedResponse(cacheKey, JSON.stringify(data), cacheTtlSeconds)
+      logCache({ operation: 'set', key: cacheKey, ttl: cacheTtlSeconds })
+    }
 
     // Log fresh response for debugging
     logApiResponse('GET', path, 200, Date.now() - startTime, false, data)
@@ -504,11 +578,12 @@ export async function GET(
       cached: false,
     })
 
+    const cacheHeader: 'MISS' | 'BYPASS' = bypassCache || !cacheEnabled ? 'BYPASS' : 'MISS'
     return NextResponse.json(data, {
       status: 200,
       headers: await buildSafetyHeaders({
         targetUrl,
-        cache: 'MISS',
+        cache: cacheHeader,
         upstreamHeaders: response.headers,
         upstreamRequestHeaders: { ...upstreamRequestHeaders, Authorization: 'Bearer REDACTED' },
       }),

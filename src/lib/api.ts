@@ -51,6 +51,7 @@ export class APIError extends Error {
  */
 interface ProxyFetchOptions {
   signal?: AbortSignal
+  bypassCache?: boolean
 }
 
 /**
@@ -75,6 +76,7 @@ async function proxyFetch(
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
+      ...(options?.bypassCache ? { 'X-Cache-Bypass': '1' } : {}),
     },
     signal: options?.signal,
   })
