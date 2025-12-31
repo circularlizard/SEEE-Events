@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Eye, Map, ClipboardCheck, Settings } from "lucide-react";
 import Image from "next/image";
 import { APP_LABELS, APP_DESCRIPTIONS, APP_REQUIRES_ADMIN, PRIMARY_APPS, type AppKey } from "@/types/app";
+import { getDefaultPathForApp, getRequiredAppForPath } from "@/lib/app-route-guards";
 
 /**
  * App card configuration for the 3-card layout
@@ -49,15 +50,38 @@ function LoginContent() {
     const provider = APP_REQUIRES_ADMIN[app] ? 'osm-admin' : 'osm-standard';
     console.log('[Login] Signing in with provider:', provider, 'app:', app);
     
-    signIn(provider, { 
-      callbackUrl: `${callbackUrl}?appSelection=${app}`,
+    const resolvedCallbackUrl = (() => {
+      try {
+        const requiredApp = getRequiredAppForPath(callbackUrl)
+        if (requiredApp && requiredApp === app) {
+          return callbackUrl
+        }
+      } catch {
+        // ignore
+      }
+      return getDefaultPathForApp(app)
+    })()
+
+    signIn(provider, {
+      callbackUrl: `${resolvedCallbackUrl}?appSelection=${app}`,
     });
   };
   
   const handleMockLogin = (app: AppKey) => {
     const roleSelection = APP_REQUIRES_ADMIN[app] ? 'admin' : 'standard';
+    const resolvedCallbackUrl = (() => {
+      try {
+        const requiredApp = getRequiredAppForPath(callbackUrl)
+        if (requiredApp && requiredApp === app) {
+          return callbackUrl
+        }
+      } catch {
+        // ignore
+      }
+      return getDefaultPathForApp(app)
+    })()
     signIn('credentials', {
-      callbackUrl: `${callbackUrl}?appSelection=${app}`,
+      callbackUrl: `${resolvedCallbackUrl}?appSelection=${app}`,
       username: roleSelection,
       roleSelection,
       appSelection: app,

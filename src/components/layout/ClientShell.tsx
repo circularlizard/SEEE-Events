@@ -13,6 +13,7 @@ import { useEvents } from "@/hooks/useEvents";
 import { useStore } from "@/store/use-store";
 import { useLogout } from "@/components/QueryProvider";
 import { getDefaultPathForApp, getRequiredAppForPath, getRequiredRoleForPath, isRoleAllowed } from "@/lib/app-route-guards";
+import type { AppKey } from "@/types/app";
 
 export default function ClientShell({ children }: { children: React.ReactNode }) {
   const { status } = useSession();
@@ -74,17 +75,29 @@ export default function ClientShell({ children }: { children: React.ReactNode })
     return getRequiredRoleForPath(pathname);
   }, [isDashboardRoute, pathname]);
 
+  // If the URL contains an appSelection query param, we're in the middle of switching apps.
+  // Don't render dashboard content or redirect based on stale persisted app state until
+  // StartupInitializer consumes the param and updates the store.
+  const urlAppSelection: AppKey | null = useMemo(() => {
+    if (typeof window === 'undefined') return null;
+    const raw = new URLSearchParams(window.location.search).get('appSelection')
+    return (raw as AppKey | null) ?? null
+  }, [pathname]);
+
   useEffect(() => {
     if (!isDashboardRoute) return;
     if (!requiredApp || !currentApp) return;
     if (requiredApp === currentApp) return;
+
+    // If appSelection is present in the URL, wait for StartupInitializer to reconcile it.
+    if (urlAppSelection) return;
 
     const targetPath = getDefaultPathForApp(currentApp);
     const params = new URLSearchParams();
     params.set('app', currentApp);
     params.set('redirectedFrom', pathname);
     router.replace(`${targetPath}?${params.toString()}`);
-  }, [currentApp, isDashboardRoute, pathname, requiredApp, router]);
+  }, [currentApp, isDashboardRoute, pathname, requiredApp, router, urlAppSelection]);
 
   useEffect(() => {
     if (!isDashboardRoute) return;
@@ -102,8 +115,12 @@ export default function ClientShell({ children }: { children: React.ReactNode })
   // Determine if we should show the banner (has section selected)
   const hasSection = !!currentSection?.sectionId || (selectedSections && selectedSections.length > 0);
   const shouldShowSectionChrome = appUsesSectionChrome && hasSection && !isSectionPickerPage;
-  const appMismatch = Boolean(isDashboardRoute && requiredApp && currentApp && requiredApp !== currentApp);
-  const awaitingAppContext = Boolean(isDashboardRoute && requiredApp && !currentApp);
+  const appMismatch = Boolean(isDashboardRoute && requiredApp && currentApp && requiredApp !== currentApp && !urlAppSelection);
+  const awaitingAppContext = Boolean(
+    isDashboardRoute &&
+      requiredApp &&
+      (!currentApp || (urlAppSelection && currentApp !== urlAppSelection))
+  );
   const roleMismatch = Boolean(isDashboardRoute && requiredRole && userRole && !isRoleAllowed(requiredRole, userRole));
 
   // Only render the full application chrome when authenticated.

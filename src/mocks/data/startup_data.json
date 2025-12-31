@@ -300,11 +300,14 @@
         "isDefault": "0",
         "permissions": {
           "badge": 0,
-          "member": 0,
+          "member": 10,
           "user": 0,
           "register": 0,
           "programme": 10,
-          "events": 10
+          "events": 10,
+          "flexi": 20,
+          "finance": 100,
+          "quartermaster": 20
         },
         "sectionConfig": {
           "subscription_level": 3,

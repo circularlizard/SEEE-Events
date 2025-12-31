@@ -36,6 +36,10 @@ const routeMatchers: RouteMatcher[] = [
       startsWith("/dashboard/platform")(pathname),
   },
   {
+    app: "data-quality",
+    match: (pathname) => startsWith("/dashboard/members/issues")(pathname),
+  },
+  {
     app: "multi",
     match: (pathname) =>
       startsWith("/dashboard/members")(pathname) ||
