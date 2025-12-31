@@ -3,12 +3,12 @@
 This plan outlines the prioritized steps to align the platform with the functional review findings and the new 3-app architecture.
 
 ## Priority 1: Login & UX Simplification
-- [ ] **Simplify App Selection (REQ-AUTH-13):** Replace the current role/app selection with a high-quality "3 Card" layout on the landing page.
+- [X] **Simplify App Selection (REQ-AUTH-13):** Replace the current role/app selection with a high-quality "3 Card" layout on the landing page.
     - Card 1: **Expedition Viewer** - Requires `section:event:read` scope only.
     - Card 2: **Expedition Planner** - Requires full admin scopes.
     - Card 3: **OSM Data Quality Viewer** - Requires full admin scopes with multi-section support.
     - *Platform Admin* remains a subtle link for super-admins with additional platform verification.
-- [ ] **Implement App-Specific OAuth Scopes (REQ-AUTH-15):** Each app must request only the OSM scopes it needs:
+- [X] **Implement App-Specific OAuth Scopes (REQ-AUTH-15):** Each app must request only the OSM scopes it needs:
     - Expedition Viewer: Request `section:event:read` only.
     - Expedition Planner & Data Quality Viewer: Request full admin scopes.
     - Platform Admin: Request full admin scopes plus platform verification.
