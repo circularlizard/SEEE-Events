@@ -1,6 +1,6 @@
-# Phase 3: Multi-App Refinement & Resilience
+# Phase 3: Multi-App Refinement & Resilience (Completed)
 
-This plan outlines the prioritized steps to align the platform with the functional review findings and the new 3-app architecture.
+This plan outlined the prioritized steps to align the platform with the functional review findings and the new multi-app architecture. **Priorities 1–3 are complete; remaining work continues in [multi-app-stage-3.md](./multi-app-stage-3.md).**
 
 ## Priority 1: Login & UX Simplification
 - [X] **Simplify App Selection (REQ-AUTH-13):** Replace the current role/app selection with a high-quality "3 Card" layout on the landing page.
@@ -49,15 +49,8 @@ This plan outlines the prioritized steps to align the platform with the function
     - All scenarios reference the new personas (`noSeeeElevatedOther`, `seeeEventsOnlyRestrictedOther`, `seeeFullOnly`, `seeeFullElevatedOther`).
 - [X] **Re-enable BDD Tests:** Feature file updated (no more `@skip`), step defs now require mock login buttons, and `playwright.bdd.config.ts` starts a fresh HTTPS dev server with mock env vars + longer inactivity timeout. `npm run test:bdd -- --grep multi-app --reporter=line --workers=1` passes headlessly.
 
-## Priority 4: Expedition Viewer (Standard) Refinement
-- [ ] **Home Page Refactor (REQ-EVENTS-06):** Change the default landing view to "Attendance by Person," grouped by Patrol cards.
-- [ ] **SEEE Only Mode:** Completely disable and hide the section picker and section-switching logic when in this app.
-- [ ] **Cache Integration (REQ-EVENTS-07):** Fix the issue where cached patrol names and member data aren't being picked up by standard users.
+---
 
-## Priority 5: Expedition Planner & Data Quality (Admin)
-- [ ] **Planner Development:** Build out the "Planner" shell as the primary engine for patrol refresh and event preparation.
-- [ ] **Data Quality App:** Migrate the "Member Issues" views into the dedicated "Data Quality Viewer" app.
+## Priorities 4–6: Continued in Stage 3
 
-## Priority 6: Platform Admin Cleanup
-- [ ] **UI Polish:** Correct labels (e.g., "Patrol Data" -> "Platform Operations") and ensure the data loading toolbar is visible.
-- [ ] **Audit Log Visibility:** Ensure console actions are clearly visible in the audit trail.
+The remaining work (Expedition Viewer refinement, Expedition Planner development, OSM Data Quality Viewer migration, and Platform Admin cleanup) is now tracked in **[multi-app-stage-3.md](./multi-app-stage-3.md)**, which sequences specification updates, implementation tasks, and E2E coverage for each application.

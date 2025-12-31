@@ -344,3 +344,33 @@ Reference documentation for all completed implementation phases. For active/futu
 ---
 
 **Next Steps:** Proceed to Phase 2.8 (Role-Based Access Control prerequisite) and Phase 3 (Event Dashboard Implementation).
+
+---
+
+## **Phase 3: Multi-App Refinement & Resilience ✅ COMPLETE (Jan 1, 2025)**
+
+**Plan:** [multi-app-part-2-completed-2025-01-01.md](./multi-app-part-2-completed-2025-01-01.md)
+
+**Summary:** Aligned the platform with the functional review findings and the new multi-app architecture. Implemented the 3-card login UI, app-specific OAuth scopes, permission validation, API resilience improvements, and comprehensive E2E test coverage.
+
+**Key Deliverables:**
+
+### Priority 1: Login & UX Simplification
+- Simplified app selection with 3-card layout (Expedition Viewer, Expedition Planner, OSM Data Quality).
+- Implemented app-specific OAuth scopes (standard vs admin).
+- Added permission validation against OSM startup data for SEEE-specific and multi-section apps.
+- Updated section picker to filter by app-required permissions.
+
+### Priority 2: API Resilience & Rate Limiting
+- Fixed bottleneck backoff logic for 429 responses.
+- Added telemetry UI for rate limit status and backoff timers.
+- Implemented Redis cache policy (shared patrol cache, user-scoped member/event caches).
+- Removed global members hydration to reduce 429 frequency.
+
+### Priority 3: E2E Test Updates
+- Adapted mock auth to 3-card selection with persona picker.
+- Added permission validation tests for all app/persona combinations.
+- Re-enabled BDD tests with mock login buttons and fresh dev server.
+- All 34 BDD tests passing (2 skipped).
+
+**Continuation:** Remaining work (Expedition Viewer refinement, Expedition Planner development, OSM Data Quality migration, Platform Admin cleanup) continues in [multi-app-stage-3.md](../implementation/multi-app-stage-3.md).
