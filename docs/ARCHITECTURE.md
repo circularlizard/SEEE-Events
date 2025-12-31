@@ -298,10 +298,29 @@ To ensure speed for the user and protection for the API (Section 5.1), the appli
 | Data Type | TTL (Time-To-Live) | Rationale |
 | :---- | :---- | :---- |
 | **Access Control List** | **NO EXPIRY** | Configuration data must persist until manually changed. |
-| **Patrol and Member Structure** | **90 Days** | Critical for Standard Viewers (who cannot fetch directly), changes infrequently. Automatically refreshed when an Administrator logs in. |
-| **Static Data** (Events Lists, general non-critical Member Lists for Admins) | **1 Hour** | Membership rarely changes during an event. |
-| **Volatile Data** (Invites, Kit Lists, specific event details) | **5-10 Minutes** | Balances the need for updates with API protection. |
+| **Patrol Structure** | **90 Days** | Changes infrequently; safe to share within the platform and reduces repeated upstream calls. |
+| **Member Lists (per user, per section)** | **1 Hour** | Member lists are treated as user-scoped; caching reduces load but avoids cross-user data persistence. |
+| **Event Lists + Event Details (per user, per section)** | **1 Hour** | Personal caches reduce repeated page navigations and keep pressure off the upstream rate limit. |
+| **Member Details** | **Not cached across users** | Avoids cross-user personal-data caching and reduces risk of cache misuse/enumeration.
 | **OAuth Tokens** | **1 Hour** | Matches the OSM Token expiry lifecycle. |
+
+### **Cache Keying & Safety Rules**
+
+To prevent cross-user data leaks, cache keys must be scoped:
+
+* **User-scoped keys:** Any cached OSM response that includes member or event data must be keyed by:
+  * authenticated user id
+  * section id
+  * OSM endpoint + params
+* **Shared keys:** Only non-sensitive, non-user-specific datasets may be shared (e.g., patrol structure).
+
+### **Force Refresh Semantics**
+
+Users can bypass cache for records they have access to:
+
+* **Per-event refresh:** bypass the cached event detail for that event (for the current user + section).
+* **Per-member refresh:** bypass the cached member list entry or any member detail fetch available in the current UI context.
+* **Global refresh (current section):** bypass the user-scoped caches for the active section.
 
 ## **8\. Reporting & Export**
 

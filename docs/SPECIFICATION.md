@@ -242,7 +242,19 @@ The application relies on data stored in OSM "User Data" columns within the Even
   * **Internal Throttling (REQ-ARCH-03):** Self-cap below OSM’s published limits (e.g., 80/min if 100/min permitted).
   * **Backoff Compliance (REQ-ARCH-04):** The system must monitor for HTTP 429 responses and immediately pause the request queue, applying an exponential backoff or respecting the `Retry-After` header.
 * **Rate Limit Telemetry (REQ-ARCH-19):** A visible UI indicator must surface current rate-limit status, remaining quota, and any active backoff periods to the user.
-  * **Caching Strategy (REQ-ARCH-05):** Use caching for non-volatile data to reduce API load.
+  * **Caching Strategy (REQ-ARCH-05):** Use server-side caching in Redis to reduce API load while preventing cross-user data leakage.
+    * **Shared patrol cache:** Patrol structure may be cached across users (scoped by section) with a 90-day TTL because it is low sensitivity and changes infrequently.
+    * **No shared member cache:** Member-related cached responses must not be shared across users.
+    * **User-scoped keys:** Cache keys for member lists, event lists, and event details must be scoped to the authenticated user (and selected section).
+    * **Short TTLs:** User-scoped caches must be short-lived:
+      * **Member list (per section, per user):** 1 hour.
+      * **Event lists and event details (per section, per user):** 1 hour.
+    * **PII constraints:** Cached responses must not be used to persist or rehydrate sensitive personal data beyond what is already returned by authorized upstream endpoints.
+  * **Cache refresh controls (REQ-ARCH-20):** A user must be able to force-refresh records they have access to:
+    * Per-event refresh.
+    * Per-member refresh (where a member record is visible/authorized in the UI context).
+    * Global refresh (for the current section).
+  * **Cache source indicators (REQ-ARCH-21):** Where practical, the UI should indicate whether a view loaded data from Redis cache vs upstream fetch (and optionally show cache age).
 * **Safety Shield (REQ-ARCH-06):** All client requests must route via `/api/proxy/...`.
 * **Retry Controls (REQ-ARCH-07):** Disable or tightly constrain retries for 401/429/503 responses.
 * **Abort Support (REQ-ARCH-08):** Client fetch helpers must accept `AbortSignal` so section changes cancel in-flight work.
