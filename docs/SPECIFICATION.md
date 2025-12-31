@@ -43,20 +43,30 @@ All requirements in this specification carry unique identifiers using the patter
 
 ### **3.1 Platform-Wide Capabilities**
 
-#### **3.1.1 Authentication, Application & Section Selection**
+#### **3.1.1 Authentication & Multi-App Entry**
 
-* **Protocol (REQ-AUTH-01):** The application will use **OSM OAuth 2.0 (Authorization Code Flow)**.  
-  * *Rationale:* This is the mandatory standard for multi-user applications interfacing with OSM.  
-* **Login Method (REQ-AUTH-02):** Users must authenticate using their existing **Personal OSM Credentials**.  
-* **Role Selection (REQ-AUTH-03):** At the start of the login process, the user must select their intended role ("Administrator" or "Standard Viewer") to determine requested OAuth scopes.
-* **Application Selection (REQ-AUTH-13):** After selecting a role, the user must select which application experience to open (SEEE Event Planning, SEEE Expedition Viewer, Multi-Section Viewer, Platform Admin). The selection drives route group entry, default section assumptions, and any additional scopes required by that app.
-* **Administrator Scopes (REQ-AUTH-04):** Administrators require `section:event:read`, `section:member:read`, `section:programme:read`, `section:flexirecord:read`.
-* **Standard Viewer Scopes (REQ-AUTH-05):** Standard viewers require `section:event:read` only.
-* **Active Section Model (REQ-AUTH-06):** The platform must operate with a single active section at a time (`currentSection`).  
-  - **Persisted Selection (REQ-AUTH-07):** If a section exists in the persisted session store, the application must load it immediately without showing the full selector.  
-  - **Selector-first Rendering (REQ-AUTH-08):** If no section is selected, the section selector must render **before** the normal dashboard UI to avoid flash.  
-  - **Selection Persistence (REQ-AUTH-09):** After a user selects a section, that selection must be persisted and subsequent data loads must target that section.  
-* **Section Switch UX (REQ-AUTH-10):** When a section is already selected, switching must occur via a compact dropdown control in the sidebar (desktop) with a mobile affordance in the header. Multi-section viewer flows must keep this selector visible, while the SEEE-only apps hide it by default.
+* **Protocol (REQ-AUTH-01):** The application will use **OSM OAuth 2.0 (Authorization Code Flow)**.
+* **Login Method (REQ-AUTH-02):** Users must authenticate using their existing **Personal OSM Credentials**.
+* **Simplified App Selection (REQ-AUTH-13):** After login, the user is presented with a simplified "3 Card" entry page to select their intended application experience.
+    * **Expedition Viewer:** Read-only dashboard for SEEE events. Requires `section:event:read` scope.
+    * **Expedition Planner:** Tools for SEEE event setup and patrol management. Requires `section:event:read`, `section:member:read`, `section:programme:read`, `section:flexirecord:read` scopes.
+    * **OSM Data Quality Viewer:** Multi-section tool for identifying OSM data issues. Requires `section:event:read`, `section:member:read`, `section:programme:read`, `section:flexirecord:read` scopes.
+* **App-Specific OAuth Scopes (REQ-AUTH-15):** Each application requests only the OSM scopes required for its functionality:
+    - **Expedition Viewer:** Requests `section:event:read` only.
+    - **Expedition Planner & Data Quality Viewer:** Request full admin scopes `section:event:read`, `section:member:read`, `section:programme:read`, `section:flexirecord:read`.
+* **Permission Validation (REQ-AUTH-16):** After OAuth completion, each app must validate the `permissions` object returned by OSM:
+    - Check that required permission types exist in the permissions object.
+    - Verify each required permission has a value greater than 0.
+    - If validation fails, display a helpful message: "You do not have the required OSM permissions to use this app. Please contact your OSM administrator." with a logout button.
+    - No data hydration or API calls should be attempted if permission validation fails.
+* **Platform Admin Entry (REQ-AUTH-14):** A subtle entry point and restricted route (`/dashboard/platform-admin`) provides operational controls for platform owners. Requires full admin scopes `section:event:read`, `section:member:read`, `section:programme:read`, `section:flexirecord:read` and platform admin verification via `platform:allowedOperators` configuration.
+* **Legacy Role Scopes (Deprecated):**
+    * **Administrator Scopes (REQ-AUTH-04):** Full admin scopes - now used by Expedition Planner and Data Quality Viewer apps.
+    * **Standard Viewer Scopes (REQ-AUTH-05):** Event-only scope - now used by Expedition Viewer app.
+* **Active Section Model (REQ-AUTH-06):**
+    - **SEEE-Specific Apps:** Expedition Viewer and Expedition Planner assume the SEEE section ID and hide all section selection UI.
+    - **Multi-Section Apps:** Data Quality Viewer and Multi-Section Viewer (future) enable the section selector.
+* **Selector-first Rendering (REQ-AUTH-08):** If an app requires a section and none is selected, the selector must render **before** the normal dashboard UI to avoid flash.
 
 **Implementation alignment (Dec 2025)** references the requirements above:
 
@@ -81,7 +91,13 @@ All requirements in this specification carry unique identifiers using the patter
 
 The SEEE Event Planning app replaces the legacy "Administrator" role UI. It assumes the SEEE section, hides the section selector, and provides tooling to hydrate patrols/members, review data quality, and prepare expeditions.
 
-#### **3.2.1 Admin: Members views & data quality**
+#### **3.2.1 App Access & Permissions (REQ-AUTH-15, REQ-AUTH-16)**
+
+* **Required OSM Scopes:** `section:event:read`, `section:member:read`, `section:programme:read`, `section:flexirecord:read`.
+* **Permission Validation:** Must validate that all required permissions exist in OSM startup data with values > 0.
+* **Access Denied Flow:** Display helpful error message with logout button if permissions insufficient; no hydration attempted.
+
+#### **3.2.2 Admin: Members views & data quality**
 
 * **Scope (REQ-ADMIN-01):** Provide administrator-only views for exploring member datasets and identifying data quality issues.
 * **Members List (REQ-ADMIN-02):** Admins must see a sortable member list per section.
@@ -100,17 +116,23 @@ Future Phase 3 deliverables (patrol refresh tooling, logistics adapters, readine
 
 ### **3.3 SEEE Expedition Viewer Application (Standard Experience)**
 
-The SEEE Expedition Viewer app is a read-only experience for expedition leaders. It assumes the SEEE section, disables destructive actions, and surfaces per-event dashboards.
+The SEEE Expedition Viewer app is a read-only experience for expedition leaders. It is locked to the SEEE section.
 
-#### **3.3.1 Event Dashboard**
+#### **3.3.1 App Access & Permissions (REQ-AUTH-15, REQ-AUTH-16)**
 
+* **Required OSM Scopes:** `section:event:read` only.
+* **Permission Validation:** Must validate that events permission exists in OSM startup data with value > 0.
+* **Access Denied Flow:** Display helpful error message with logout button if permission insufficient; no API calls attempted.
+
+#### **3.3.2 Event Dashboard & Landing**
+
+* **Home Page (REQ-EVENTS-06):** The landing page displays "Attendance by Person" grouped by Patrol cards.
 * **Scope (REQ-EVENTS-01):** Display **active and future events only**; historical data is out of scope.  
 * **Event Listing (REQ-EVENTS-02):** Show upcoming expedition events fetched from the selected section.  
 * **Participant Status (REQ-EVENTS-03):** For each event display participant name and invitation status (Invited/Accepted/Declined).  
-* **Unit Filtering (REQ-EVENTS-04):** Provide a "Unit Filter" dropdown that filters participants based on their Patrol (Unit/ESU name).  
-* **Attendance Route (REQ-EVENTS-05):** Attendance view lives at `/dashboard/events/attendance`; main events list at `/dashboard/events`.
+* **Cache Integration (REQ-EVENTS-07):** The app must use the admin-hydrated patrol and member cache to resolve names and patrol associations, ensuring a responsive experience for standard users who lack broad member permissions.
 
-#### **3.3.2 Expedition Logistics View**
+#### **3.3.3 Expedition Logistics View**
 
 For each event, the dashboard must display logistical details.
 
@@ -119,15 +141,15 @@ For each event, the dashboard must display logistical details.
 * **Displayed Fields (REQ-LOGISTICS-03):** For every participant show Expedition Group, Tent Group, Group Gear Provider (free text), and Additional Info (free text).
 * **First Aid Summary (REQ-LOGISTICS-04):** **Deferred** – see Section 7 (Future Scope) for the postponed First Aid reporting requirement.
 
-#### **3.3.3 Readiness & Training View (Deferred)**
+#### **3.3.4 Readiness & Training View (Deferred)**
 
 All training and First Aid requirements (REQ-TRAINING-01 → REQ-TRAINING-03) are deferred to the Future Scope outlined in Section 7.
 
-#### **3.3.4 Member Participation & Readiness Summary View (Deferred)**
+#### **3.3.5 Member Participation & Readiness Summary View (Deferred)**
 
 The cross-event readiness matrix (REQ-SUMMARY-01 → REQ-SUMMARY-10) is deferred alongside the training features. See Section 7 for the retained specification.
 
-#### **3.3.5 Reporting & Export**
+#### **3.3.6 Reporting & Export**
 
 To support offline analysis and physical record-keeping during expeditions:
 
@@ -136,7 +158,25 @@ To support offline analysis and physical record-keeping during expeditions:
 * **PDF Export (REQ-REPORTING-03):** Users must be able to generate a well-formatted PDF report suitable for printing.
 * **PDF Formatting (REQ-REPORTING-04):** PDF exports must include readable table layouts, clear headers, and reflect applied filters/access controls.
 
-### **3.4 Multi-Section Viewer Application (Future Scope)**
+### **3.4 OSM Data Quality Viewer Application (Administrator Experience)**
+
+The OSM Data Quality Viewer provides multi-section access to identify and resolve OSM data issues across sections.
+
+#### **3.4.1 App Access & Permissions (REQ-AUTH-15, REQ-AUTH-16)**
+
+* **Required OSM Scopes:** `section:event:read`, `section:member:read`, `section:programme:read`, `section:flexirecord:read`.
+* **Permission Validation:** Must validate that all required permissions exist in OSM startup data with values > 0.
+* **Access Denied Flow:** Display helpful error message with logout button if permissions insufficient; no API calls attempted.
+* **Multi-Section Support:** Enables section selector for administrators managing multiple sections.
+
+#### **3.4.2 Data Quality Views**
+
+* **Cross-Section Issues (REQ-DATA-QUALITY-01):** Aggregate and display data quality issues across all accessible sections.
+* **Section-Specific Filtering (REQ-DATA-QUALITY-02):** Allow filtering by section to focus on specific problem areas.
+* **Issue Categories:** Reuse issue categories from REQ-ADMIN-04 (missing contact info, doctor info, duplicate contacts).
+* **Export Capabilities:** Provide CSV export of identified issues for offline resolution tracking.
+
+### **3.5 Multi-Section Viewer Application (Future Scope)**
 
 The Multi-Section Viewer mirrors the Expedition Viewer UI but reintroduces the section selector, per-user access strategies, and generalized schemas so other sections can opt in.
 
@@ -147,9 +187,18 @@ The Multi-Section Viewer mirrors the Expedition Viewer UI but reintroduces the s
 
 Detailed readiness/logistics requirements continue to reference Section 7 until the multi-section viewer is funded.
 
-### **3.5 Platform Admin Console**
+### **3.6 Platform Admin Console**
 
 The new Platform Admin Console centralizes operational controls required to keep the multi-app platform healthy.
+
+#### **3.6.1 App Access & Permissions (REQ-AUTH-14, REQ-AUTH-15, REQ-AUTH-16)**
+
+* **Required OSM Scopes:** `section:event:read`, `section:member:read`, `section:programme:read`, `section:flexirecord:read`.
+* **Platform Admin Verification:** Must verify user is in `platform:allowedOperators` configuration.
+* **Permission Validation:** Must validate all required OSM permissions exist with values > 0.
+* **Access Denied Flow:** Display helpful error message with logout button if either platform admin or OSM permissions insufficient.
+
+#### **3.6.2 Operational Controls**
 
 * **Operational Access (REQ-CONSOLE-01):** Only SEEE platform owners (subset of administrators) may access the console via a dedicated app entry point and route group (`/dashboard/(platform-admin)`).
 * **Patrol Cache Management (REQ-CONSOLE-02):** Provide controls to trigger patrol/member hydration runs, inspect last refresh timestamps, and re-queue failed jobs without redeploying the app.
@@ -189,7 +238,8 @@ The application relies on data stored in OSM "User Data" columns within the Even
 * **Defensive Rate Limit (REQ-ARCH-01):** Implement strict rate limiting to stay below OSM thresholds.
   * **Header Monitoring (REQ-ARCH-02):** Read X-RateLimit headers on every response.
   * **Internal Throttling (REQ-ARCH-03):** Self-cap below OSM’s published limits (e.g., 80/min if 100/min permitted).
-  * **Retry-After Compliance (REQ-ARCH-04):** Obey Retry-After headers on 429 responses.
+  * **Backoff Compliance (REQ-ARCH-04):** The system must monitor for HTTP 429 responses and immediately pause the request queue, applying an exponential backoff or respecting the `Retry-After` header.
+* **Rate Limit Telemetry (REQ-ARCH-19):** A visible UI indicator must surface current rate-limit status, remaining quota, and any active backoff periods to the user.
   * **Caching Strategy (REQ-ARCH-05):** Use caching for non-volatile data to reduce API load.
 * **Safety Shield (REQ-ARCH-06):** All client requests must route via `/api/proxy/...`.
 * **Retry Controls (REQ-ARCH-07):** Disable or tightly constrain retries for 401/429/503 responses.
@@ -268,7 +318,7 @@ To ensure compliance before an expedition, the dashboard must verify completion 
 
 | Domain Prefix | Description |
 | --- | --- |
-| AUTH | Authentication, session selection, and timeout requirements |
+| AUTH | Authentication, session selection, timeout requirements, and app-specific permissions |
 | EVENTS | Event dashboard + attendance views |
 | LOGISTICS | Expedition logistics fields and summaries |
 | TRAINING | Readiness/training data requirements |

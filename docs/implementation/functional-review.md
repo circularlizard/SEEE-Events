@@ -8,6 +8,7 @@
     * Expedition planner
         * Needs at least read access to members, events, patrols, flexi, programme, badges
         * with potential future write access based on OSM permissions returned in the startup data
+        * Will also include data quality viewer
         * Populates patrol cache
         * Tied to the SEEE section
     * OSM data quality viewer
@@ -16,6 +17,10 @@
         * Uses section selector - not tied to the SEEE section
         * Main view is data quality view
     * Platform admin
+        * Doesn't hydrate any data, but can 
+        * Cache views, API tests, debug etc
+        * No section selector
+        * Needs read access to members to populate patrol cache
 
 
 ## General
@@ -23,6 +28,7 @@
 * Need to make sure rate limit backoff is working
 * Add Rate limiting display to the UI, so we can see what is happening
 * SEEE section is going to create ~500 API calls on load - need to make sure this doesn't cause issues. Perhaps this needs to be broken down somehow
+* Does it make sense for the Redis cache to be shared between users?
 
 ## User - Standard
 
