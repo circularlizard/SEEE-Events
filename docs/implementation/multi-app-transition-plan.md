@@ -121,17 +121,28 @@ We will migrate one feature slice at a time so that each app surface lives entir
   - `auth-app-selection.test.ts`: 19 tests, 100% coverage (OAuth flow, role defaults, session persistence, URL handling)
   - `use-store-app.test.ts`: 23 tests, 83.85% coverage (currentApp state, app switching, role/app combinations, edge cases)
   
-- [x] Update Playwright BDD scenarios to cover all `(role, app)` combinations and ensure unauthorized app access is blocked.
-  _Done:_ Created `tests/e2e/features/multi-app-routing.feature` with comprehensive scenarios:
-  - Admin access to all apps (planning, platform-admin, expedition, multi)
-  - Standard user access restrictions (expedition, multi only)
-  - App selection persistence through OAuth flow
-  - Default app assignment by role
-  - Cross-app navigation blocking
-  - Role/app combination matrix (6 scenarios)
-  - Multi-section viewer section switching
-  - Platform admin route protection
-  - App-specific 404 pages
+- [x] Update middleware to allow admin free navigation between apps while enforcing role-based restrictions.
+  _Done (Dec 30, 2025):_ Fixed `middleware.ts` to allow admins to navigate freely between all apps (planning, platform-admin, expedition, multi) while non-admin users remain restricted to their selected app's routes. Platform-admin routes still require admin role regardless of app selection.
+  
+- [x] Update mock auth provider to accept appSelection credential.
+  _Done (Dec 30, 2025):_ Added `appSelection` field to CredentialsProvider schema in `src/lib/auth.ts`. Mock login now passes appSelection through to JWT token, matching the real OAuth flow design.
+  
+- [~] Update Playwright BDD scenarios to cover all `(role, app)` combinations and ensure unauthorized app access is blocked.
+  _Partially done (Dec 30, 2025):_ Created `tests/e2e/features/multi-app-routing.feature` with comprehensive scenarios, but **all tests currently skipped** due to mock auth redirect issue. After clicking "Dev: Mock Login", page redirects back to "/" instead of "/dashboard". Requires manual debugging.
+  
+  **Known issues:**
+  - Mock auth flow not completing redirect properly
+  - appSelection may not be persisting through auth callback
+  - Shared login steps updated to select default apps (Event Planning for admin, Expedition Viewer for standard)
+  - Tests timeout waiting for dashboard URL after mock login
+  
+  **Next steps for manual testing (morning):**
+  - Test login flow with browser dev tools open
+  - Verify appSelection in JWT token after mock login
+  - Check middleware redirect logic with console logging
+  - Compare real OAuth flow vs mock auth behavior
+  - Test navigation between apps manually
+  - Re-enable BDD tests after fixing root cause
   
 - [x] Update `/test-stack` workflow to include new route groups and console flows.
   _Done:_ Verified existing workflow already covers all route groups through full test suite (lint → tsc → unit → BDD E2E → coverage merge).
@@ -148,3 +159,68 @@ We will migrate one feature slice at a time so that each app surface lives entir
 - [ ] Provide migration guidance for contributors (doc + Loom/video) showing how to work within the new route groups.
 - [ ] Update `docs/SPECIFICATION.md` and `docs/ARCHITECTURE.md` references when milestones complete.
 - [ ] Once multi-section viewer is production-ready, promote it from placeholder to GA by enabling the new provider and hydrators.
+
+---
+
+## Status Update: Dec 30, 2025 (Evening)
+
+### ✅ Completed Tonight
+1. **Middleware routing fixes** - Admins can now navigate freely between all apps; non-admin users restricted to their selected app
+2. **Mock auth enhancements** - Added `appSelection` credential field to CredentialsProvider
+3. **Shared login step updates** - Login steps now select default apps before clicking mock login
+4. **BDD test refactoring** - Simplified tests to focus on routing behavior using existing shared steps
+
+### 🚧 Blocked Issues
+**Mock auth redirect loop** - Critical blocker for E2E testing:
+- Symptom: After clicking "Dev: Mock Login", page redirects to "/" instead of "/dashboard"
+- Impact: All multi-app BDD tests skipped (marked with @skip tag)
+- Root cause: Unknown - requires manual debugging with browser dev tools
+
+### 📋 Next Actions for Morning
+
+#### Priority 1: Debug Mock Auth Flow
+1. **Manual testing with dev tools:**
+   - Open `http://localhost:3000` in browser with dev tools
+   - Select "Administrator" role + "Event Planning" app
+   - Click "Dev: Mock Login" and watch Network tab
+   - Check Application > Cookies for NextAuth session
+   - Verify JWT token includes `appSelection` field
+
+2. **Add console logging:**
+   - `src/app/page.tsx` - log `selectedApp` before `signIn` call
+   - `src/lib/auth.ts` - log `credentials.appSelection` in authorize function
+   - `middleware.ts` - log `tokenApp` and redirect decisions
+   - `src/components/StartupInitializer.tsx` - log app hydration
+
+3. **Compare OAuth flows:**
+   - Test real OSM OAuth vs mock auth
+   - Check if issue is mock-specific or affects both
+
+#### Priority 2: Manual Navigation Testing
+Once login works, test these scenarios manually:
+- Admin logs in → lands on `/dashboard/planning` ✓
+- Admin navigates to `/dashboard/admin` → sees Platform Admin Console ✓
+- Admin navigates to `/dashboard/events` → sees Events ✓
+- Standard viewer logs in → lands on `/dashboard` ✓
+- Standard viewer tries `/dashboard/admin` → sees Forbidden ✓
+- Standard viewer tries `/dashboard/planning` → redirects to `/dashboard` ✓
+
+#### Priority 3: Re-enable BDD Tests
+After fixing mock auth:
+1. Remove `@skip` tag from `multi-app-routing.feature`
+2. Uncomment all test scenarios
+3. Run `npm run test:bdd -- --grep multi-app`
+4. Fix any remaining issues
+5. Run full test stack: `npm run lint && npx tsc --noEmit && npm run test:unit && npm run test:bdd`
+
+#### Priority 4: Documentation Updates
+- Update `SPECIFICATION.md` with REQ-AUTH-13 implementation details
+- Update `ARCHITECTURE.md` with multi-app routing architecture
+- Add troubleshooting section to README for common issues
+
+### 🎯 Success Criteria
+- [ ] Mock login successfully redirects to dashboard
+- [ ] All manual navigation scenarios pass
+- [ ] All BDD tests pass (multi-app + existing)
+- [ ] Full test stack passes (lint, tsc, unit, E2E, coverage)
+- [ ] Documentation updated and committed
