@@ -55,6 +55,8 @@ All requirements in this specification carry unique identifiers using the patter
     - **Expedition Viewer:** Requests `section:event:read` only.
     - **Expedition Planner & Data Quality Viewer:** Request full admin scopes `section:event:read`, `section:member:read`, `section:programme:read`, `section:flexirecord:read`.
 * **Permission Validation (REQ-AUTH-16):** After OAuth completion, each app must validate the `permissions` object returned by OSM:
+    - **SEEE-Specific Apps (Expedition Viewer, Expedition Planner):** Must validate permissions specifically for the SEEE section (ID 43105). The user must have the required permissions on the SEEE section to use these apps.
+    - **Multi-Section Apps (OSM Data Quality Viewer, Platform Admin, Multi-Section Viewer):** Must validate that the user has the required permissions on **any** accessible section. The section selector will only show sections where the user has sufficient permissions.
     - Check that required permission types exist in the permissions object.
     - Verify each required permission has a value greater than 0.
     - If validation fails, display a helpful message: "You do not have the required OSM permissions to use this app. Please contact your OSM administrator." with a logout button.
@@ -64,8 +66,8 @@ All requirements in this specification carry unique identifiers using the patter
     * **Administrator Scopes (REQ-AUTH-04):** Full admin scopes - now used by Expedition Planner and Data Quality Viewer apps.
     * **Standard Viewer Scopes (REQ-AUTH-05):** Event-only scope - now used by Expedition Viewer app.
 * **Active Section Model (REQ-AUTH-06):**
-    - **SEEE-Specific Apps:** Expedition Viewer and Expedition Planner assume the SEEE section ID and hide all section selection UI.
-    - **Multi-Section Apps:** Data Quality Viewer and Multi-Section Viewer (future) enable the section selector.
+    - **SEEE-Specific Apps:** Expedition Viewer and Expedition Planner assume the SEEE section ID and hide all section selection UI. These apps require SEEE-specific permission validation.
+    - **Multi-Section Apps:** OSM Data Quality Viewer, Platform Admin enable the section selector, showing only sections where the user has the required permissions for the selected app.
 * **Selector-first Rendering (REQ-AUTH-08):** If an app requires a section and none is selected, the selector must render **before** the normal dashboard UI to avoid flash.
 
 **Implementation alignment (Dec 2025)** references the requirements above:

@@ -13,14 +13,18 @@ This plan outlines the prioritized steps to align the platform with the function
     - Expedition Planner & Data Quality Viewer: Request full admin scopes.
     - Platform Admin: Request full admin scopes plus platform verification.
 - [ ] **Add Permission Validation (REQ-AUTH-16):** After OAuth completion, each app must validate the `globals.roles.permissions` object from OSM startup data:
+    - **SEEE-Specific Apps (Expedition Viewer, Expedition Planner):** Validate permissions specifically for SEEE section (ID 43105). User must have required permissions on SEEE section.
+    - **Multi-Section Apps (OSM Data Quality Viewer, Platform Admin):** Validate that user has required permissions on ANY accessible section. Section selector will only show sections with sufficient permissions.
     - Check required permissions exist and have values > 0.
     - Display helpful error message with logout button if validation fails.
     - Prevent any data hydration if permissions insufficient.
+- [ ] **Update Section Picker:** Filter section list to only show sections where user has required permissions for the selected app.
 - [ ] **Fix Login Flash:** Ensure the dashboard shell doesn't render until the app context and section are fully hydrated.
 
 ## Priority 2: API Resilience & Rate Limiting (Critical Stability)
 - [ ] **Backoff Logic (REQ-ARCH-04):** Fix the bottleneck implementation to properly pause the queue and back off when a 429 (Too Many Requests) is encountered.
 - [ ] **Telemetry UI (REQ-ARCH-19):** Add a visible indicator (e.g., in the header or a toast) showing current API rate limit status and active backoff timers.
+- [ ] **Redis Cache Policy:** Implement decision on shared vs. user-specific Redis caching for member/event data (balancing performance and GDPR/security).
 - [ ] **Hydration Optimization:** Review the SEEE hydration flow (~500 calls) to see if it can be batched or prioritized to reduce 429 frequency.
 
 ## Priority 3: E2E Test Updates for New Login Flow
@@ -30,8 +34,10 @@ This plan outlines the prioritized steps to align the platform with the function
     - Fix the redirect loop that prevents E2E tests from completing login.
     - Actions: Add console logging to `src/app/page.tsx`, `src/lib/auth.ts`, `middleware.ts`, and `StartupInitializer.tsx` to trace the `appSelection` flow.
 - [ ] **Add Permission Validation Tests:** Create test scenarios for:
-    - User with sufficient permissions accessing each app successfully.
-    - User with insufficient permissions seeing the access denied screen.
+    - User with sufficient SEEE permissions accessing SEEE-specific apps successfully.
+    - User with sufficient permissions on any section accessing multi-section apps successfully.
+    - User with insufficient SEEE permissions denied access to SEEE-specific apps.
+    - User with insufficient permissions on all sections denied access to multi-section apps.
     - Platform admin verification (both success and failure).
 - [ ] **Re-enable BDD Tests:** Once the new login flow and auth are working, update and run the full multi-app test suite.
     - Remove `@skip` from `multi-app-routing.feature`.
@@ -47,7 +53,6 @@ This plan outlines the prioritized steps to align the platform with the function
 ## Priority 5: Expedition Planner & Data Quality (Admin)
 - [ ] **Planner Development:** Build out the "Planner" shell as the primary engine for patrol refresh and event preparation.
 - [ ] **Data Quality App:** Migrate the "Member Issues" views into the dedicated "Data Quality Viewer" app.
-- [ ] **Redis Policy:** Implement a decision on shared vs. user-specific Redis caching for member/event data (balancing performance and GDPR/security).
 
 ## Priority 6: Platform Admin Cleanup
 - [ ] **UI Polish:** Correct labels (e.g., "Patrol Data" -> "Platform Operations") and ensure the data loading toolbar is visible.
