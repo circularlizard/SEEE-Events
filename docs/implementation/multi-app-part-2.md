@@ -22,9 +22,19 @@ This plan outlines the prioritized steps to align the platform with the function
 - [~] **Fix Login Flash:** Ensure the dashboard shell doesn't render until the app context and section are fully hydrated. *Not 100% eliminated, but acceptable for now.*
 
 ## Priority 2: API Resilience & Rate Limiting (Critical Stability)
-- [ ] **Backoff Logic (REQ-ARCH-04):** Fix the bottleneck implementation to properly pause the queue and back off when a 429 (Too Many Requests) is encountered.
-- [ ] **Telemetry UI (REQ-ARCH-19):** Add a visible indicator (e.g., in the header or a toast) showing current API rate limit status and active backoff timers.
-- [ ] **Redis Cache Policy:** Implement decision on shared vs. user-specific Redis caching for member/event data (balancing performance and GDPR/security).
+- [X] **Backoff Logic (REQ-ARCH-04):** Fix the bottleneck implementation to properly pause the queue and back off when a 429 (Too Many Requests) is encountered.
+- [X] **Telemetry UI (REQ-ARCH-19):** Add a visible indicator (e.g., in the header or a toast) showing current API rate limit status and active backoff timers.
+- [ ] **Redis Cache Policy (REQ-ARCH-05, REQ-ARCH-20, REQ-ARCH-21):** Implement the agreed Redis caching policy that reduces rate limit pressure without sharing member data across users.
+    - Shared patrol cache (scoped by section): 90-day TTL.
+    - No shared member cache across users.
+    - User-scoped caches (scoped by user + section):
+        - Member list: 1 hour.
+        - Event list and event details: 1 hour.
+    - Force refresh controls:
+        - Per-event refresh.
+        - Per-member refresh (when visible/authorized in UI context).
+        - Global refresh (current section).
+    - Where practical, add UI indicators for cached vs upstream data (and optional cache age).
 - [ ] **Hydration Optimization:** Review the SEEE hydration flow (~500 calls) to see if it can be batched or prioritized to reduce 429 frequency.
 
 ## Priority 3: E2E Test Updates for New Login Flow
