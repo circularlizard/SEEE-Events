@@ -4,6 +4,7 @@ import {
   isHardLocked,
   isSoftLocked,
   setHardLock,
+  setSoftLock,
   getCachedResponse,
   setCachedResponse,
   getCacheKey,
@@ -422,6 +423,46 @@ export async function GET(
 
     // Handle error responses
     if (!response.ok) {
+      if (response.status === 429) {
+        const retryAfterRaw = response.headers.get('Retry-After')
+        const retryAfterParsed = retryAfterRaw ? Number(retryAfterRaw) : NaN
+        const nowSec = Math.floor(Date.now() / 1000)
+        const resetRaw = response.headers.get('X-RateLimit-Reset')
+        const resetParsed = resetRaw ? Number(resetRaw) : NaN
+
+        const ttl = (() => {
+          if (Number.isFinite(retryAfterParsed) && retryAfterParsed > 0) {
+            return Math.max(1, Math.floor(retryAfterParsed))
+          }
+          if (Number.isFinite(resetParsed) && resetParsed > nowSec) {
+            return Math.max(60, Math.floor(resetParsed - nowSec))
+          }
+          return 60
+        })()
+
+        await setSoftLock(ttl)
+
+        return NextResponse.json(
+          {
+            error: 'RATE_LIMITED',
+            message: 'OSM rate limit exceeded. System is cooling down. Please try again later.',
+            retryAfter: ttl,
+          },
+          {
+            status: 429,
+            headers: {
+              ...(await buildSafetyHeaders({
+                targetUrl,
+                cache: 'MISS',
+                upstreamHeaders: response.headers,
+                upstreamRequestHeaders: { ...upstreamRequestHeaders, Authorization: 'Bearer REDACTED' },
+              })),
+              'Retry-After': String(ttl),
+            },
+          }
+        )
+      }
+
       const errorText = await response.text()
       console.error(`[Proxy] API error: ${response.status} - ${errorText}`)
 

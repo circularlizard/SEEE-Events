@@ -221,6 +221,35 @@ describe('Proxy Route Integration', () => {
     expect(res.headers.get('X-Cache')).toBe('BYPASS')
   })
 
+  it('sets soft lock and returns 429 when upstream rate limits (Retry-After)', async () => {
+    const { getCachedResponse, setSoftLock } = jest.requireMock('@/lib/redis')
+    ;(getCachedResponse as jest.Mock).mockResolvedValueOnce(null)
+
+    const headers = new Headers({
+      'retry-after': '12',
+      'x-ratelimit-remaining': '0',
+      'x-ratelimit-limit': '1000',
+      'x-ratelimit-reset': String(Math.floor(Date.now() / 1000) + 3600),
+    })
+    const mockResponse = {
+      ok: false,
+      status: 429,
+      headers,
+      text: async () => 'rate limited',
+    } as any
+    jest.spyOn(global, 'fetch' as any).mockResolvedValueOnce(mockResponse)
+
+    const res = await GET(makeRequest('GET', `${base}/osmc/members`), {
+      params: Promise.resolve({ path: ['osmc', 'members'] }),
+    })
+    expect(res.status).toBe(429)
+    expect(res.headers.get('Retry-After')).toBe('12')
+    const body = await res.json()
+    expect(body.error).toBe('RATE_LIMITED')
+    expect(body.retryAfter).toBe(12)
+    expect(setSoftLock).toHaveBeenCalledWith(12)
+  })
+
   it('returns 503 when hard locked', async () => {
     const { isHardLocked } = jest.requireMock('@/lib/redis')
     ;(isHardLocked as jest.Mock).mockResolvedValueOnce(true)

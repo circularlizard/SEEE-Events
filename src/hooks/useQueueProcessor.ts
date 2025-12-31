@@ -68,12 +68,19 @@ export function useQueueProcessor(options?: {
 
       if (apiErr?.status === 429) {
         // Soft lock: re-enqueue with backoff
+        const backoffMs = (() => {
+          const retryAfterSec = apiErr?.retryAfter
+          if (typeof retryAfterSec === 'number' && Number.isFinite(retryAfterSec) && retryAfterSec > 0) {
+            return Math.max(1000, Math.floor(retryAfterSec * 1000))
+          }
+          return retryBackoffMs
+        })()
         if (process.env.NODE_ENV !== 'production') {
-          console.warn('[QueueProcessor] Rate limited (429). Re-enqueueing with backoff ms:', retryBackoffMs, 'ID:', id)
+          console.warn('[QueueProcessor] Rate limited (429). Re-enqueueing with backoff ms:', backoffMs, 'ID:', id)
         }
         setTimeout(() => {
           enqueueItems([id])
-        }, retryBackoffMs)
+        }, backoffMs)
       }
       // For 503 (hard lock) or other errors, drop for now
     } finally {
