@@ -3,18 +3,18 @@
 This plan sequencesthe remaining work to align the four-application architecture with the functional review. For each application we first update the master specification, then ship the required implementation changes, and finally refresh the E2E coverage to match the new behavior.
 
 ## Phase 1: Expedition Viewer
-- **Objective:** Lock the viewer into the SEEE section, ensure attendance-first UX, and guarantee read-only scope limited to events. @docs/implementation/functional-review.md#35-53 @docs/implementation/multi-app-part-2.md#52-56
+- **Objective:** Provide SEEE leaders with a read-only view of all SEEE expeditions and consolidated attendance, tied permanently to the SEEE section with no section selector. All UX/state updates in this phase must also be consumable by the Expedition Planner app. @docs/implementation/functional-review.md#35-53
 - **Specification Updates:**
-  - Add explicit SEEE-only constraint and remove section picker behaviors from the spec.
-  - Document Patrol-card landing page, attendance-by-person drill-in, and cache rules for patrol names.
-  - Clarify minimal OAuth scopes (`section:event:read`) and hydration expectations.
+  - Restate the app purpose: show SEEE expedition list plus consolidated attendee view (by patrol and per event) using cached patrol names; no other scopes besides `section:event:read`.
+  - Capture the two mandatory views (Events list, Consolidated attendees) and note future extensibility via event custom fields reused by Planner.
+  - Clarify that patrol ID→name mapping continues to come from Redis; document the dependency on admin-populated cache.
 - **Implementation Tasks:**
-  - Refactor dashboard shell to hard-lock SEEE context and hide section selector logic.
-  - Build Patrol card landing page with attendance drill-down and ensure hydration reliability for members.
-  - Consume Redis patrol cache for display and add force-refresh hooks once shared across apps.
+  - Lock the viewer to SEEE section in routing/store layers and remove any section picker remnants.
+  - Build/align the two primary views, ensuring consolidated attendees leverage cached patrol names and can later pivot on custom fields.
+  - Share underlying components/query hooks with Expedition Planner to keep future Planner views in sync.
 - **E2E Updates:**
-  - Expand Expedition Viewer scenarios to confirm SEEE lock, patrol cards, attendance drill-down, and cache indicators.
-  - Add failure case coverage for insufficient permissions and hydration errors.
+  - Update viewer scenarios to cover SEEE-only login, events list visibility, consolidated attendee view, and cache usage messaging.
+  - Add regression coverage proving viewer and planner consume the same views/components (e.g., shared step definitions/assertions).
 
 ## Phase 2: Expedition Planner
 - **Objective:** Deliver the admin planning shell focused on member/event prep, using SEEE section defaults and broader scopes. @docs/implementation/functional-review.md#54-64 @docs/implementation/multi-app-part-2.md#57-60

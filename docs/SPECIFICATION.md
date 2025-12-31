@@ -118,7 +118,7 @@ Future Phase 3 deliverables (patrol refresh tooling, logistics adapters, readine
 
 ### **3.3 SEEE Expedition Viewer Application (Standard Experience)**
 
-The SEEE Expedition Viewer app is a read-only experience for expedition leaders. It is locked to the SEEE section.
+The SEEE Expedition Viewer app is a read-only experience for expedition leaders. It is permanently locked to the SEEE section, has no section selector, and only requires event read scope. Its purpose is to let leaders see which members are attending which SEEE expeditions via two core views: (1) the SEEE event list and (2) a consolidated attendee view (grouped by patrol and per-event). Future attendance pivots (e.g., Walking Group, Tent Group) will reuse the same shared components in the Expedition Planner app.
 
 #### **3.3.1 App Access & Permissions (REQ-AUTH-15, REQ-AUTH-16)**
 
@@ -126,32 +126,23 @@ The SEEE Expedition Viewer app is a read-only experience for expedition leaders.
 * **Permission Validation:** Must validate that events permission exists in OSM startup data with value > 0.
 * **Access Denied Flow:** Display helpful error message with logout button if permission insufficient; no API calls attempted.
 
-#### **3.3.2 Event Dashboard & Landing**
+#### **3.3.2 Expeditions & Consolidated Attendance Views**
 
-* **Home Page (REQ-EVENTS-06):** The landing page displays "Attendance by Person" grouped by Patrol cards.
-* **Scope (REQ-EVENTS-01):** Display **active and future events only**; historical data is out of scope.  
-* **Event Listing (REQ-EVENTS-02):** Show upcoming expedition events fetched from the selected section.  
-* **Participant Status (REQ-EVENTS-03):** For each event display participant name and invitation status (Invited/Accepted/Declined).  
-* **Cache Integration (REQ-EVENTS-07):** The app must use the admin-hydrated patrol and member cache to resolve names and patrol associations, ensuring a responsive experience for standard users who lack broad member permissions.
+* **Events View (REQ-EVENTS-01/02):** Display active/future SEEE expedition events only; each event shows participant names and invitation status. This is the default entry point.
+* **Consolidated Attendance View (REQ-EVENTS-06):** Provide a combined attendee view grouped by Patrol and Event so leaders can quickly see who is attending which expedition.
+* **Shared Components:** Underlying table/card components must be shared with Expedition Planner to avoid divergence as new custom-field pivots are added.
+* **Cache Integration (REQ-EVENTS-07):** Patrol ID→name mapping must come from the Redis patrol cache hydrated by admins; viewer surfaces cache freshness indicators but cannot refresh patrol data itself.
 
 #### **3.3.3 Expedition Logistics View**
 
 For each event, the dashboard must display logistical details.
 
-* **Dynamic Column Mapping (REQ-LOGISTICS-01):** Since custom columns in OSM vary per event, the system must allow users to map available OSM columns (Walking Group, Tent Group, etc.) whenever automatic detection fails.
+* **Column Mapping Source (REQ-LOGISTICS-01):** Expedition Viewer consumes column-mapping definitions (Walking Group, Tent Group, etc.) provided by the Platform Admin Console; viewer users cannot modify mappings directly.
 * **Graceful Degradation (REQ-LOGISTICS-02):** When required columns are missing/unmapped, the app must continue to show participant lists/invitation status and simply hide/gray-out unavailable logistics fields.
 * **Displayed Fields (REQ-LOGISTICS-03):** For every participant show Expedition Group, Tent Group, Group Gear Provider (free text), and Additional Info (free text).
 * **First Aid Summary (REQ-LOGISTICS-04):** **Deferred** – see Section 7 (Future Scope) for the postponed First Aid reporting requirement.
 
-#### **3.3.4 Readiness & Training View (Deferred)**
-
-All training and First Aid requirements (REQ-TRAINING-01 → REQ-TRAINING-03) are deferred to the Future Scope outlined in Section 7.
-
-#### **3.3.5 Member Participation & Readiness Summary View (Deferred)**
-
-The cross-event readiness matrix (REQ-SUMMARY-01 → REQ-SUMMARY-10) is deferred alongside the training features. See Section 7 for the retained specification.
-
-#### **3.3.6 Reporting & Export**
+#### **3.3.4 Reporting & Export**
 
 To support offline analysis and physical record-keeping during expeditions:
 
@@ -208,6 +199,7 @@ The new Platform Admin Console centralizes operational controls required to keep
 * **Developer Tools (REQ-CONSOLE-04):** Include safe developer utilities (e.g., proxy inspector, rate-limit simulator toggles, MSW enable/disable) to diagnose issues without SSH access.
 * **Log Viewer (REQ-CONSOLE-05):** Provide read-only access to recent proxy/safety layer logs with filters for severity, OSM endpoint, and request ID to accelerate incident response.
 * **Audit Trail (REQ-CONSOLE-06):** All actions taken in the console must be logged with timestamp, user, action, and payload summary for compliance.
+* **Column Mapping Management (REQ-CONSOLE-07):** Allow platform admins to configure the expedition logistics column mappings (Walking Group, Tent Group, etc.) stored in Redis/KV so Expedition Viewer/Planner consume consistent definitions without per-user mapping UI.
 
 ## **4. Data Management Strategy**
 
