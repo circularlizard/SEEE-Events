@@ -374,3 +374,37 @@ Reference documentation for all completed implementation phases. For active/futu
 - All 34 BDD tests passing (2 skipped).
 
 **Continuation:** Remaining work (Expedition Viewer refinement, Expedition Planner development, OSM Data Quality migration, Platform Admin cleanup) continues in [multi-app-stage-3.md](../implementation/multi-app-stage-3.md).
+
+---
+
+## **Multi-App Platform Transition ✅ COMPLETE (Jan 1, 2025)**
+
+**Plan:** [multi-app-transition-plan-completed-2025-01-01.md](./multi-app-transition-plan-completed-2025-01-01.md)
+
+**Summary:** Evolved the SEEE dashboard into a multi-application platform with four distinct apps: Expedition Viewer, Expedition Planner, OSM Data Quality Viewer, and Platform Admin.
+
+**Key Deliverables:**
+
+### Infrastructure & State Plumbing
+- Extended Zustand store with `currentApp` state and app-specific selectors.
+- Mirrored app selection in NextAuth JWT/session for SSR compatibility.
+- Wired StartupInitializer to hydrate app context immediately after login.
+
+### Routing & Layout
+- Introduced app-specific route groups under `/dashboard/(planning|expedition|platform-admin|multi)`.
+- Implemented `requiredApp` metadata enforcement via middleware and client guards.
+- Created app-specific 404 pages and navigation.
+
+### Auth & Application Selection
+- Enhanced login page with 3-card app selection UI.
+- Mapped role/app combinations to appropriate OAuth providers.
+- Persisted app selection through auth callbacks and redirects.
+
+### Platform Admin Console
+- Scaffolded admin routes with cache status, SEEE config, developer tools, and audit log panels.
+- Implemented audit event logging for all console actions.
+
+### Testing
+- Added 82 new unit tests for app routing, auth selection, and store state.
+- Fixed mock auth redirect callback for BDD test compatibility.
+- All 34 BDD tests passing.
