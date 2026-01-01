@@ -19,8 +19,8 @@ export default function PlannerEventsPage() {
 
   return (
     <ExpeditionEventsView
-      title="Planner Events"
-      description={`${visibleEvents.length} expedition ${visibleEvents.length === 1 ? 'record' : 'records'} ready for planning`}
+      title="Events"
+      description={`${visibleEvents.length} ${visibleEvents.length === 1 ? 'event' : 'events'} available`}
       events={visibleEvents}
       isLoading={isLoading}
       isError={isError}

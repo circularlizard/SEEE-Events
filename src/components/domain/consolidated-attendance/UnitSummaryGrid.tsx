@@ -16,9 +16,12 @@ interface UnitSummary {
 interface UnitSummaryGridProps {
   attendees: PersonAttendance[]
   getPatrolName: (patrolId: number | string | null | undefined) => string
+  buildUnitHref?: (unitId: string) => string
 }
 
-export function UnitSummaryGrid({ attendees, getPatrolName }: UnitSummaryGridProps) {
+const defaultHrefBuilder = (unitId: string) => `/dashboard/events/attendance/${encodeURIComponent(unitId)}`
+
+export function UnitSummaryGrid({ attendees, getPatrolName, buildUnitHref = defaultHrefBuilder }: UnitSummaryGridProps) {
   const unitSummaries = useMemo(() => {
     const summaryMap = new Map<string, UnitSummary>()
 
@@ -77,15 +80,18 @@ export function UnitSummaryGrid({ attendees, getPatrolName }: UnitSummaryGridPro
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-      {unitSummaries.map((unit) => (
-        <UnitSummaryCard
-          key={unit.unitId}
-          unitId={unit.unitId}
-          unitName={unit.unitName}
-          peopleCount={unit.peopleCount}
-          eventCount={unit.eventCount}
-        />
-      ))}
+      {unitSummaries.map((unit) => {
+        const href = buildUnitHref(unit.unitId)
+        return (
+          <UnitSummaryCard
+            key={unit.unitId}
+            unitName={unit.unitName}
+            peopleCount={unit.peopleCount}
+            eventCount={unit.eventCount}
+            href={href}
+          />
+        )
+      })}
     </div>
   )
 }

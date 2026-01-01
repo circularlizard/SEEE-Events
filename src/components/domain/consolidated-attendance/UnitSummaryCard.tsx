@@ -5,15 +5,15 @@ import { Users, Calendar } from 'lucide-react'
 import Link from 'next/link'
 
 interface UnitSummaryCardProps {
-  unitId: string
   unitName: string
   peopleCount: number
   eventCount: number
+  href: string
 }
 
-export function UnitSummaryCard({ unitId, unitName, peopleCount, eventCount }: UnitSummaryCardProps) {
+export function UnitSummaryCard({ unitName, peopleCount, eventCount, href }: UnitSummaryCardProps) {
   return (
-    <Link href={`/dashboard/events/attendance/${encodeURIComponent(unitId)}`}>
+    <Link href={href}>
       <Card className="hover:bg-muted/50 transition-colors cursor-pointer h-full">
         <CardContent className="pt-6">
           <h3 className="text-lg font-semibold mb-3 truncate" title={unitName}>
