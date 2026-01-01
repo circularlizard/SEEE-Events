@@ -1,7 +1,7 @@
 # Attendance Screen Redesign Plan
 
 **Date:** 2026-01-01  
-**Status:** In Progress
+**Status:** Completed (2026-01-01) – shipped with Expedition Viewer Phase 1 + shared attendance tests
 
 ## Overview
 
@@ -77,7 +77,7 @@ Option C: **Two-column layout** (Recommended)
 10. [x] Add loading progress indicator to attendance page
 11. [x] Make attendance overview the expedition home page (redirect from `/dashboard`)
 12. [x] Add view toggle (By Event / By Attendee) to unit detail page
-13. [ ] Update tests
+13. [x] Update tests (`attendance-by-person.feature`, shared Planner drill-down spec, step catalogue)
 
 ## Spec Updates Required
 

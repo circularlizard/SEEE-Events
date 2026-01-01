@@ -43,6 +43,13 @@ npm run dev:http
 
 Visit [https://localhost:3000](https://localhost:3000) to see the app.
 
+## Current Application Portfolio (Status – Jan 2026)
+
+- **Expedition Viewer (Phase 1 complete)** – Locked to the SEEE section, `/dashboard` now redirects to the unit attendance overview, and `/dashboard/events/attendance` renders Unit Summary Cards with drill-down accordion, cache banner, hydration indicator, and By Event / By Attendee toggle. Viewer reuses the shared Expedition Events view and consolidated attendance components that Planner consumes.
+- **Expedition Planner (Phase 2 in progress)** – Shares the events shell with Viewer (`/dashboard/planning/events`) and will pick up the same attendance components as new planning scenarios land. Planner personas should log in via the "Expedition Planner" mock auth button.
+- **OSM Data Quality Viewer** – Multi-section issues workspace focused on patrol data quality (Phase 3).
+- **Platform Admin** – Platform operations tooling (audit log, cache views, telemetry) with admin-only scopes.
+
 ## UI Standards
 
 The SEEE Expedition Dashboard follows consistent UI patterns across the Events List and Event Detail pages:
@@ -162,6 +169,19 @@ redis-cli SADD platform:allowedOperators "admin@example.com"
 - Admin users **can** access all routes
 - Route guards enforce app and role requirements
 - Unauthorized access redirects to appropriate default paths
+
+### Mock Personas (Dev & Playwright)
+
+When mock auth is enabled (`NEXT_PUBLIC_MOCK_AUTH_ENABLED=true`), you can select predefined personas from the dropdown on the login screen or via Playwright steps:
+
+| Persona ID | Role | Default App | Notes |
+| --- | --- | --- | --- |
+| `seeeEventsOnlyRestrictedOther` | Standard | Expedition Viewer | SEEE events-only scope; lands on the new attendance overview |
+| `seeeFullElevatedOther` | Admin | Expedition Planner | Full SEEE scope + elevated access for Planner scenarios |
+| `seeeFullOnly` | Admin | Expedition Viewer | Useful for testing shared components without elevated scope |
+| `noSeeeElevatedOther` | Admin | Planner / Data Quality | Cross-section admin without SEEE access (used for guard-rail tests) |
+
+These personas match the Playwright BDD steps (e.g., `Given I am logged in with mock persona "seeeEventsOnlyRestrictedOther" for app "Expedition Viewer"`). If the dropdown is hidden, the mock auth buttons still auto-select the appropriate persona for the chosen app.
 
 ### OAuth Callback URLs
 

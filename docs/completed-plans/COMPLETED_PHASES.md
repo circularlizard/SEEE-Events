@@ -377,6 +377,22 @@ Reference documentation for all completed implementation phases. For active/futu
 
 ---
 
+## **Expedition Viewer Phase 1 – SEEE Read-only ✅ COMPLETE (Jan 1, 2026)**
+
+**Plan:** [attendance-redesign-plan-completed-2026-01-01.md](./attendance-redesign-plan-completed-2026-01-01.md) and [planner-e2e-updates-2026-01-01-completed-2026-01-01.md](./planner-e2e-updates-2026-01-01-completed-2026-01-01.md)
+
+**Summary:** Locked the Expedition Viewer app to the SEEE section, delivered the new unit-centric attendance experience, and ensured shared components/hooks are consumed by both Viewer and Planner routes.
+
+**Key Deliverables:**
+1. **Specification refresh:** `docs/SPECIFICATION.md` updated with `REQ-VIEW-14` through `REQ-VIEW-17` covering unit cards, drill-down, cache, and hydration indicators.
+2. **Attendance redesign:** `/dashboard/events/attendance` now renders Unit Summary Cards with drill-down accordion, view toggle, cache banner, and hydration indicator; overview is the default expedition home.
+3. **Shared events feature:** `tests/e2e/features/dashboard/events-list.feature` rewritten as Scenario Outline for Viewer and Planner personas, plus Planner drill-down spec (`event-summaries-hydration.spec.ts` repurposed).
+4. **BDD + step catalogue:** `attendance-by-person.feature` rewritten, new steps documented in `docs/testing/bdd-step-catalogue.md`, and `/test-stack` (headless Playwright) run with 46 passing / 2 skipped.
+
+**Outcome:** Expedition Viewer Phase 1 is fully shipped, Planner parity is enforced via shared components and specs, and the unified BDD suite verifies both desktop and mobile flows.
+
+---
+
 ## **Multi-App Platform Transition ✅ COMPLETE (Jan 1, 2025)**
 
 **Plan:** [multi-app-transition-plan-completed-2025-01-01.md](./multi-app-transition-plan-completed-2025-01-01.md)

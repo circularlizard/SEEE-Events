@@ -2,7 +2,7 @@
 
 This plan sequencesthe remaining work to align the four-application architecture with the functional review. For each application we first update the master specification, then ship the required implementation changes, and finally refresh the E2E coverage to match the new behavior.
 
-## Phase 1: Expedition Viewer
+## Phase 1: Expedition Viewer **(Completed – 2026-01-01)**
 - **Objective:** Provide SEEE leaders with a read-only view of all SEEE expeditions and consolidated attendance, tied permanently to the SEEE section with no section selector. All UX/state updates in this phase must also be consumable by the Expedition Planner app. @docs/implementation/functional-review.md#35-53
 - **Specification Updates:**
   - Restate the app purpose: show SEEE expedition list plus consolidated attendee view (by patrol and per event) using cached patrol names; no other scopes besides `section:event:read`.
@@ -15,6 +15,7 @@ This plan sequencesthe remaining work to align the four-application architecture
 - **E2E Updates:**
   - Update viewer scenarios to cover SEEE-only login, events list visibility, consolidated attendee view, and cache usage messaging.
   - Add regression coverage proving viewer and planner consume the same views/components (e.g., shared step definitions/assertions).
+  - ✅ Status: Completed via `docs/SPECIFICATION.md` updates (REQ-VIEW-14→17), rewritten `events-list.feature`, `attendance-by-person.feature`, Planner drill-down spec, and `/test-stack` execution on 2026-01-01.
 
 ## Phase 2: Expedition Planner
 - **Objective:** Deliver the admin planning shell focused on member/event prep, using SEEE section defaults and broader scopes. @docs/implementation/functional-review.md#54-64 @docs/implementation/multi-app-part-2.md#57-60
