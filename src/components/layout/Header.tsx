@@ -43,7 +43,7 @@ export default function Header() {
   })();
 
   return (
-    <header className="w-full border-b bg-background">
+    <header className="w-full border-b border-slate-200/60 bg-white/80 backdrop-blur-xl supports-[backdrop-filter]:bg-white/70 shadow-[0_8px_30px_rgba(15,23,42,0.06)] sticky top-0 z-40">
       <div className="px-4 h-14 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <TentTree className="h-6 w-6 text-primary" aria-hidden />

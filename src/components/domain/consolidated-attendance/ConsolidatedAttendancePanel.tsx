@@ -154,14 +154,14 @@ export function ConsolidatedAttendancePanel({ attendees, getPatrolName }: Consol
                 )}
 
                 {groupMode === 'patrol' && (
-                  <div className="space-y-2">
+                  <div className="space-y-3">
                     {patrolGroups.map(([patrolKey, persons]) => (
                       <Collapsible
                         key={`patrol-${patrolKey}`}
                         open={openPatrols.has(patrolKey)}
                         onOpenChange={() => togglePatrol(patrolKey)}
                       >
-                        <CollapsibleTrigger className="flex items-center gap-2 w-full p-3 bg-muted/50 hover:bg-muted rounded-lg font-semibold text-left">
+                        <CollapsibleTrigger className="flex items-center gap-2 w-full p-3 rounded-2xl border border-border/80 bg-card text-left font-semibold text-foreground shadow-[0_8px_24px_rgba(15,23,42,0.06)] transition-colors hover:bg-card/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
                           {openPatrols.has(patrolKey) ? (
                             <ChevronDown className="h-4 w-4" />
                           ) : (
@@ -218,25 +218,13 @@ export function ConsolidatedAttendancePanel({ attendees, getPatrolName }: Consol
                 )}
 
                 {groupMode === 'patrolEvent' && (
-                  <div className="space-y-2">
+                  <div className="space-y-3">
                     {patrolEventGroups.map(({ patrolKey, events }) => (
-                      <Collapsible
-                        key={`patrol-${patrolKey}`}
-                        open={openPatrols.has(patrolKey)}
-                        onOpenChange={() => togglePatrol(patrolKey)}
-                      >
-                        <CollapsibleTrigger className="flex items-center gap-2 w-full p-3 bg-muted/50 hover:bg-muted rounded-lg font-semibold text-left">
-                          {openPatrols.has(patrolKey) ? (
-                            <ChevronDown className="h-4 w-4" />
-                          ) : (
-                            <ChevronRight className="h-4 w-4" />
-                          )}
-                          <span>Unit: {getPatrolName(patrolKey)}</span>
                           <span className="text-muted-foreground font-normal text-sm ml-auto">
                             {events.length} {events.length === 1 ? 'event' : 'events'}
                           </span>
                         </CollapsibleTrigger>
-                        <CollapsibleContent className="pl-4 space-y-2 mt-2">
+                        <CollapsibleContent className="pl-4 space-y-3 mt-2">
                           {events.map((event) => {
                             const eventKey = `${patrolKey}-${event.eventId}`
                             return (
@@ -245,7 +233,7 @@ export function ConsolidatedAttendancePanel({ attendees, getPatrolName }: Consol
                                 open={openEvents.has(eventKey)}
                                 onOpenChange={() => toggleEvent(eventKey)}
                               >
-                                <CollapsibleTrigger className="flex items-center gap-2 w-full p-2 bg-primary/10 hover:bg-primary/20 rounded-md font-medium text-left text-sm">
+                                <CollapsibleTrigger className="flex items-center gap-2 w-full p-2 rounded-xl border border-primary/30 bg-primary/5 text-left font-medium text-sm text-foreground shadow-[0_6px_18px_rgba(30,64,175,0.18)] transition-colors hover:bg-primary/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
                                   {openEvents.has(eventKey) ? (
                                     <ChevronDown className="h-3 w-3" />
                                   ) : (

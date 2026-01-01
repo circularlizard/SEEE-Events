@@ -229,7 +229,7 @@ export default function UnitDetailPage() {
                   open={openItems.has(key)}
                   onOpenChange={() => toggleItem(key)}
                 >
-                  <CollapsibleTrigger className="flex items-center gap-2 w-full p-3 bg-muted/50 hover:bg-muted rounded-lg font-semibold text-left">
+                  <CollapsibleTrigger className="flex items-center gap-2 w-full p-4 rounded-2xl border border-border/80 bg-card text-left font-semibold text-foreground shadow-[0_8px_24px_rgba(15,23,42,0.06)] transition-colors hover:bg-card/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
                     {openItems.has(key) ? (
                       <ChevronDown className="h-4 w-4 shrink-0" />
                     ) : (
@@ -247,12 +247,12 @@ export default function UnitDetailPage() {
                       {event.attendees.length}
                     </span>
                   </CollapsibleTrigger>
-                  <CollapsibleContent>
-                    <div className="mt-2 ml-6 space-y-1">
+                  <CollapsibleContent className="overflow-hidden data-[state=open]:animate-accordion-down data-[state=closed]:animate-accordion-up">
+                    <div className="mt-3 ml-6 space-y-2">
                       {event.attendees.map((attendee) => (
                         <div
                           key={attendee.memberId}
-                          className="p-2 bg-muted/30 rounded text-sm"
+                          className="p-3 rounded-xl border border-border/70 bg-secondary/60 text-sm shadow-sm"
                         >
                           {attendee.name}
                         </div>
@@ -284,7 +284,7 @@ export default function UnitDetailPage() {
                   open={openItems.has(key)}
                   onOpenChange={() => toggleItem(key)}
                 >
-                  <CollapsibleTrigger className="flex items-center gap-2 w-full p-3 bg-muted/50 hover:bg-muted rounded-lg font-semibold text-left">
+                  <CollapsibleTrigger className="flex items-center gap-2 w-full p-4 rounded-2xl border border-border/80 bg-card text-left font-semibold text-foreground shadow-[0_8px_24px_rgba(15,23,42,0.06)] transition-colors hover:bg-card/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
                     {openItems.has(key) ? (
                       <ChevronDown className="h-4 w-4 shrink-0" />
                     ) : (
@@ -295,12 +295,12 @@ export default function UnitDetailPage() {
                       {person.events.length} {person.events.length === 1 ? 'event' : 'events'}
                     </span>
                   </CollapsibleTrigger>
-                  <CollapsibleContent>
-                    <div className="mt-2 ml-6 space-y-1">
+                  <CollapsibleContent className="overflow-hidden data-[state=open]:animate-accordion-down data-[state=closed]:animate-accordion-up">
+                    <div className="mt-3 ml-6 space-y-2">
                       {person.events.map((event) => (
                         <div
                           key={event.id}
-                          className="p-2 bg-muted/30 rounded text-sm"
+                          className="p-3 rounded-xl border border-border/70 bg-secondary/60 text-sm shadow-sm"
                         >
                           <div className="font-medium">{event.name}</div>
                           <div className="text-xs text-muted-foreground">
