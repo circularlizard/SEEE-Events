@@ -1,0 +1,40 @@
+{
+  "status": true,
+  "error": null,
+  "data": {
+    "members": [
+      { "member_id": 6001, "full_name": "Scout Chase A", "patrol_id": 192280 },
+      { "member_id": 6002, "full_name": "Scout Chase B", "patrol_id": 192281 },
+      { "member_id": 6003, "full_name": "Scout Chase C", "patrol_id": 192282 }
+    ]
+  },
+  "meta": {
+    "event": {
+      "eventid": 1633733,
+      "name": "Chase Walk",
+      "startdate": "2026-03-13",
+      "enddate": "2026-03-15",
+      "location": "Cannock Chase",
+      "members": [
+        {
+          "scoutid": 6001,
+          "attending": "Yes",
+          "member": { "firstname": "Scout", "lastname": "ChaseA" },
+          "patrol_id": 192280
+        },
+        {
+          "scoutid": 6002,
+          "attending": "Yes",
+          "member": { "firstname": "Scout", "lastname": "ChaseB" },
+          "patrol_id": 192281
+        },
+        {
+          "scoutid": 6003,
+          "attending": "Invited",
+          "member": { "firstname": "Scout", "lastname": "ChaseC" },
+          "patrol_id": 192282
+        }
+      ]
+    }
+  }
+}

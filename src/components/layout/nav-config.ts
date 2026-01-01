@@ -34,6 +34,11 @@ const expeditionNav: NavSection[] = [
         href: "/dashboard/events/attendance",
         icon: UsersIcon,
       },
+      {
+        label: "Events",
+        href: "/dashboard/events",
+        icon: CalendarDays,
+      },
     ],
   },
 ];

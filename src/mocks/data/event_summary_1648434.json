@@ -1,0 +1,40 @@
+{
+  "status": true,
+  "error": null,
+  "data": {
+    "members": [
+      { "member_id": 7001, "full_name": "Scout Pentjam A", "patrol_id": 192280 },
+      { "member_id": 7002, "full_name": "Scout Pentjam B", "patrol_id": 192281 },
+      { "member_id": 7003, "full_name": "Scout Pentjam C", "patrol_id": 192282 }
+    ]
+  },
+  "meta": {
+    "event": {
+      "eventid": 1648434,
+      "name": "Pentjam '26 - Explorers",
+      "startdate": "2026-05-15",
+      "enddate": "2026-05-17",
+      "location": "Fordell Firs",
+      "members": [
+        {
+          "scoutid": 7001,
+          "attending": "Yes",
+          "member": { "firstname": "Scout", "lastname": "PentjamA" },
+          "patrol_id": 192280
+        },
+        {
+          "scoutid": 7002,
+          "attending": "Yes",
+          "member": { "firstname": "Scout", "lastname": "PentjamB" },
+          "patrol_id": 192281
+        },
+        {
+          "scoutid": 7003,
+          "attending": "Invited",
+          "member": { "firstname": "Scout", "lastname": "PentjamC" },
+          "patrol_id": 192282
+        }
+      ]
+    }
+  }
+}

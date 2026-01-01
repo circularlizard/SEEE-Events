@@ -27,3 +27,27 @@
 - Update requirement mappings in all affected feature files to the new `REQ-VIEW-*` IDs.
 - Coordinate with future spec updates so the Planner scenarios also reference `REQ-PLAN-*` IDs once planner-only logistics features ship.
 - After the BDD edits, run `/test-stack` to ensure Playwright snapshots remain green before landing the Planner route changes.
+
+## Expedition Viewer Attendance Redesign – E2E Alignment (Jan 2026)
+
+### Context
+- Expedition Viewer phase 1 (see `docs/implementation/multi-app-stage-3.md`) locks the app to SEEE, redirects `/dashboard` to the unit attendance overview, and mandates shared components/hooks with Expedition Planner.
+- Attendance redesign (`docs/implementation/attendance-redesign-plan.md`) introduced Unit Summary Cards, unit drill-down accordion with view toggle, automatic hydration indicator, and cache status messaging.
+- Current BDD files cover the legacy list/table experience only; no scenarios assert the new overview/cards, drill-down, hydration indicator, or cache banner.
+
+### Required Feature Updates
+1. **`attendance-by-person.feature` rewrite**
+   - Scenario Outline covering desktop/tablet vs mobile/card rendering of Unit Summary Cards (`@REQ-VIEW-14 @REQ-VIEW-17`).
+   - Steps verifying patrol names resolve from cache, counts for attendees/events, and navigation when a card is activated.
+2. **New unit drill-down scenario**
+   - Assert accordion sections per event, By Event / By Attendee toggle, and that attendees respect patrol filters (`@REQ-VIEW-15`).
+   - Validate cache freshness banner + hydration indicator (`@REQ-VIEW-05 @REQ-VIEW-16`).
+3. **Shared component regression**
+   - Add Scenario Outline ensuring both Expedition Viewer and Planner render the consolidated attendance table using the shared component (`@REQ-VIEW-04`), referencing each route.
+
+### Test Plan
+1. Update step catalogue with new reusable steps for "unit summary card", "hydration indicator", and "cache banner".
+2. Modify `tests/e2e/features/dashboard/attendance-by-person.feature` and any linked step definitions.
+3. Delete or repurpose outdated step definitions tied to the old flat list view.
+4. Extend Playwright personas: ensure viewer persona defaults to `/dashboard` -> attendance redirect, while planner persona navigates through sidebar to shared routes.
+5. Execute `/test-stack` locally, inspect Playwright traces for mobile + desktop viewport assertions, then land changes alongside the viewer redesign PR.

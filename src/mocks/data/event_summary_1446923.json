@@ -1,0 +1,33 @@
+{
+  "status": true,
+  "error": null,
+  "data": {
+    "members": [
+      { "member_id": 2010, "full_name": "Scout Gold A", "patrol_id": 101 },
+      { "member_id": 2011, "full_name": "Scout Gold B", "patrol_id": 102 }
+    ]
+  },
+  "meta": {
+    "event": {
+      "eventid": 1446923,
+      "name": "Gold DofE In Progress (Admin Only)",
+      "startdate": "2025-12-15",
+      "enddate": "2025-12-15",
+      "location": "",
+      "members": [
+        {
+          "scoutid": 2010,
+          "attending": "Yes",
+          "member": { "firstname": "Gold", "lastname": "Participant A" },
+          "patrol_id": 101
+        },
+        {
+          "scoutid": 2011,
+          "attending": "Yes",
+          "member": { "firstname": "Gold", "lastname": "Participant B" },
+          "patrol_id": 102
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "status": true,
+  "error": null,
+  "data": {
+    "members": [
+      { "member_id": 8001, "full_name": "Scout Bronze A", "patrol_id": 192279 },
+      { "member_id": 8002, "full_name": "Scout Bronze B", "patrol_id": 192281 }
+    ]
+  },
+  "meta": {
+    "event": {
+      "eventid": 1398694,
+      "name": "Bronze DofE In Progress (Admin Only)",
+      "startdate": "2026-11-01",
+      "enddate": "2026-11-01",
+      "location": "",
+      "members": [
+        {
+          "scoutid": 8001,
+          "attending": "Yes",
+          "member": { "firstname": "Scout", "lastname": "BronzeA" },
+          "patrol_id": 192279
+        },
+        {
+          "scoutid": 8002,
+          "attending": "Invited",
+          "member": { "firstname": "Scout", "lastname": "BronzeB" },
+          "patrol_id": 192281
+        }
+      ]
+    }
+  }
+}

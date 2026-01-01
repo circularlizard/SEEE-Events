@@ -1,0 +1,40 @@
+{
+  "status": true,
+  "error": null,
+  "data": {
+    "members": [
+      { "member_id": 709120, "full_name": "Sam Bruce", "patrol_id": 192279 },
+      { "member_id": 821710, "full_name": "Lachlan McDiarmid", "patrol_id": 192279 },
+      { "member_id": 830343, "full_name": "Alec McDiarmid", "patrol_id": 192281 }
+    ]
+  },
+  "meta": {
+    "event": {
+      "eventid": 1385068,
+      "name": "Bore Stane Hoodie Order",
+      "startdate": "2024-10-10",
+      "enddate": "2024-10-10",
+      "location": "",
+      "members": [
+        {
+          "scoutid": 709120,
+          "attending": "Yes",
+          "member": { "firstname": "Sam", "lastname": "Bruce" },
+          "patrol_id": 192279
+        },
+        {
+          "scoutid": 821710,
+          "attending": "Yes",
+          "member": { "firstname": "Lachlan", "lastname": "McDiarmid" },
+          "patrol_id": 192279
+        },
+        {
+          "scoutid": 830343,
+          "attending": "Invited",
+          "member": { "firstname": "Alec", "lastname": "McDiarmid" },
+          "patrol_id": 192281
+        }
+      ]
+    }
+  }
+}

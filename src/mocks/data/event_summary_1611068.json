@@ -1,0 +1,40 @@
+{
+  "status": true,
+  "error": null,
+  "data": {
+    "members": [
+      { "member_id": 5001, "full_name": "Explorer One", "patrol_id": 192279 },
+      { "member_id": 5002, "full_name": "Explorer Two", "patrol_id": 192281 },
+      { "member_id": 5003, "full_name": "Explorer Three", "patrol_id": 192282 }
+    ]
+  },
+  "meta": {
+    "event": {
+      "eventid": 1611068,
+      "name": "Castle Explorers Christmas Ceilidh-Disco",
+      "startdate": "2025-12-15",
+      "enddate": "2025-12-15",
+      "location": "Craiglockhart Church Hall",
+      "members": [
+        {
+          "scoutid": 5001,
+          "attending": "Yes",
+          "member": { "firstname": "Explorer", "lastname": "One" },
+          "patrol_id": 192279
+        },
+        {
+          "scoutid": 5002,
+          "attending": "No",
+          "member": { "firstname": "Explorer", "lastname": "Two" },
+          "patrol_id": 192281
+        },
+        {
+          "scoutid": 5003,
+          "attending": "Invited",
+          "member": { "firstname": "Explorer", "lastname": "Three" },
+          "patrol_id": 192282
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "status": true,
+  "error": null,
+  "data": {
+    "members": [
+      { "member_id": 3010, "full_name": "Scout Silver A", "patrol_id": 201 },
+      { "member_id": 3011, "full_name": "Scout Silver B", "patrol_id": 202 }
+    ]
+  },
+  "meta": {
+    "event": {
+      "eventid": 1446920,
+      "name": "Silver DofE In Progress (Admin Only)",
+      "startdate": "2025-12-15",
+      "enddate": "2025-12-15",
+      "location": "",
+      "members": [
+        {
+          "scoutid": 3010,
+          "attending": "Yes",
+          "member": { "firstname": "Silver", "lastname": "Participant A" },
+          "patrol_id": 201
+        },
+        {
+          "scoutid": 3011,
+          "attending": "Yes",
+          "member": { "firstname": "Silver", "lastname": "Participant B" },
+          "patrol_id": 202
+        }
+      ]
+    }
+  }
+}

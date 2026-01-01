@@ -9,6 +9,13 @@ import badgesData from './data/badges.json'
 import eventDetailsData from './data/event_details.json'
 import eventSummaryData from './data/event_summary.json'
 import eventSummary2Data from './data/event_summary_2.json'
+import eventSummary1385068Data from './data/event_summary_1385068.json'
+import eventSummary1446923Data from './data/event_summary_1446923.json'
+import eventSummary1446920Data from './data/event_summary_1446920.json'
+import eventSummary1611068Data from './data/event_summary_1611068.json'
+import eventSummary1633733Data from './data/event_summary_1633733.json'
+import eventSummary1648434Data from './data/event_summary_1648434.json'
+import eventSummary1398694Data from './data/event_summary_1398694.json'
 import eventsData from './data/events.json'
 import flexiDataData from './data/flexi_data.json'
 import flexiDefinitionsData from './data/flexi_definitions.json'
@@ -55,6 +62,13 @@ const mockDataRegistry: Record<string, unknown> = {
   'event_details.json': eventDetailsData,
   'event_summary.json': eventSummaryData,
   'event_summary_2.json': eventSummary2Data,
+  'event_summary_1385068.json': eventSummary1385068Data,
+  'event_summary_1446923.json': eventSummary1446923Data,
+  'event_summary_1446920.json': eventSummary1446920Data,
+  'event_summary_1611068.json': eventSummary1611068Data,
+  'event_summary_1633733.json': eventSummary1633733Data,
+  'event_summary_1648434.json': eventSummary1648434Data,
+  'event_summary_1398694.json': eventSummary1398694Data,
   'events.json': eventsData,
   'flexi_data.json': flexiDataData,
   'flexi_definitions.json': flexiDefinitionsData,

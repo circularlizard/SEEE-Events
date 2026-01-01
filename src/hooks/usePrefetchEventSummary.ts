@@ -50,8 +50,8 @@ function ensureEventId(summary: unknown, eventId: number) {
       ...meta,
       event: {
         ...event,
-        eventid: event.eventid ?? eventId,
-        id: event.id ?? eventId,
+        eventid: eventId,
+        id: eventId,
       },
     },
   }

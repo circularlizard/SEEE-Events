@@ -296,6 +296,76 @@
     "is_static_resource": false
   },
   {
+    "original_file": "getEventSummary_1385068.txt",
+    "mock_data_file": "event_summary_1385068.json",
+    "full_url": "https://www.onlinescoutmanager.co.uk/v3/events/event/1385068/summary",
+    "path": "/v3/events/event/1385068/summary",
+    "method": "GET",
+    "action": null,
+    "query_params": {},
+    "is_static_resource": false
+  },
+  {
+    "original_file": "getEventSummary_1446923.txt",
+    "mock_data_file": "event_summary_1446923.json",
+    "full_url": "https://www.onlinescoutmanager.co.uk/v3/events/event/1446923/summary",
+    "path": "/v3/events/event/1446923/summary",
+    "method": "GET",
+    "action": null,
+    "query_params": {},
+    "is_static_resource": false
+  },
+  {
+    "original_file": "getEventSummary_1446920.txt",
+    "mock_data_file": "event_summary_1446920.json",
+    "full_url": "https://www.onlinescoutmanager.co.uk/v3/events/event/1446920/summary",
+    "path": "/v3/events/event/1446920/summary",
+    "method": "GET",
+    "action": null,
+    "query_params": {},
+    "is_static_resource": false
+  },
+  {
+    "original_file": "getEventSummary_1611068.txt",
+    "mock_data_file": "event_summary_1611068.json",
+    "full_url": "https://www.onlinescoutmanager.co.uk/v3/events/event/1611068/summary",
+    "path": "/v3/events/event/1611068/summary",
+    "method": "GET",
+    "action": null,
+    "query_params": {},
+    "is_static_resource": false
+  },
+  {
+    "original_file": "getEventSummary_1633733.txt",
+    "mock_data_file": "event_summary_1633733.json",
+    "full_url": "https://www.onlinescoutmanager.co.uk/v3/events/event/1633733/summary",
+    "path": "/v3/events/event/1633733/summary",
+    "method": "GET",
+    "action": null,
+    "query_params": {},
+    "is_static_resource": false
+  },
+  {
+    "original_file": "getEventSummary_1648434.txt",
+    "mock_data_file": "event_summary_1648434.json",
+    "full_url": "https://www.onlinescoutmanager.co.uk/v3/events/event/1648434/summary",
+    "path": "/v3/events/event/1648434/summary",
+    "method": "GET",
+    "action": null,
+    "query_params": {},
+    "is_static_resource": false
+  },
+  {
+    "original_file": "getEventSummary_1398694.txt",
+    "mock_data_file": "event_summary_1398694.json",
+    "full_url": "https://www.onlinescoutmanager.co.uk/v3/events/event/1398694/summary",
+    "path": "/v3/events/event/1398694/summary",
+    "method": "GET",
+    "action": null,
+    "query_params": {},
+    "is_static_resource": false
+  },
+  {
     "original_file": "getmembers.txt",
     "mock_data_file": "members.json",
     "full_url": "https://www.onlinescoutmanager.co.uk/ext/members/contact/?action=getListOfMembers&sort=dob&sectionid=37458&termid=842886&section=explorers",

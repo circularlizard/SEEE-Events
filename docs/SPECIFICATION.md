@@ -118,7 +118,7 @@ Future Phase 3 deliverables (patrol refresh tooling, logistics adapters, readine
 
 ### **3.3 SEEE Expedition Viewer Application (Standard Experience)**
 
-The SEEE Expedition Viewer app is a read-only experience for expedition leaders. It is permanently locked to the SEEE section, has no section selector, and only requires event read scope. Its purpose is to let leaders see which members are attending which SEEE expeditions via two core views: (1) the SEEE event list and (2) a consolidated attendee view (grouped by patrol and per-event). Future attendance pivots (e.g., Walking Group, Tent Group) will reuse the same shared components in the Expedition Planner app.
+The SEEE Expedition Viewer app is a read-only experience for expedition leaders. It is permanently locked to the SEEE section, has no section selector, and only requires event read scope. Its purpose is to let leaders see which members are attending which SEEE expeditions via two core views: (1) the SEEE event list and (2) a consolidated attendee view (grouped by patrol and per-event). The expedition home route now lands on the attendance overview so leaders immediately see unit-level summaries before diving into event detail. Future attendance pivots (e.g., Walking Group, Tent Group) will reuse the same shared components in the Expedition Planner app, so all viewer UX/state updates must remain consumable by Planner.
 
 #### **3.3.1 App Access & Permissions (REQ-AUTH-15, REQ-AUTH-16)**
 
@@ -132,7 +132,11 @@ The SEEE Expedition Viewer app is a read-only experience for expedition leaders.
 * **Participant Snapshot (REQ-VIEW-02):** Every event entry must surface participant names and invitation status without requiring navigation to event detail.
 * **Consolidated Attendance View (REQ-VIEW-03):** Provide a combined attendee view grouped by Patrol and Event so leaders can quickly see who is attending which expedition.
 * **Shared Components (REQ-VIEW-04):** Underlying table/card components must be shared with Expedition Planner to avoid divergence as new custom-field pivots are added.
-* **Cache Integration (REQ-VIEW-05):** Patrol ID→name mapping must come from the Redis patrol cache hydrated by admins; viewer surfaces cache freshness indicators but cannot refresh patrol data itself.
+* **Cache Integration (REQ-VIEW-05):** Patrol ID→name mapping must come from the Redis patrol cache hydrated by admins; viewer surfaces cache freshness indicators but cannot refresh patrol data itself. Cache status messaging must appear on both the events list and consolidated attendance views so leaders understand the data pedigree.
+* **Attendance Overview Cards (REQ-VIEW-14):** `/dashboard/events/attendance` must render a grid of Unit Summary Cards (one per patrol/unit) showing the patrol name (from cache), count of unique “Yes” attendees, and count of events they are attending. Cards act as navigation to the unit drill-down route and must degrade to a single-column stack on mobile.
+* **Unit Drill-down (REQ-VIEW-15):** `/dashboard/events/attendance/[unitId]` must present an event-grouped accordion by default, showing each event header (name + date) with attendees for that unit. The view must include a By Event / By Attendee toggle, a persistent back link to the overview, and must reuse the same data grid components exposed to Expedition Planner.
+* **Attendance Hydration Status (REQ-VIEW-16):** Attendance views must invoke the automatic hydration hook so cached member/event data stays fresh. The UI must display a progress indicator while hydration runs and gracefully resume rendering once cache priming finishes.
+* **Attendance Home Redirect (REQ-VIEW-17):** The Expedition Viewer landing route (`/dashboard`) must redirect to the attendance overview so unit cards are the canonical entry point across desktop and mobile.
 
 #### **3.3.3 Expedition Logistics View**
 
