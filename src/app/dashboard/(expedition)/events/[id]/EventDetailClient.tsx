@@ -6,7 +6,7 @@
 
 import { useMemo, useState } from 'react'
 import { useEventDetail } from '@/hooks/useEventDetail'
-import { Card, CardContent } from '@/components/ui/card'
+import { Card } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useEventSummaryCache } from '@/hooks/useEventSummaryCache'
 import { usePatrolMap } from '@/hooks/usePatrolMap'

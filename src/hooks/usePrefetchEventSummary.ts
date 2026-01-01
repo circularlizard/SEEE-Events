@@ -36,16 +36,23 @@ export function usePrefetchEventSummary() {
   )
 }
 
+type SummaryWithEventMeta = {
+  meta?: {
+    event?: Record<string, unknown>
+  }
+} & Record<string, unknown>
+
 function ensureEventId(summary: unknown, eventId: number) {
   if (!summary || typeof summary !== 'object') {
     return summary
   }
 
-  const meta = (summary as Record<string, any>).meta ?? {}
-  const event = meta.event ?? {}
+  const typedSummary = summary as SummaryWithEventMeta
+  const meta = { ...(typedSummary.meta ?? {}) }
+  const event = { ...(meta.event ?? {}) }
 
   return {
-    ...(summary as Record<string, any>),
+    ...typedSummary,
     meta: {
       ...meta,
       event: {

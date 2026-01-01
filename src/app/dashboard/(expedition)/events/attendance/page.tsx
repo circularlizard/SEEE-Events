@@ -8,7 +8,7 @@ import { useEvents } from '@/hooks/useEvents'
 
 export default function AttendanceByPersonPage() {
   const { attendees, getPatrolName } = useConsolidatedAttendance()
-  const { events, isLoading: eventsLoading } = useEvents()
+  const { isLoading: eventsLoading } = useEvents()
   const {
     hydratedCount,
     totalEvents: hydrationEventTotal,

@@ -220,11 +220,23 @@ export function ConsolidatedAttendancePanel({ attendees, getPatrolName }: Consol
                 {groupMode === 'patrolEvent' && (
                   <div className="space-y-3">
                     {patrolEventGroups.map(({ patrolKey, events }) => (
+                      <Collapsible
+                        key={`patrol-event-${patrolKey}`}
+                        open={openPatrols.has(patrolKey)}
+                        onOpenChange={() => togglePatrol(patrolKey)}
+                      >
+                        <CollapsibleTrigger className="flex items-center gap-2 w-full p-3 rounded-2xl border border-border/80 bg-card text-left font-semibold text-foreground shadow-[0_8px_24px_rgba(15,23,42,0.06)] transition-colors hover:bg-card/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
+                          {openPatrols.has(patrolKey) ? (
+                            <ChevronDown className="h-4 w-4" />
+                          ) : (
+                            <ChevronRight className="h-4 w-4" />
+                          )}
+                          <span>Unit: {getPatrolName(patrolKey)}</span>
                           <span className="text-muted-foreground font-normal text-sm ml-auto">
                             {events.length} {events.length === 1 ? 'event' : 'events'}
                           </span>
                         </CollapsibleTrigger>
-                        <CollapsibleContent className="pl-4 space-y-3 mt-2">
+                        <CollapsibleContent className="pl-2 space-y-3 mt-2">
                           {events.map((event) => {
                             const eventKey = `${patrolKey}-${event.eventId}`
                             return (
@@ -250,7 +262,7 @@ export function ConsolidatedAttendancePanel({ attendees, getPatrolName }: Consol
                                   </span>
                                 </CollapsibleTrigger>
                                 <CollapsibleContent>
-                                  <div className="border rounded-lg overflow-hidden text-sm mt-1 ml-2">
+                                  <div className="border rounded-lg overflow-hidden text-sm mt-1 ml-4">
                                     <table className="w-full text-sm">
                                       <thead className="bg-muted/30">
                                         <tr className="border-b">
