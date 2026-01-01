@@ -10,6 +10,7 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/com
 import { Skeleton } from '@/components/ui/skeleton'
 import { Button } from '@/components/ui/button'
 import { useEventSummaryCache } from '@/hooks/useEventSummaryCache'
+import { usePatrolMap } from '@/hooks/usePatrolMap'
 import Link from 'next/link'
 // Using event summary for participant-related info (custom fields names live here)
 
@@ -24,6 +25,7 @@ export default function EventDetailClient({ eventId }: Props) {
   const [sortKey, setSortKey] = useState<string>('name')
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc')
   const { getSummaryById } = useEventSummaryCache()
+  const { getPatrolName } = usePatrolMap()
   const handleSort = (key: string) => {
     if (sortKey === key) {
       setSortDir((d) => (d === 'asc' ? 'desc' : 'asc'))
@@ -205,12 +207,12 @@ export default function EventDetailClient({ eventId }: Props) {
       <Card className="p-4">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-2">
-            <label htmlFor="unitFilter" className="text-sm">Patrol</label>
+            <label htmlFor="unitFilter" className="text-sm">Unit</label>
             <input
               id="unitFilter"
               value={unitFilter}
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => setUnitFilter(e.target.value)}
-              placeholder="Patrol ID"
+              placeholder="Filter by unit"
               className="w-40 border rounded px-2 py-1 text-sm"
             />
             <select
@@ -239,7 +241,7 @@ export default function EventDetailClient({ eventId }: Props) {
                   <span className="inline-flex items-center gap-2">Name <span className="text-xs text-muted-foreground">{sortKey==='name' ? (sortDir==='asc'?'↑':'↓') : ''}</span></span>
                 </th>
                 <th className="text-left p-4 font-semibold cursor-pointer" onClick={() => handleSort('patrol')}>
-                  <span className="inline-flex items-center gap-2">Patrol ID <span className="text-xs text-muted-foreground">{sortKey==='patrol' ? (sortDir==='asc'?'↑':'↓') : ''}</span></span>
+                  <span className="inline-flex items-center gap-2">Unit <span className="text-xs text-muted-foreground">{sortKey==='patrol' ? (sortDir==='asc'?'↑':'↓') : ''}</span></span>
                 </th>
                 <th className="text-left p-4 font-semibold cursor-pointer" onClick={() => handleSort('status')}>
                   <span className="inline-flex items-center gap-2">Attendance <span className="text-xs text-muted-foreground">{sortKey==='status' ? (sortDir==='asc'?'↑':'↓') : ''}</span></span>
@@ -258,7 +260,7 @@ export default function EventDetailClient({ eventId }: Props) {
               {participants.map((p) => (
                 <tr key={p.id} className="border-b last:border-b-0 hover:bg-muted/50 transition-colors">
                   <td className="p-4 font-medium">{p.name}</td>
-                  <td className="p-4 text-muted-foreground">{p.patrol ?? '—'}</td>
+                  <td className="p-4 text-muted-foreground">{getPatrolName(p.patrol)}</td>
                   <td className="p-4 text-muted-foreground">{p.status ?? '—'}</td>
                   <td className="p-4 text-muted-foreground">{computeAge(p.dob)}</td>
                   {customColumnKeys.map((title) => (
@@ -278,7 +280,7 @@ export default function EventDetailClient({ eventId }: Props) {
             <div className="flex items-center justify-between">
               <div>
                 <div className="font-medium">{p.name}</div>
-                <div className="text-sm text-muted-foreground">Patrol: {p.patrol ?? '—'} • Status: {p.status ?? '—'} • Age: {computeAge(p.dob)}</div>
+                <div className="text-sm text-muted-foreground">Unit: {getPatrolName(p.patrol)} • Status: {p.status ?? '—'} • Age: {computeAge(p.dob)}</div>
               </div>
               {/* Placeholder for First Aid badge */}
               <div className="text-xs px-2 py-1 rounded bg-muted">FA: —</div>

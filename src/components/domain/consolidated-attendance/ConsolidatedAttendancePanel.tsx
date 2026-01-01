@@ -7,7 +7,6 @@ import { Label } from '@/components/ui/label'
 import { Card, CardContent } from '@/components/ui/card'
 import { ChevronDown, ChevronRight } from 'lucide-react'
 import { Skeleton } from '@/components/ui/skeleton'
-import { cn } from '@/lib/utils'
 import type { PersonAttendance } from '@/hooks/usePerPersonAttendance'
 import { groupByPatrol, groupByPatrolAndEvent, sortByName } from '@/components/domain/consolidated-attendance/grouping'
 
@@ -81,11 +80,11 @@ export function ConsolidatedAttendancePanel({ attendees, getPatrolName }: Consol
             </div>
             <div className="flex items-center space-x-2">
               <RadioGroupItem value="patrol" id="group-patrol" />
-              <Label htmlFor="group-patrol">By Patrol</Label>
+              <Label htmlFor="group-patrol">By Unit</Label>
             </div>
             <div className="flex items-center space-x-2">
               <RadioGroupItem value="patrolEvent" id="group-patrol-event" />
-              <Label htmlFor="group-patrol-event">By Patrol &amp; Event</Label>
+              <Label htmlFor="group-patrol-event">By Unit &amp; Event</Label>
             </div>
           </RadioGroup>
           {(groupMode === 'patrol' || groupMode === 'patrolEvent') && attendees.length > 0 && (
@@ -120,7 +119,7 @@ export function ConsolidatedAttendancePanel({ attendees, getPatrolName }: Consol
                       <thead className="bg-muted">
                         <tr className="border-b">
                           <th className="p-4 font-semibold text-left">Name</th>
-                          <th className="p-4 font-semibold text-left">Patrol</th>
+                          <th className="p-4 font-semibold text-left">Unit</th>
                           <th className="p-4 font-semibold text-left">Yes Events</th>
                         </tr>
                       </thead>
@@ -168,7 +167,7 @@ export function ConsolidatedAttendancePanel({ attendees, getPatrolName }: Consol
                           ) : (
                             <ChevronRight className="h-4 w-4" />
                           )}
-                          <span>Patrol: {getPatrolName(patrolKey)}</span>
+                          <span>Unit: {getPatrolName(patrolKey)}</span>
                           <span className="text-muted-foreground font-normal text-sm ml-auto">
                             {persons.length} {persons.length === 1 ? 'person' : 'people'}
                           </span>
@@ -232,7 +231,7 @@ export function ConsolidatedAttendancePanel({ attendees, getPatrolName }: Consol
                           ) : (
                             <ChevronRight className="h-4 w-4" />
                           )}
-                          <span>Patrol: {getPatrolName(patrolKey)}</span>
+                          <span>Unit: {getPatrolName(patrolKey)}</span>
                           <span className="text-muted-foreground font-normal text-sm ml-auto">
                             {events.length} {events.length === 1 ? 'event' : 'events'}
                           </span>
@@ -300,7 +299,7 @@ export function ConsolidatedAttendancePanel({ attendees, getPatrolName }: Consol
                     <Card key={`m-${p.memberId}`} className="border">
                       <CardContent className="pt-4">
                         <div className="text-base font-semibold">{p.name}</div>
-                        <div className="text-sm text-muted-foreground mb-2">Patrol: {getPatrolName(p.patrolId)}</div>
+                        <div className="text-sm text-muted-foreground mb-2">Unit: {getPatrolName(p.patrolId)}</div>
                         <ul className="list-disc pl-5 space-y-1 text-sm text-muted-foreground">
                           {p.events.map((e) => (
                             <li key={`m-${p.memberId}-${e.id}`}>
@@ -334,7 +333,7 @@ export function ConsolidatedAttendancePanel({ attendees, getPatrolName }: Consol
                         ) : (
                           <ChevronRight className="h-4 w-4" />
                         )}
-                        <span>Patrol: {getPatrolName(patrolKey)}</span>
+                        <span>Unit: {getPatrolName(patrolKey)}</span>
                         <span className="text-muted-foreground font-normal text-sm ml-auto">{persons.length}</span>
                       </CollapsibleTrigger>
                       <CollapsibleContent className="space-y-2 mt-2">
@@ -378,7 +377,7 @@ export function ConsolidatedAttendancePanel({ attendees, getPatrolName }: Consol
                         ) : (
                           <ChevronRight className="h-4 w-4" />
                         )}
-                        <span>Patrol: {getPatrolName(patrolKey)}</span>
+                        <span>Unit: {getPatrolName(patrolKey)}</span>
                         <span className="text-muted-foreground font-normal text-sm ml-auto">
                           {events.length} {events.length === 1 ? 'event' : 'events'}
                         </span>

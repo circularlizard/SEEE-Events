@@ -30,22 +30,7 @@ const expeditionNav: NavSection[] = [
   {
     items: [
       {
-        label: "Overview",
-        href: "/dashboard",
-        icon: LayoutDashboard,
-      },
-    ],
-  },
-  {
-    title: "Events",
-    items: [
-      {
-        label: "Events",
-        href: "/dashboard/events",
-        icon: CalendarDays,
-      },
-      {
-        label: "Attendance by Person",
+        label: "Attendance Overview",
         href: "/dashboard/events/attendance",
         icon: UsersIcon,
       },
@@ -123,6 +108,11 @@ const planningNav: NavSection[] = [
         label: "Planning Home",
         href: "/dashboard/planning",
         icon: LayoutDashboard,
+      },
+      {
+        label: "Events",
+        href: "/dashboard/planning/events",
+        icon: CalendarDays,
       },
     ],
   },
