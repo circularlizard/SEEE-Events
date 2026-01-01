@@ -6,6 +6,13 @@ import {
   parseStrict,
   parsePermissive,
 } from '../schemas'
+import { logValidationError } from '../logger'
+
+jest.mock('../logger', () => ({
+  logValidationError: jest.fn(),
+}))
+
+const mockLogValidationError = logValidationError as jest.Mock
 
 describe('Zod Schemas - Two-Tier Validation', () => {
   describe('Tier 1: Strict Validation (Members)', () => {
@@ -63,6 +70,9 @@ describe('Zod Schemas - Two-Tier Validation', () => {
       expect(() => {
         parseStrict(MemberSchema, invalidData, 'TestMember')
       }).toThrow()
+      expect(mockLogValidationError).toHaveBeenCalledWith(
+        expect.objectContaining({ context: 'TestMember', tier: 1 })
+      )
     })
 
     it('parseStrict should return valid data', () => {
@@ -229,30 +239,38 @@ describe('Zod Schemas - Two-Tier Validation', () => {
       expect(() => {
         parseStrict(MemberSchema, invalidData, 'ComparisonTest')
       }).toThrow()
+      expect(mockLogValidationError).toHaveBeenCalledWith(
+        expect.objectContaining({ context: 'ComparisonTest', tier: 1 })
+      )
     })
 
     it('Tier 2 should gracefully degrade on invalid data', () => {
       const invalidData = { scoutid: 123 }
 
+      const defaultValue = {
+        scoutid: '0',
+        firstname: '',
+        lastname: '',
+        dob: '',
+        photo_guid: '',
+        patrolid: '',
+        age: '',
+        total: '',
+        completed: '',
+      }
+
       const result = parsePermissive(
         FlexiDataItemSchema,
         invalidData,
-        {
-          scoutid: '0',
-          firstname: '',
-          lastname: '',
-          dob: '',
-          photo_guid: '',
-          patrolid: '',
-          age: '',
-          total: '',
-          completed: '',
-        },
+        defaultValue,
         'ComparisonTest'
       )
 
       // Should not throw
       expect(result).toBeDefined()
+      expect(mockLogValidationError).toHaveBeenCalledWith(
+        expect.objectContaining({ context: 'ComparisonTest', tier: 2 })
+      )
     })
   })
 })

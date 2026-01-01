@@ -1,5 +1,11 @@
 import { parseCustomDataGroups } from '../member-data-parser'
-import type { CustomDataGroup } from '../schemas'
+import {
+  createNormalizedMemberFromSummary,
+  updateMemberWithIndividualData,
+  updateMemberWithCustomData,
+  markMemberError,
+} from '../member-data-parser'
+import type { CustomDataGroup, NormalizedMember, IndividualData, Member } from '../schemas'
 
 function group(overrides: Partial<CustomDataGroup>): CustomDataGroup {
   // Minimal stub that satisfies the CustomDataGroup type used by the parser
@@ -71,5 +77,70 @@ describe('member-data-parser', () => {
     expect(parsed.primaryContact1?.relationship).toBe('Mother')
     expect(parsed.consents?.photoConsent).toBe(true)
     expect(parsed.consents?.medicalConsent).toBe(true)
+  })
+
+  it('fills normalized member stages across data sources', () => {
+    const summaryMember: Member = {
+      scoutid: 99,
+      firstname: 'Delta',
+      lastname: 'Tester',
+      photo_guid: '123e4567-e89b-12d3-a456-426614174000',
+      patrolid: 1,
+      patrol: 'Raptors',
+      sectionid: 42,
+      enddate: null,
+      age: '14 / 6',
+      patrol_role_level_label: 'Member',
+      active: true,
+    }
+
+    const normalized = createNormalizedMemberFromSummary(summaryMember)
+    expect(normalized.firstName).toBe('Delta')
+    expect(normalized.dateOfBirth).toBeNull()
+
+    const individual: IndividualData = {
+      scoutid: '99',
+      firstname: 'Delta',
+      lastname: 'Tester',
+      photo_guid: null,
+      dob: '2010-01-01',
+      started: '2020-01-01',
+      created_date: '2024-01-01',
+      last_accessed: '2024-02-01',
+      patrolid: '1',
+      patrolleader: '0',
+      startedsection: '2020-01-01',
+      enddate: null,
+      age: '14 / 6',
+      age_simple: '14/6',
+      sectionid: 42,
+      active: true,
+      meetings: '0',
+      others: [],
+    }
+
+    const withIndividual = updateMemberWithIndividualData(normalized, individual)
+    expect(withIndividual.dateOfBirth).toBe('2010-01-01')
+    expect(withIndividual.loadingState).toBe('individual')
+
+    const withCustom = updateMemberWithCustomData(withIndividual, {
+      memberContact: { firstName: 'Tester', lastName: 'Parent' } as NormalizedMember['memberContact'],
+      primaryContact1: null,
+      primaryContact2: null,
+      emergencyContact: null,
+      doctorName: 'Dr Who',
+      doctorPhone: '000',
+      doctorAddress: 'Somewhere',
+      medicalNotes: 'None',
+      dietaryNotes: 'Vegan',
+      allergyNotes: '',
+      consents: { photoConsent: true, medicalConsent: true },
+    })
+    expect(withCustom.memberContact?.firstName).toBe('Tester')
+    expect(withCustom.loadingState).toBe('complete')
+
+    const errored = markMemberError(withCustom, 'boom')
+    expect(errored.loadingState).toBe('error')
+    expect(errored.errorMessage).toBe('boom')
   })
 })
