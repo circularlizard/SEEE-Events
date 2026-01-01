@@ -238,7 +238,12 @@ export default function UnitDetailPage() {
                       <ChevronRight className="h-4 w-4 shrink-0" />
                     )}
                     <div className="flex-1 min-w-0">
-                      <span className="block truncate">{event.eventName}</span>
+                      <Link
+                        href={`/dashboard/events/${event.eventId}`}
+                        className="block truncate text-foreground hover:text-primary transition-colors"
+                      >
+                        {event.eventName}
+                      </Link>
                       <span className="block text-xs font-normal text-muted-foreground">
                         {[formatDateRange(event.startDate, event.endDate), event.location]
                           .filter(Boolean)
@@ -304,7 +309,12 @@ export default function UnitDetailPage() {
                           key={event.id}
                           className="p-3 rounded-xl border border-border/70 bg-secondary/60 text-sm shadow-sm"
                         >
-                          <div className="font-medium">{event.name}</div>
+                          <Link
+                            href={`/dashboard/events/${event.id}`}
+                            className="font-medium text-foreground hover:text-primary transition-colors"
+                          >
+                            {event.name}
+                          </Link>
                           <div className="text-xs text-muted-foreground">
                             {[formatDateRange(event.startDate, event.endDate), event.location]
                               .filter(Boolean)

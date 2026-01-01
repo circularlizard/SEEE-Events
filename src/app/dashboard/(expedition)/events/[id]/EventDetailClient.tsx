@@ -326,7 +326,14 @@ export default function EventDetailClient({ eventId }: Props) {
               {participants.map((p) => (
                 <tr key={p.id} className="border-b last:border-b-0 hover:bg-muted/50 transition-colors">
                   <td className="p-4 font-medium">{p.name}</td>
-                  <td className="p-4 text-muted-foreground">{getPatrolName(p.patrol)}</td>
+                  <td className="p-4 text-muted-foreground">
+                    <Link
+                      href={`/dashboard/events/attendance/${encodeURIComponent(String(p.patrol ?? 'unassigned'))}`}
+                      className="text-foreground hover:text-primary transition-colors"
+                    >
+                      {getPatrolName(p.patrol)}
+                    </Link>
+                  </td>
                   <td className="p-4 text-muted-foreground">{p.status ?? '—'}</td>
                   <td className="p-4 text-muted-foreground">{computeAge(p.dob)}</td>
                   {customColumnKeys.map((title) => (
@@ -346,7 +353,18 @@ export default function EventDetailClient({ eventId }: Props) {
             <div className="flex items-center justify-between">
               <div>
                 <div className="font-medium">{p.name}</div>
-                <div className="text-sm text-muted-foreground">Unit: {getPatrolName(p.patrol)} • Status: {p.status ?? '—'} • Age: {computeAge(p.dob)}</div>
+                <div className="text-sm text-muted-foreground space-y-0.5">
+                  <div>
+                    Unit:{' '}
+                    <Link
+                      href={`/dashboard/events/attendance/${encodeURIComponent(String(p.patrol ?? 'unassigned'))}`}
+                      className="text-foreground hover:text-primary transition-colors"
+                    >
+                      {getPatrolName(p.patrol)}
+                    </Link>
+                  </div>
+                  <div>Status: {p.status ?? '—'} • Age: {computeAge(p.dob)}</div>
+                </div>
               </div>
               {/* Placeholder for First Aid badge */}
               <div className="text-xs px-2 py-1 rounded bg-muted">FA: —</div>
