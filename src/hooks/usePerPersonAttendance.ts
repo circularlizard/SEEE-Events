@@ -1,7 +1,7 @@
 import { useMemo, useSyncExternalStore } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 
-interface EventMeta {
+export interface EventMeta {
   id: number
   name: string
   startDate?: string
@@ -9,7 +9,7 @@ interface EventMeta {
   location?: string
 }
 
-interface PersonAttendance {
+export interface PersonAttendance {
   memberId: number
   name: string
   patrolId?: number | null

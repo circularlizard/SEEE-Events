@@ -1,85 +1,5 @@
-/**
- * Unit tests for attendance grouping and sorting helpers
- */
-
-// Define the types inline for testing (matching the page component)
-interface PersonEvent {
-  id: string
-  name: string
-  startDate?: string
-  endDate?: string
-  location?: string
-}
-
-interface PersonAttendance {
-  memberId: string
-  name: string
-  patrolId: string | number | null
-  events: PersonEvent[]
-}
-
-/** Sort data alphabetically by name (case-insensitive) */
-function sortByName<T extends { name: string }>(data: T[]): T[] {
-  return [...data].sort((a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }))
-}
-
-/** Helper to group data by patrol (Patrol → Person → Events) */
-function groupByPatrol(data: PersonAttendance[]) {
-  const sorted = sortByName(data)
-  const groups = sorted.reduce<Record<string, PersonAttendance[]>>((acc, person) => {
-    const key = String(person.patrolId ?? 'Unassigned')
-    acc[key] = acc[key] ? [...acc[key], person] : [person]
-    return acc
-  }, {})
-  // Sort patrol keys alphabetically
-  return Object.entries(groups).sort(([a], [b]) => a.localeCompare(b, undefined, { sensitivity: 'base' }))
-}
-
-/** Helper to group data by patrol and event (Patrol → Event → People) */
-function groupByPatrolAndEvent(data: PersonAttendance[]) {
-  const sorted = sortByName(data)
-  
-  // First group by patrol
-  const patrolGroups: Record<string, Record<string, { eventName: string; startDate?: string; people: PersonAttendance[] }>> = {}
-  
-  for (const person of sorted) {
-    const patrolKey = String(person.patrolId ?? 'Unassigned')
-    if (!patrolGroups[patrolKey]) {
-      patrolGroups[patrolKey] = {}
-    }
-    
-    for (const event of person.events) {
-      const eventKey = event.id
-      if (!patrolGroups[patrolKey][eventKey]) {
-        patrolGroups[patrolKey][eventKey] = {
-          eventName: event.name,
-          startDate: event.startDate,
-          people: []
-        }
-      }
-      patrolGroups[patrolKey][eventKey].people.push(person)
-    }
-  }
-  
-  // Convert to sorted array structure
-  return Object.entries(patrolGroups)
-    .sort(([a], [b]) => a.localeCompare(b, undefined, { sensitivity: 'base' }))
-    .map(([patrolKey, events]) => ({
-      patrolKey,
-      events: Object.entries(events)
-        .map(([eventId, eventData]) => ({
-          eventId,
-          ...eventData
-        }))
-        // Sort events by start date (soonest first)
-        .sort((a, b) => {
-          if (!a.startDate && !b.startDate) return 0
-          if (!a.startDate) return 1
-          if (!b.startDate) return -1
-          return new Date(a.startDate).getTime() - new Date(b.startDate).getTime()
-        })
-    }))
-}
+import { groupByPatrol, groupByPatrolAndEvent, sortByName } from '@/components/domain/consolidated-attendance/grouping'
+import type { PersonAttendance } from '@/hooks/usePerPersonAttendance'
 
 describe('sortByName', () => {
   it('sorts data alphabetically by name (case-insensitive)', () => {
@@ -107,11 +27,11 @@ describe('sortByName', () => {
 })
 
 describe('groupByPatrol', () => {
-  const mockData: PersonAttendance[] = [
-    { memberId: '1', name: 'Zara', patrolId: 'Patrol-A', events: [] },
-    { memberId: '2', name: 'Alice', patrolId: 'Patrol-B', events: [] },
-    { memberId: '3', name: 'Bob', patrolId: 'Patrol-A', events: [] },
-    { memberId: '4', name: 'Charlie', patrolId: null, events: [] },
+    const mockData: PersonAttendance[] = [
+    { memberId: 1, name: 'Zara', patrolId: 101, events: [] },
+    { memberId: 2, name: 'Alice', patrolId: 202, events: [] },
+    { memberId: 3, name: 'Bob', patrolId: 101, events: [] },
+    { memberId: 4, name: 'Charlie', patrolId: null, events: [] },
   ]
   
   it('groups data by patrol with people sorted alphabetically within each group', () => {
@@ -121,10 +41,10 @@ describe('groupByPatrol', () => {
     expect(result.length).toBe(3)
     
     // Groups should be sorted alphabetically
-    expect(result.map(([key]) => key)).toEqual(['Patrol-A', 'Patrol-B', 'Unassigned'])
+    expect(result.map(([key]) => key)).toEqual(['101', '202', 'Unassigned'])
     
     // People within Patrol-A should be sorted
-    const patrolA = result.find(([key]) => key === 'Patrol-A')
+    const patrolA = result.find(([key]) => key === '101')
     expect(patrolA?.[1].map(p => p.name)).toEqual(['Bob', 'Zara'])
   })
   
@@ -139,7 +59,7 @@ describe('groupByPatrol', () => {
   
   it('handles numeric patrolId', () => {
     const data: PersonAttendance[] = [
-      { memberId: '1', name: 'Alice', patrolId: 123, events: [] },
+      { memberId: 1, name: 'Alice', patrolId: 123, events: [] },
     ]
     
     const result = groupByPatrol(data)
@@ -154,28 +74,28 @@ describe('groupByPatrol', () => {
 describe('groupByPatrolAndEvent', () => {
   const mockData: PersonAttendance[] = [
     { 
-      memberId: '1', 
+      memberId: 1, 
       name: 'Zara', 
-      patrolId: 'Patrol-A', 
+      patrolId: 101, 
       events: [
-        { id: 'event-1', name: 'Bronze Practice', startDate: '2025-03-15' },
-        { id: 'event-2', name: 'Silver Qualifier', startDate: '2025-04-20' },
+        { id: 1, name: 'Bronze Practice', startDate: '2025-03-15' },
+        { id: 2, name: 'Silver Qualifier', startDate: '2025-04-20' },
       ] 
     },
     { 
-      memberId: '2', 
+      memberId: 2, 
       name: 'Alice', 
-      patrolId: 'Patrol-A', 
+      patrolId: 101, 
       events: [
-        { id: 'event-1', name: 'Bronze Practice', startDate: '2025-03-15' },
+        { id: 1, name: 'Bronze Practice', startDate: '2025-03-15' },
       ] 
     },
     { 
-      memberId: '3', 
+      memberId: 3, 
       name: 'Bob', 
-      patrolId: 'Patrol-B', 
+      patrolId: 202, 
       events: [
-        { id: 'event-2', name: 'Silver Qualifier', startDate: '2025-04-20' },
+        { id: 2, name: 'Silver Qualifier', startDate: '2025-04-20' },
       ] 
     },
   ]
@@ -185,12 +105,12 @@ describe('groupByPatrolAndEvent', () => {
     
     // Should have 2 patrol groups
     expect(result.length).toBe(2)
-    expect(result.map(g => g.patrolKey)).toEqual(['Patrol-A', 'Patrol-B'])
+    expect(result.map(g => g.patrolKey)).toEqual(['101', '202'])
   })
   
   it('sorts events by start date within each patrol', () => {
     const result = groupByPatrolAndEvent(mockData)
-    const patrolA = result.find(g => g.patrolKey === 'Patrol-A')
+    const patrolA = result.find(g => g.patrolKey === '101')
     
     // Events should be sorted by date (Bronze Practice before Silver Qualifier)
     expect(patrolA?.events.map(e => e.eventName)).toEqual(['Bronze Practice', 'Silver Qualifier'])
@@ -198,7 +118,7 @@ describe('groupByPatrolAndEvent', () => {
   
   it('lists people alphabetically under each event', () => {
     const result = groupByPatrolAndEvent(mockData)
-    const patrolA = result.find(g => g.patrolKey === 'Patrol-A')
+    const patrolA = result.find(g => g.patrolKey === '101')
     const bronzePractice = patrolA?.events.find(e => e.eventName === 'Bronze Practice')
     
     // Alice and Zara both attend Bronze Practice, should be sorted
@@ -208,12 +128,12 @@ describe('groupByPatrolAndEvent', () => {
   it('handles events without start dates', () => {
     const data: PersonAttendance[] = [
       { 
-        memberId: '1', 
+        memberId: 1, 
         name: 'Alice', 
-        patrolId: 'Patrol-A', 
+        patrolId: 101, 
         events: [
-          { id: 'event-1', name: 'Event A' },
-          { id: 'event-2', name: 'Event B', startDate: '2025-01-01' },
+          { id: 1, name: 'Event A' },
+          { id: 2, name: 'Event B', startDate: '2025-01-01' },
         ] 
       },
     ]
@@ -228,10 +148,10 @@ describe('groupByPatrolAndEvent', () => {
   it('handles null patrolId as "Unassigned"', () => {
     const data: PersonAttendance[] = [
       { 
-        memberId: '1', 
+        memberId: 1, 
         name: 'Alice', 
         patrolId: null, 
-        events: [{ id: 'event-1', name: 'Event A' }] 
+        events: [{ id: 1, name: 'Event A' }] 
       },
     ]
     
@@ -245,13 +165,13 @@ describe('groupByPatrolAndEvent', () => {
   
   it('handles person with no events', () => {
     const data: PersonAttendance[] = [
-      { memberId: '1', name: 'Alice', patrolId: 'Patrol-A', events: [] },
+      { memberId: 1, name: 'Alice', patrolId: 101, events: [] },
     ]
     
     const result = groupByPatrolAndEvent(data)
     // Person with no events creates a patrol group with empty events array
     expect(result.length).toBe(1)
-    expect(result[0].patrolKey).toBe('Patrol-A')
+    expect(result[0].patrolKey).toBe('101')
     expect(result[0].events).toEqual([])
   })
 })
