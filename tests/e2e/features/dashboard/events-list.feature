@@ -1,14 +1,24 @@
-@REQ-EVENTS-01 @REQ-EVENTS-02 @REQ-EVENTS-05
-Feature: Events List
+@REQ-VIEW-01 @REQ-VIEW-03 @REQ-VIEW-04
+Feature: Shared Expedition Events View
   As a logged-in user
-  I need to view upcoming events
-  So that I can review attendance and event details
+  I need to view upcoming SEEE expeditions
+  So that I can review attendance and event details across Viewer and Planner apps
 
-  Background:
-    Given I am logged in as a standard viewer
+  @REQ-VIEW-01 @REQ-VIEW-03
+  Scenario Outline: Events page loads and renders list content for <appLabel>
+    Given I am logged in with mock persona "<persona>" for app "<appLabel>"
+    When I navigate to "<eventsRoute>"
+    Then I should see "Events"
+    And the events list should render appropriately for this viewport
 
-  @REQ-EVENTS-02
-  Scenario: Events page loads and renders list content
-    When I navigate to "/dashboard/events"
+    Examples:
+      | appLabel            | persona                        | eventsRoute                  |
+      | Expedition Viewer   | seeeEventsOnlyRestrictedOther  | /dashboard/events            |
+      | Expedition Planner  | seeeFullElevatedOther          | /dashboard/planning/events   |
+
+  @REQ-VIEW-04 @desktop-only
+  Scenario: Planner sidebar navigation to shared events view
+    Given I am logged in with mock persona "seeeFullElevatedOther" for app "Expedition Planner"
+    When I navigate to "/dashboard/planning/events"
     Then I should see "Events"
     And the events list should render appropriately for this viewport

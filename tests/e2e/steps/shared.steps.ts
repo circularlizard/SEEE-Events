@@ -297,3 +297,35 @@ Then('the callbackUrl should be {string}', async ({ page }, expectedPath: string
 Then('I should not see {string}', async ({ page }, text: string) => {
   await expect(page.locator(`text=${text}`)).not.toBeVisible()
 })
+
+When('I click the sidebar link {string} under {string}', async ({ page }, linkText: string, groupText: string) => {
+  // Wait for sidebar to be visible
+  await page.waitForLoadState('networkidle')
+  
+  // Expand the sidebar group if collapsed
+  const groupButton = page.getByRole('button', { name: new RegExp(groupText, 'i') })
+  if (await groupButton.isVisible().catch(() => false)) {
+    const expanded = await groupButton.getAttribute('aria-expanded')
+    if (expanded === 'false') {
+      await groupButton.click()
+      await page.waitForTimeout(300)
+    }
+  }
+  
+  // Click the link within the sidebar - try multiple strategies
+  const exactLink = page.getByRole('link', { name: new RegExp(`^${linkText}$`, 'i') })
+  const partialLink = page.locator(`nav a:has-text("${linkText}")`)
+  const sidebarLink = page.locator(`[role="navigation"] a:has-text("${linkText}")`)
+  
+  if (await exactLink.isVisible().catch(() => false)) {
+    await exactLink.click()
+  } else if (await partialLink.first().isVisible().catch(() => false)) {
+    await partialLink.first().click()
+  } else if (await sidebarLink.first().isVisible().catch(() => false)) {
+    await sidebarLink.first().click()
+  } else {
+    throw new Error(`Could not find sidebar link "${linkText}" under "${groupText}"`)
+  }
+  
+  await page.waitForLoadState('networkidle')
+})

@@ -2,6 +2,35 @@
 
 _Generated automatically via `node scripts/check-bdd-steps.mjs --catalog` on 2025-12-31T00:17:34.192Z._
 
+## New Steps Added (2026-01-01)
+
+The following steps were added to support the Expedition Viewer attendance redesign and Planner shared component scenarios:
+
+### Sidebar Navigation
+| Step Text | Implementation | Feature Usage |
+| --- | --- | --- |
+| I click the sidebar link {string} under {string} | When – `tests/e2e/steps/shared.steps.ts` | `tests/e2e/features/dashboard/events-list.feature` |
+
+### Unit Summary Cards (Attendance Overview)
+| Step Text | Implementation | Feature Usage |
+| --- | --- | --- |
+| the attendance overview should display unit summary cards | Then – `tests/e2e/steps/attendance.steps.ts` | `tests/e2e/features/dashboard/attendance-by-person.feature` |
+| each unit card should show patrol name, attendee count, and event count | Then – `tests/e2e/steps/attendance.steps.ts` | `tests/e2e/features/dashboard/attendance-by-person.feature` |
+| I click on a unit summary card | When – `tests/e2e/steps/attendance.steps.ts` | `tests/e2e/features/dashboard/attendance-by-person.feature` |
+| I should be on a unit detail page | Then – `tests/e2e/steps/attendance.steps.ts` | `tests/e2e/features/dashboard/attendance-by-person.feature` |
+
+### Unit Drill-down (Accordion, Toggle, Indicators)
+| Step Text | Implementation | Feature Usage |
+| --- | --- | --- |
+| the unit detail page should display event accordion sections | Then – `tests/e2e/steps/attendance.steps.ts` | `tests/e2e/features/dashboard/attendance-by-person.feature` |
+| I should see a view toggle for By Event and By Attendee | Then – `tests/e2e/steps/attendance.steps.ts` | `tests/e2e/features/dashboard/attendance-by-person.feature` |
+| I should see a cache freshness indicator | Then – `tests/e2e/steps/attendance.steps.ts` | `tests/e2e/features/dashboard/attendance-by-person.feature` |
+| I should see a hydration progress indicator | Then – `tests/e2e/steps/attendance.steps.ts` | `tests/e2e/features/dashboard/attendance-by-person.feature` |
+
+---
+
+## Legacy Steps
+
 | Step Text | Implementations | Feature Usage |
 | --- | --- | --- |
 | I am logged in as a standard viewer | Given – `tests/e2e/steps/shared.steps.ts:99` | _(unused)_ |
