@@ -39,7 +39,7 @@ All applications share the same proxy/auth/rate-limit safety layer, UI shell, Ta
 
 ### 3.0 Requirement ID Scheme
 
-All requirements in this specification carry unique identifiers using the pattern `REQ-<domain>-<nn>`. Domains align with major feature areas (e.g., `AUTH`, `EVENTS`, `LOGISTICS`, `TRAINING`, `SUMMARY`, `REPORTING`, `ADMIN`, `DATA`, `ARCH`, `NFR`). These IDs provide stable references for BDD features, tests, and documentation. Any new requirement must receive the next sequential number within its domain.
+All requirements in this specification carry unique identifiers using the pattern `REQ-<domain>-<nn>`. Domains align with major feature areas (e.g., `AUTH`, `LOGISTICS`, `TRAINING`, `SUMMARY`, `REPORTING`, `DATA`, `ARCH`, `NFR`) **and now include dedicated prefixes for each application experience (`PLAN`, `VIEW`, `DQ`, `MULTI`, `PLATFORM`)**. These IDs provide stable references for BDD features, tests, and documentation. Any new requirement must receive the next sequential number within its domain.
 
 ### **3.1 Platform-Wide Capabilities**
 
@@ -101,13 +101,13 @@ The SEEE Event Planning app replaces the legacy "Administrator" role UI. It assu
 
 #### **3.2.2 Admin: Members views & data quality**
 
-* **Scope (REQ-ADMIN-01):** Provide administrator-only views for exploring member datasets and identifying data quality issues.
-* **Members List (REQ-ADMIN-02):** Admins must see a sortable member list per section.
-* **Progressive Enrichment (REQ-ADMIN-03):** The members list must populate basic info immediately and enrich additional fields incrementally.
-* **Issue Categories (REQ-ADMIN-04):** The system must detect and group issues for: missing/incomplete contact info, missing other contacts, missing doctor info, and duplicate emergency contact.
-* **Accordion UX (REQ-ADMIN-05):** Member issues must render as collapsible accordion sections whose headers show issue name, count, criticality indicator, and description.
-* **Issue Tables (REQ-ADMIN-06):** Expanded sections must display sortable member tables (default sort: name) with color-coding per criticality, matching the Dec 2025 UX.
-* **Security (REQ-ADMIN-07):** Member contact/medical data is sensitive and must never be persisted to localStorage.
+* **Scope (REQ-PLAN-01):** Provide administrator-only views for exploring member datasets and identifying data quality issues.
+* **Members List (REQ-PLAN-02):** Admins must see a sortable member list per section.
+* **Progressive Enrichment (REQ-PLAN-03):** The members list must populate basic info immediately and enrich additional fields incrementally.
+* **Issue Categories (REQ-PLAN-04):** The system must detect and group issues for: missing/incomplete contact info, missing other contacts, missing doctor info, and duplicate emergency contact.
+* **Accordion UX (REQ-PLAN-05):** Member issues must render as collapsible accordion sections whose headers show issue name, count, criticality indicator, and description.
+* **Issue Tables (REQ-PLAN-06):** Expanded sections must display sortable member tables (default sort: name) with color-coding per criticality, matching the Dec 2025 UX.
+* **Security (REQ-PLAN-07):** Member contact/medical data is sensitive and must never be persisted to localStorage.
 
 **Routes (canonical, admin only):**
 
@@ -128,28 +128,29 @@ The SEEE Expedition Viewer app is a read-only experience for expedition leaders.
 
 #### **3.3.2 Expeditions & Consolidated Attendance Views**
 
-* **Events View (REQ-EVENTS-01/02):** Display active/future SEEE expedition events only; each event shows participant names and invitation status. This is the default entry point.
-* **Consolidated Attendance View (REQ-EVENTS-06):** Provide a combined attendee view grouped by Patrol and Event so leaders can quickly see who is attending which expedition.
-* **Shared Components:** Underlying table/card components must be shared with Expedition Planner to avoid divergence as new custom-field pivots are added.
-* **Cache Integration (REQ-EVENTS-07):** Patrol ID→name mapping must come from the Redis patrol cache hydrated by admins; viewer surfaces cache freshness indicators but cannot refresh patrol data itself.
+* **Event List (REQ-VIEW-01):** Display only active/future SEEE expeditions in reverse chronological order; each card/table row links to the event detail route.
+* **Participant Snapshot (REQ-VIEW-02):** Every event entry must surface participant names and invitation status without requiring navigation to event detail.
+* **Consolidated Attendance View (REQ-VIEW-03):** Provide a combined attendee view grouped by Patrol and Event so leaders can quickly see who is attending which expedition.
+* **Shared Components (REQ-VIEW-04):** Underlying table/card components must be shared with Expedition Planner to avoid divergence as new custom-field pivots are added.
+* **Cache Integration (REQ-VIEW-05):** Patrol ID→name mapping must come from the Redis patrol cache hydrated by admins; viewer surfaces cache freshness indicators but cannot refresh patrol data itself.
 
 #### **3.3.3 Expedition Logistics View**
 
 For each event, the dashboard must display logistical details.
 
-* **Column Mapping Source (REQ-LOGISTICS-01):** Expedition Viewer consumes column-mapping definitions (Walking Group, Tent Group, etc.) provided by the Platform Admin Console; viewer users cannot modify mappings directly.
-* **Graceful Degradation (REQ-LOGISTICS-02):** When required columns are missing/unmapped, the app must continue to show participant lists/invitation status and simply hide/gray-out unavailable logistics fields.
-* **Displayed Fields (REQ-LOGISTICS-03):** For every participant show Expedition Group, Tent Group, Group Gear Provider (free text), and Additional Info (free text).
-* **First Aid Summary (REQ-LOGISTICS-04):** **Deferred** – see Section 7 (Future Scope) for the postponed First Aid reporting requirement.
+* **Column Mapping Source (REQ-VIEW-06):** Expedition Viewer consumes column-mapping definitions (Walking Group, Tent Group, etc.) provided by the Platform Admin Console; viewer users cannot modify mappings directly.
+* **Graceful Degradation (REQ-VIEW-07):** When required columns are missing/unmapped, the app must continue to show participant lists/invitation status and simply hide/gray-out unavailable logistics fields.
+* **Displayed Fields (REQ-VIEW-08):** For every participant show Expedition Group, Tent Group, Group Gear Provider (free text), and Additional Info (free text).
+* **First Aid Summary (REQ-VIEW-09):** **Deferred** – see Section 7 (Future Scope) for the postponed First Aid reporting requirement.
 
 #### **3.3.4 Reporting & Export**
 
 To support offline analysis and physical record-keeping during expeditions:
 
-* **CSV/XLS Export (REQ-REPORTING-01):** Users must be able to download the currently displayed data (Event Dashboard or Summary) as CSV or Excel.
-* **Filter Fidelity (REQ-REPORTING-02):** All exports must respect the currently applied filters (e.g., Patrol, Event, Readiness).
-* **PDF Export (REQ-REPORTING-03):** Users must be able to generate a well-formatted PDF report suitable for printing.
-* **PDF Formatting (REQ-REPORTING-04):** PDF exports must include readable table layouts, clear headers, and reflect applied filters/access controls.
+* **CSV/XLS Export (REQ-VIEW-10):** Users must be able to download the currently displayed data (Event Dashboard or Summary) as CSV or Excel.
+* **Filter Fidelity (REQ-VIEW-11):** All exports must respect the currently applied filters (e.g., Patrol, Event, Readiness).
+* **PDF Export (REQ-VIEW-12):** Users must be able to generate a well-formatted PDF report suitable for printing.
+* **PDF Formatting (REQ-VIEW-13):** PDF exports must include readable table layouts, clear headers, and reflect applied filters/access controls.
 
 ### **3.4 OSM Data Quality Viewer Application (Administrator Experience)**
 
@@ -164,19 +165,19 @@ The OSM Data Quality Viewer provides multi-section access to identify and resolv
 
 #### **3.4.2 Data Quality Views**
 
-* **Cross-Section Issues (REQ-DATA-QUALITY-01):** Aggregate and display data quality issues across all accessible sections.
-* **Section-Specific Filtering (REQ-DATA-QUALITY-02):** Allow filtering by section to focus on specific problem areas.
-* **Issue Categories:** Reuse issue categories from REQ-ADMIN-04 (missing contact info, doctor info, duplicate contacts).
-* **Export Capabilities:** Provide CSV export of identified issues for offline resolution tracking.
+* **Cross-Section Issues (REQ-DQ-01):** Aggregate and display data quality issues across all accessible sections.
+* **Section-Specific Filtering (REQ-DQ-02):** Allow filtering by section to focus on specific problem areas.
+* **Issue Categories (REQ-DQ-03):** Reuse issue categories from REQ-PLAN-04 (missing contact info, doctor info, duplicate contacts).
+* **Export Capabilities (REQ-DQ-04):** Provide CSV export of identified issues for offline resolution tracking.
 
 ### **3.5 Multi-Section Viewer Application (Future Scope)**
 
 The Multi-Section Viewer mirrors the Expedition Viewer UI but reintroduces the section selector, per-user access strategies, and generalized schemas so other sections can opt in.
 
-* **Access Strategy Alignment:** Must honor Patrol-based vs Event-based restrictions defined in `REQ-ACCESS-04` → `REQ-ACCESS-08`.
-* **Schema Flexibility:** Event/member schemas must support section-specific flexi columns without assuming SEEE naming conventions.
-* **Progressive Enablement:** Multi-section audiences cannot view SEEE-only admin tools, patrol refreshers, or platform admin controls.
-* **Documentation:** When this app is enabled, onboarding material must explain when to hydrate caches and how to request access.
+* **Access Strategy Alignment (REQ-MULTI-01):** Must honor Patrol-based vs Event-based restrictions defined in `REQ-ACCESS-04` → `REQ-ACCESS-08`.
+* **Schema Flexibility (REQ-MULTI-02):** Event/member schemas must support section-specific flexi columns without assuming SEEE naming conventions.
+* **Progressive Enablement (REQ-MULTI-03):** Multi-section audiences cannot view SEEE-only admin tools, patrol refreshers, or platform admin controls.
+* **Documentation (REQ-MULTI-04):** When this app is enabled, onboarding material must explain when to hydrate caches and how to request access.
 
 Detailed readiness/logistics requirements continue to reference Section 7 until the multi-section viewer is funded.
 
@@ -193,13 +194,13 @@ The new Platform Admin Console centralizes operational controls required to keep
 
 #### **3.6.2 Operational Controls**
 
-* **Operational Access (REQ-CONSOLE-01):** Only SEEE platform owners (subset of administrators) may access the console via a dedicated app entry point and route group (`/dashboard/(platform-admin)`).
-* **Patrol Cache Management (REQ-CONSOLE-02):** Provide controls to trigger patrol/member hydration runs, inspect last refresh timestamps, and re-queue failed jobs without redeploying the app.
-* **SEEE Section ID Configuration (REQ-CONSOLE-03):** Surface the canonical SEEE section ID with an editable field, default value, and write-back to Vercel KV/Redis so SEEE apps can assume the correct section automatically.
-* **Developer Tools (REQ-CONSOLE-04):** Include safe developer utilities (e.g., proxy inspector, rate-limit simulator toggles, MSW enable/disable) to diagnose issues without SSH access.
-* **Log Viewer (REQ-CONSOLE-05):** Provide read-only access to recent proxy/safety layer logs with filters for severity, OSM endpoint, and request ID to accelerate incident response.
-* **Audit Trail (REQ-CONSOLE-06):** All actions taken in the console must be logged with timestamp, user, action, and payload summary for compliance.
-* **Column Mapping Management (REQ-CONSOLE-07):** Allow platform admins to configure the expedition logistics column mappings (Walking Group, Tent Group, etc.) stored in Redis/KV so Expedition Viewer/Planner consume consistent definitions without per-user mapping UI.
+* **Operational Access (REQ-PLATFORM-01):** Only SEEE platform owners (subset of administrators) may access the console via a dedicated app entry point and route group (`/dashboard/(platform-admin)`).
+* **Patrol Cache Management (REQ-PLATFORM-02):** Provide controls to trigger patrol/member hydration runs, inspect last refresh timestamps, and re-queue failed jobs without redeploying the app.
+* **SEEE Section ID Configuration (REQ-PLATFORM-03):** Surface the canonical SEEE section ID with an editable field, default value, and write-back to Vercel KV/Redis so SEEE apps can assume the correct section automatically.
+* **Developer Tools (REQ-PLATFORM-04):** Include safe developer utilities (e.g., proxy inspector, rate-limit simulator toggles, MSW enable/disable) to diagnose issues without SSH access.
+* **Log Viewer (REQ-PLATFORM-05):** Provide read-only access to recent proxy/safety layer logs with filters for severity, OSM endpoint, and request ID to accelerate incident response.
+* **Audit Trail (REQ-PLATFORM-06):** All actions taken in the console must be logged with timestamp, user, action, and payload summary for compliance.
+* **Column Mapping Management (REQ-PLATFORM-07):** Allow platform admins to configure the expedition logistics column mappings (Walking Group, Tent Group, etc.) stored in Redis/KV so Expedition Viewer/Planner consume consistent definitions without per-user mapping UI.
 
 ## **4. Data Management Strategy**
 
@@ -324,13 +325,16 @@ To ensure compliance before an expedition, the dashboard must verify completion 
 
 | Domain Prefix | Description |
 | --- | --- |
-| AUTH | Authentication, session selection, timeout requirements, and app-specific permissions |
-| EVENTS | Event dashboard + attendance views |
-| LOGISTICS | Expedition logistics fields and summaries |
+| AUTH | Authentication, session selection, timeout requirements, and shared app permissions |
+| PLAN | SEEE Event Planning application (administrator tools) |
+| VIEW | SEEE Expedition Viewer application (standard leaders) |
+| DQ | OSM/Data Quality Viewer application (multi-section admin) |
+| MULTI | Future multi-section viewer requirements |
+| PLATFORM | Platform Admin console requirements |
+| LOGISTICS | Expedition logistics fields and summaries (legacy/future-shared) |
 | TRAINING | Readiness/training data requirements |
 | SUMMARY | Participation & readiness summary view |
-| REPORTING | Export/report generation |
-| ADMIN | Admin-only member management + issues |
+| REPORTING | Export/report generation (legacy shared requirements) |
 | DATA | Data sourcing, caching, and custom field dependencies |
 | ARCH | Architecture-wide requirements (rate limiting, mock layer, logging, errors, etc.) |
 | ACCESS | Security/access control strategies |
