@@ -98,6 +98,41 @@ describe('member-issues', () => {
       expect(hasNoContactInformation(member)).toBe(false)
     })
 
+    it('returns false when member contact is the only populated contact', () => {
+      const member = createMember({
+        primaryContact1: null,
+        primaryContact2: null,
+        emergencyContact: null,
+      })
+      expect(hasNoContactInformation(member)).toBe(false)
+    })
+
+    it('returns false when member contact only supplies phone2', () => {
+      const member = createMember({
+        primaryContact1: null,
+        primaryContact2: null,
+        emergencyContact: null,
+        memberContact: createContact(
+          { phone1: '', phone2: 'alt-phone', email1: '', email2: '', address1: '' },
+          'member'
+        ),
+      })
+      expect(hasNoContactInformation(member)).toBe(false)
+    })
+
+    it('returns false when member contact only supplies email2', () => {
+      const member = createMember({
+        primaryContact1: null,
+        primaryContact2: null,
+        emergencyContact: null,
+        memberContact: createContact(
+          { phone1: '', phone2: '', email1: '', email2: 'secondary@example.test', address1: '' },
+          'member'
+        ),
+      })
+      expect(hasNoContactInformation(member)).toBe(false)
+    })
+
     it('returns false when only emergency contact has data', () => {
       const member = createMember({
         memberContact: null,
@@ -130,6 +165,31 @@ describe('member-issues', () => {
       expect(hasNoEmailOrPhone(member)).toBe(false)
     })
 
+    it('returns false when member contact has only email2', () => {
+      const blank = createContact({ email1: '', email2: '', phone1: '', phone2: '' })
+      const member = createMember({
+        memberContact: createContact(
+          { email1: '', email2: 'secondary@example.test', phone1: '', phone2: '' },
+          'member-email2'
+        ),
+        primaryContact1: blank,
+        primaryContact2: blank,
+        emergencyContact: blank,
+      })
+      expect(hasNoEmailOrPhone(member)).toBe(false)
+    })
+
+    it('returns false when member contact has only phone2', () => {
+      const blank = createContact({ email1: '', email2: '', phone1: '', phone2: '' })
+      const member = createMember({
+        memberContact: createContact({ phone1: '', phone2: 'alt-phone', email1: '', email2: '' }, 'member-phone2'),
+        primaryContact1: blank,
+        primaryContact2: blank,
+        emergencyContact: blank,
+      })
+      expect(hasNoEmailOrPhone(member)).toBe(false)
+    })
+
     it('returns false when emergency contact has phone', () => {
       const noEmailPhone = createContact({ email1: '', email2: '', phone1: '', phone2: '' })
       const member = createMember({
@@ -137,6 +197,28 @@ describe('member-issues', () => {
         primaryContact1: noEmailPhone,
         primaryContact2: noEmailPhone,
         emergencyContact: createContact({ email1: '', email2: '' }),
+      })
+      expect(hasNoEmailOrPhone(member)).toBe(false)
+    })
+
+    it('returns false when primary contact 1 has phone1 only', () => {
+      const blank = createContact({ email1: '', email2: '', phone1: '', phone2: '' })
+      const member = createMember({
+        memberContact: blank,
+        primaryContact1: createContact({ email1: '', email2: '', phone2: '', phone1: 'primary1-phone' }, 'primary1'),
+        primaryContact2: blank,
+        emergencyContact: blank,
+      })
+      expect(hasNoEmailOrPhone(member)).toBe(false)
+    })
+
+    it('returns false when primary contact 2 has phone2 only', () => {
+      const blank = createContact({ email1: '', email2: '', phone1: '', phone2: '' })
+      const member = createMember({
+        memberContact: blank,
+        primaryContact1: blank,
+        primaryContact2: createContact({ phone1: '', phone2: 'alt-phone', email1: '', email2: '' }, 'primary2'),
+        emergencyContact: blank,
       })
       expect(hasNoEmailOrPhone(member)).toBe(false)
     })
@@ -194,7 +276,7 @@ describe('member-issues', () => {
     it('returns false when emergency contact is null', () => {
       const member = createMember({ emergencyContact: null })
       const result = hasDuplicateEmergencyContact(member)
-      expect(result.isDuplicate).toBe(false)
+      expect(result).toEqual({ isDuplicate: false })
     })
 
     it('detects duplicate with primary contact 1 via email', () => {
@@ -217,6 +299,37 @@ describe('member-issues', () => {
       const result = hasDuplicateEmergencyContact(member)
       expect(result.isDuplicate).toBe(true)
       expect(result.duplicateOf).toBe('Primary Contact 2')
+    })
+
+    it('detects duplicate with primary contact 1 via secondary email', () => {
+      const sharedEmail = 'secondary@example.test'
+      const member = createMember({
+        emergencyContact: createContact({ email1: '', email2: sharedEmail }),
+        primaryContact1: createContact({ email1: '', email2: sharedEmail }),
+      })
+      const result = hasDuplicateEmergencyContact(member)
+      expect(result.isDuplicate).toBe(true)
+      expect(result.duplicateOf).toBe('Primary Contact 1')
+    })
+
+    it('detects duplicate with primary contact 2 via phone2', () => {
+      const sharedPhone = '0777000111'
+      const member = createMember({
+        emergencyContact: createContact({ phone1: '', phone2: sharedPhone }),
+        primaryContact2: createContact({ phone1: '', phone2: sharedPhone }),
+      })
+      const result = hasDuplicateEmergencyContact(member)
+      expect(result.isDuplicate).toBe(true)
+      expect(result.duplicateOf).toBe('Primary Contact 2')
+    })
+
+    it('does not treat null primary contacts as duplicates', () => {
+      const member = createMember({
+        primaryContact1: null,
+        primaryContact2: null,
+      })
+      const result = hasDuplicateEmergencyContact(member)
+      expect(result.isDuplicate).toBe(false)
     })
 
     it('returns false when contacts are different', () => {
