@@ -25,7 +25,7 @@ export async function GET() {
           queued: limiterStats.queued,
           running: limiterStats.running,
           executing: limiterStats.executing,
-          done: limiterStats.done,
+          done: limiterStats.done ?? 0,
         }
       : null
 
