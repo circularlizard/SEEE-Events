@@ -1,5 +1,6 @@
 import { http, HttpResponse } from 'msw'
 import apiMap from './api_map.json'
+import { applyMemberIssueFixtures } from './member-issue-fixtures'
 
 // Import all mock data files
 import attendanceData from './data/attendance.json'
@@ -127,7 +128,8 @@ function generateHandlers() {
     
     // Create handler based on HTTP method
     if (method === 'GET') {
-      return http.get(baseUrl, () => {
+      return http.get(baseUrl, ({ request }) => {
+        const requestUrl = new URL(request.url)
         // Note: We match on path only and ignore query parameters.
         // The actual query params are validated by the proxy layer.
         // This approach follows MSW v2+ best practices.
@@ -143,7 +145,15 @@ function generateHandlers() {
           return mockData
         })()
 
-        const shapedData = applyModeTransforms(entry, normalizedMockData)
+        const scenarioAwareData =
+          entry.path === '/ext/customdata/' && entry.action === 'getData'
+            ? applyMemberIssueFixtures(
+                requestUrl.searchParams.get('associated_id'),
+                normalizedMockData
+              )
+            : normalizedMockData
+
+        const shapedData = applyModeTransforms(entry, scenarioAwareData)
 
         // Simulate API rate limit headers
         return HttpResponse.json(shapedData as Record<string, unknown>, {

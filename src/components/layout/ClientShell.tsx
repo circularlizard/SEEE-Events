@@ -12,6 +12,7 @@ import { useEvents } from "@/hooks/useEvents";
 import { useStore } from "@/store/use-store";
 import { useLogout } from "@/components/QueryProvider";
 import { getDefaultPathForApp, getRequiredAppForPath, getRequiredRoleForPath, isRoleAllowed } from "@/lib/app-route-guards";
+import { findSeeeSection, SEEE_FALLBACK_SECTION, SEEE_SECTION_ID, SEEE_SECTION_TYPE } from "@/lib/seee";
 import type { AppKey } from "@/types/app";
 
 export default function ClientShell({ children }: { children: React.ReactNode }) {
@@ -25,6 +26,10 @@ export default function ClientShell({ children }: { children: React.ReactNode })
   const userRole = useStore((s) => s.userRole);
   const permissionValidated = useStore((s) => s.permissionValidated);
   const missingPermissions = useStore((s) => s.missingPermissions);
+  const availableSections = useStore((s) => s.availableSections);
+  const setCurrentApp = useStore((s) => s.setCurrentApp);
+  const setCurrentSection = useStore((s) => s.setCurrentSection);
+  const setSelectedSections = useStore((s) => s.setSelectedSections);
   const logout = useLogout();
   
   // Global inactivity timeout for authenticated users
@@ -85,6 +90,42 @@ export default function ClientShell({ children }: { children: React.ReactNode })
 
   useEffect(() => {
     if (!isDashboardRoute) return;
+    if (!requiredApp) return;
+    if (requiredApp === currentApp) return;
+    if (urlAppSelection) return;
+    setCurrentApp(requiredApp);
+  }, [currentApp, isDashboardRoute, requiredApp, setCurrentApp, urlAppSelection]);
+
+  useEffect(() => {
+    if (!isDashboardRoute) return;
+    if (!currentApp) return;
+    const isSeeeApp = currentApp === 'planning' || currentApp === 'expedition';
+    if (!isSeeeApp) return;
+    const hasSeeeSectionSelected = currentSection?.sectionId === SEEE_SECTION_ID && currentSection?.termId;
+    if (hasSeeeSectionSelected) return;
+
+    const seeeSection = findSeeeSection(availableSections) ?? SEEE_FALLBACK_SECTION;
+    const nextTermId = seeeSection.termId ?? currentSection?.termId ?? '0';
+
+    setCurrentSection({
+      sectionId: SEEE_SECTION_ID,
+      sectionName: seeeSection.sectionName,
+      sectionType: seeeSection.sectionType ?? SEEE_SECTION_TYPE,
+      termId: nextTermId,
+    });
+    setSelectedSections([]);
+  }, [
+    availableSections,
+    currentApp,
+    currentSection?.sectionId,
+    currentSection?.termId,
+    isDashboardRoute,
+    setCurrentSection,
+    setSelectedSections,
+  ]);
+
+  useEffect(() => {
+    if (!isDashboardRoute) return;
     if (!requiredRole) return;
     if (!userRole) return;
     if (isRoleAllowed(requiredRole, userRole)) return;
@@ -136,13 +177,13 @@ export default function ClientShell({ children }: { children: React.ReactNode })
     return <PermissionDenied app={currentApp as AppKey} missingPermissions={missingPermissions} />;
   }
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="h-screen flex flex-col overflow-hidden">
       <Header />
       {shouldShowSectionChrome && <RateLimitTelemetryBanner />}
       {shouldShowSectionChrome && <DataLoadingBanner />}
-      <div className="flex flex-1">
+      <div className="flex flex-1 min-h-0">
         {!isSectionPickerPage && <Sidebar />}
-        <main className="flex-1">{children}</main>
+        <main className="flex-1 overflow-y-auto min-h-0">{children}</main>
       </div>
     </div>
   );
