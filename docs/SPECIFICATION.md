@@ -113,6 +113,10 @@ The SEEE Event Planning app replaces the legacy "Administrator" role UI. It assu
   * Full member profile: patrol context, all contact cards (member + guardians + emergency), doctor/medical notes, consents.
   * Inline highlighting of any detected data quality issues from `getMemberIssues`.
   * Layout parity with other detail pages (primary card header, cards for structured data, responsive mobile cards).
+* **Deferred Custom Data Hydration (REQ-PLAN-09):** The planner must keep Phase 1+2 (summary and individual data) in the bulk hydration queue while deferring expensive custom data calls until explicitly requested:
+  * Opening a member detail route automatically requests `getMemberCustomData` for that scout, shows in-progress/error states, and updates the React Query cache when complete.
+  * The Member Data Quality view must provide a “Load data” control that fetches any remaining members’ custom data with live progress feedback.
+  * All planner surfaces (lists, issues, detail) must remain usable during partial hydration, clearly indicating when detailed contact/medical information is still loading or unavailable.
 
 **Routes (canonical, admin only):**
 

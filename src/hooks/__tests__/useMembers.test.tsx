@@ -347,4 +347,97 @@ describe('useMembers', () => {
       })
     })
   })
+
+  describe('custom data loaders', () => {
+    beforeEach(() => {
+      mockStore.currentSection = { sectionId: '123', termId: '456' }
+      mockStore.userRole = 'admin'
+      mockGetMembers.mockResolvedValue([
+        {
+          scoutid: 1,
+          firstname: 'Alice',
+          lastname: 'Smith',
+          sectionid: 123,
+          patrolid: 1,
+          patrol: 'Eagles',
+          active: true,
+          age: '12',
+        },
+        {
+          scoutid: 2,
+          firstname: 'Bob',
+          lastname: 'Brown',
+          sectionid: 123,
+          patrolid: 2,
+          patrol: 'Foxes',
+          active: true,
+          age: '13',
+        },
+      ])
+      mockGetMemberIndividual.mockResolvedValue({ data: { date_of_birth: '2012-01-01' } })
+      mockGetMemberCustomData.mockResolvedValue({ data: { medical: 'None' } })
+    })
+
+    it('hydrates custom data when requested for a single member', async () => {
+      const { result } = renderHook(() => useMembers(), { wrapper: createWrapper() })
+
+      await waitFor(() => {
+        expect(result.current.members[0]?.loadingState).toBe('individual')
+      })
+
+      await act(async () => {
+        await result.current.loadMemberCustomData('1')
+      })
+
+      expect(mockGetMemberCustomData).toHaveBeenCalledWith(
+        expect.objectContaining({
+          sectionid: 123,
+          scoutid: 1,
+        })
+      )
+
+      const updatedMember = result.current.members.find((m) => m.id === '1')
+      expect(updatedMember?.loadingState).toBe('complete')
+      expect(updatedMember?.medicalNotes).toBe('None')
+    })
+
+    it('skips custom data fetch if member already complete', async () => {
+      const { result } = renderHook(() => useMembers(), { wrapper: createWrapper() })
+
+      await waitFor(() => {
+        expect(result.current.members[0]?.loadingState).toBe('individual')
+      })
+
+      await act(async () => {
+        await result.current.loadMemberCustomData('1')
+      })
+      mockGetMemberCustomData.mockClear()
+
+      const status = await result.current.loadMemberCustomData('1')
+      expect(status).toEqual({ status: 'skipped' })
+      expect(mockGetMemberCustomData).not.toHaveBeenCalled()
+    })
+
+    it('loads missing member custom data with progress callback', async () => {
+      const { result } = renderHook(() => useMembers(), { wrapper: createWrapper() })
+
+      await waitFor(() => {
+        expect(result.current.members.every((m) => m.loadingState === 'individual')).toBe(true)
+      })
+
+      const progressSpy = jest.fn()
+
+      await act(async () => {
+        await result.current.loadMissingMemberCustomData({ onProgress: progressSpy })
+      })
+
+      expect(mockGetMemberCustomData).toHaveBeenCalledTimes(2)
+      expect(progressSpy).toHaveBeenCalledWith({ total: 2, completed: 0 })
+      expect(progressSpy).toHaveBeenCalledWith({ total: 2, completed: 1 })
+      expect(progressSpy).toHaveBeenLastCalledWith({ total: 2, completed: 2 })
+
+      const members = result.current.members
+      expect(members.every((m) => m.loadingState === 'complete')).toBe(true)
+    })
+  })
 })
