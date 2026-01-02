@@ -16,9 +16,15 @@ import { ArrowLeft } from 'lucide-react'
 
 interface Props {
   eventId: number
+  backHref?: string
+  attendanceHrefBase?: string
 }
 
-export default function EventDetailClient({ eventId }: Props) {
+export default function EventDetailClient({
+  eventId,
+  backHref = '/dashboard/events',
+  attendanceHrefBase = '/dashboard/events/attendance',
+}: Props) {
   const { data, isLoading, isError } = useEventDetail(eventId)
   const [unitFilter, setUnitFilter] = useState<string>('')
   const [statusFilter, setStatusFilter] = useState<string>('Yes')
@@ -214,7 +220,7 @@ export default function EventDetailClient({ eventId }: Props) {
     <div className="p-4 md:p-6 space-y-6">
       <div className="mb-6 rounded-lg bg-primary px-4 py-3 text-primary-foreground">
         <Link
-          href="/dashboard/events"
+          href={backHref}
           className="inline-flex items-center gap-2 text-sm font-medium text-primary-foreground/90 transition-opacity hover:text-primary-foreground hover:opacity-100"
         >
           <ArrowLeft className="h-4 w-4" aria-hidden />
@@ -328,7 +334,7 @@ export default function EventDetailClient({ eventId }: Props) {
                   <td className="p-4 font-medium">{p.name}</td>
                   <td className="p-4 text-muted-foreground">
                     <Link
-                      href={`/dashboard/events/attendance/${encodeURIComponent(String(p.patrol ?? 'unassigned'))}`}
+                      href={`${attendanceHrefBase}/${encodeURIComponent(String(p.patrol ?? 'unassigned'))}`}
                       className="text-foreground hover:text-primary transition-colors"
                     >
                       {getPatrolName(p.patrol)}
@@ -357,7 +363,7 @@ export default function EventDetailClient({ eventId }: Props) {
                   <div>
                     Unit:{' '}
                     <Link
-                      href={`/dashboard/events/attendance/${encodeURIComponent(String(p.patrol ?? 'unassigned'))}`}
+                      href={`${attendanceHrefBase}/${encodeURIComponent(String(p.patrol ?? 'unassigned'))}`}
                       className="text-foreground hover:text-primary transition-colors"
                     >
                       {getPatrolName(p.patrol)}

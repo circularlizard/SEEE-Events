@@ -25,6 +25,7 @@ export default function PlannerEventsPage() {
       isLoading={isLoading}
       isError={isError}
       error={error as Error | null}
+      buildEventHref={(event) => `/dashboard/planning/events/${event.eventid}`}
     />
   )
 }

@@ -110,6 +110,11 @@ const planningNav: NavSection[] = [
   {
     items: [
       {
+        label: "Planning Home",
+        href: "/dashboard/planning",
+        icon: LayoutDashboard,
+      },
+      {
         label: "Attendance Overview",
         href: "/dashboard/planning/events/attendance",
         icon: UsersIcon,
@@ -119,11 +124,6 @@ const planningNav: NavSection[] = [
         href: "/dashboard/planning/events",
         icon: CalendarDays,
       },
-      {
-        label: "Planning Home",
-        href: "/dashboard/planning",
-        icon: LayoutDashboard,
-      },
     ],
   },
   {
@@ -131,13 +131,13 @@ const planningNav: NavSection[] = [
     items: [
       {
         label: "Members",
-        href: "/dashboard/members",
+        href: "/dashboard/planning/members",
         icon: UsersIcon,
         requiresAdmin: true,
       },
       {
         label: "Member Data Issues",
-        href: "/dashboard/members/issues",
+        href: "/dashboard/planning/members/issues",
         icon: AlertTriangle,
         requiresAdmin: true,
       },

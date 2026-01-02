@@ -13,6 +13,7 @@ interface ExpeditionEventsViewProps {
   error?: Error | null;
   title?: string;
   description?: string;
+  buildEventHref?: (event: Event) => string;
 }
 
 export function ExpeditionEventsView({
@@ -22,6 +23,7 @@ export function ExpeditionEventsView({
   error = null,
   title = "Events",
   description,
+  buildEventHref,
 }: ExpeditionEventsViewProps) {
   const resolvedDescription =
     description ?? `${events.length} ${events.length === 1 ? "event" : "events"} found`;
@@ -58,7 +60,11 @@ export function ExpeditionEventsView({
       ) : (
         <div className="grid gap-4 md:gap-6 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
           {events.map((event) => (
-            <EventCard key={event.eventid} event={event} />
+            <EventCard
+              key={event.eventid}
+              event={event}
+              href={buildEventHref ? buildEventHref(event) : undefined}
+            />
           ))}
         </div>
       )}

@@ -27,7 +27,8 @@ This plan sequencesthe remaining work to align the four-application architecture
   - Document Redis cache expectations and how planner seeds patrol cache for other apps.
 - **Implementation Tasks:**
   - Build Planner layout with navigation and context-aware hydration queue, mirroring Expedition Viewer views for events and consolidated attendees.
-  - Integrate the Platform Admin patrol data view (including cached patrol mapping indicators) so planners can run patrol audits without leaving the app.
+  - ✅ Shared Expedition Viewer views now back both `/dashboard/planning/events` (list) and `/dashboard/planning/events/attendance[...]` (overview + drilldown) so nav parity is in place.
+  - ✅ Integrated the Platform Admin patrol data view at `/dashboard/planning/patrol-data`, carrying over refresh tooling and admin guards.
   - Embed member data quality views sourced from the existing Data Quality app, keeping route guards/admin scopes intact.
   - Implement patrol refresh tooling and integration with flexi/badge adapters.
   - Ensure cache priming hooks run post login and on demand.
