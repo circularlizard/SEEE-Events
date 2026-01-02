@@ -1,5 +1,5 @@
 "use client";
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ArrowLeft, Phone, Mail, MapPin, Stethoscope, AlertTriangle } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -24,13 +24,54 @@ export function MemberDetailClient({ memberId }: MemberDetailClientProps) {
   const backKey = searchParams.get("from") ?? "members";
   const backLink = BACK_LINKS[backKey] ?? BACK_LINKS.members;
 
-  const { members, isLoading } = useMembers();
+  const { members, isLoading, loadMemberCustomData } = useMembers();
   const member = members.find((m) => m.id === memberId);
   const issues = useMemo(() => (member ? getMemberIssues(member) : []), [member]);
+  const [customStatus, setCustomStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+  const [customError, setCustomError] = useState<string | null>(null);
+  const memberUniqueId = member?.id ?? null;
+  const memberLoadingState = member?.loadingState;
+  const memberErrorMessage = member?.errorMessage ?? null;
+  const memberHydrated = memberLoadingState === "complete" || memberLoadingState === "error";
 
   const onBack = () => {
     router.push(backLink.href);
   };
+
+  useEffect(() => {
+    if (!member) return;
+    if (member.loadingState === "complete") {
+      setCustomStatus("success");
+      setCustomError(null);
+    } else if (member.loadingState === "error") {
+      setCustomStatus("error");
+      setCustomError(member.errorMessage ?? "Unable to load custom data.");
+    }
+  }, [memberLoadingState, memberErrorMessage, member]);
+
+  useEffect(() => {
+    if (!memberUniqueId || memberHydrated) return;
+
+    const controller = new AbortController();
+    setCustomStatus("loading");
+    setCustomError(null);
+
+    loadMemberCustomData(memberUniqueId, { signal: controller.signal })
+      .then((result) => {
+        if (result.status === "loaded" || result.status === "skipped") {
+          setCustomStatus("success");
+        }
+      })
+      .catch((error) => {
+        if (error instanceof DOMException && error.name === "AbortError") {
+          return;
+        }
+        setCustomStatus("error");
+        setCustomError(error instanceof Error ? error.message : "Failed to load custom data.");
+      });
+
+    return () => controller.abort();
+  }, [memberUniqueId, memberHydrated, loadMemberCustomData]);
 
   if (isLoading && !member) {
     return (
@@ -61,6 +102,7 @@ export function MemberDetailClient({ memberId }: MemberDetailClientProps) {
 
   const age = formatAge(member.dateOfBirth);
   const hasIssues = issues.length > 0;
+  const showCustomDataNotice = customStatus === "loading" || customStatus === "error";
 
   return (
     <div className="p-4 md:p-6 space-y-6">
@@ -82,6 +124,41 @@ export function MemberDetailClient({ memberId }: MemberDetailClientProps) {
           Age: {age} • Section member since {member.startedSection || "N/A"}
         </p>
       </div>
+
+      {showCustomDataNotice ? (
+        <Card className="border border-dashed">
+          <CardContent className="py-4 text-sm flex flex-col gap-2">
+            {customStatus === "loading" ? (
+              <>
+                <p className="font-medium">Loading contact & medical details…</p>
+                <p className="text-muted-foreground">
+                  We fetch custom data the first time you open a profile. You can navigate away while this finishes.
+                </p>
+              </>
+            ) : (
+              <>
+                <p className="font-medium text-destructive">Couldn’t load full details</p>
+                <p className="text-muted-foreground">{customError ?? "Unknown error"}</p>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="w-fit"
+                  onClick={() => {
+                    setCustomStatus("loading");
+                    setCustomError(null);
+                    loadMemberCustomData(member.id).catch((error) => {
+                      setCustomStatus("error");
+                      setCustomError(error instanceof Error ? error.message : "Failed to load custom data.");
+                    });
+                  }}
+                >
+                  Retry
+                </Button>
+              </>
+            )}
+          </CardContent>
+        </Card>
+      ) : null}
 
       {hasIssues ? (
         <Card className="border-destructive/40">

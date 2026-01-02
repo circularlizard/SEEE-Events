@@ -45,6 +45,9 @@ interface EnrichmentState {
   currentSectionId: string | null
 }
 
+const isAbortError = (error: unknown): boolean =>
+  error instanceof DOMException && error.name === 'AbortError'
+
 /**
  * TanStack Query hook for fetching members list with progressive enrichment
  * 
@@ -219,68 +222,7 @@ export function useMembers() {
         })
       }
 
-      // Phase 3: Fetch custom data (contacts, medical, consents) for each member
-      completed = 0
-      updateDataSourceProgress('members', {
-        completed: 0,
-        phase: 'Loading member details...',
-      })
-
-      // Get fresh member list from cache (with individual data)
-      const membersWithIndividual = queryClient.getQueryData<NormalizedMember[]>(queryKey) ?? []
-
-      for (const member of membersWithIndividual) {
-        if (abortController.signal.aborted) return
-
-        // Skip members that errored or already have custom data
-        if (member.loadingState === 'error' || member.loadingState === 'complete') {
-          completed++
-          continue
-        }
-
-        try {
-          const customData = await getMemberCustomData({
-            sectionid: Number(sectionId),
-            scoutid: Number(member.id),
-            signal: abortController.signal,
-          })
-
-          if (abortController.signal.aborted) return
-
-          const parsed = parseCustomDataGroups(customData.data)
-          
-          // Update cache with fully enriched member
-          queryClient.setQueryData<NormalizedMember[]>(queryKey, (old) => {
-            if (!old) return old
-            return old.map(m => 
-              m.id === member.id 
-                ? updateMemberWithCustomData(m, parsed)
-                : m
-            )
-          })
-        } catch (error) {
-          if (abortController.signal.aborted) return
-          console.error(`Failed to fetch custom data for member ${member.id}:`, error)
-          const errorMsg = error instanceof Error ? error.message : 'Unknown error'
-          
-          queryClient.setQueryData<NormalizedMember[]>(queryKey, (old) => {
-            if (!old) return old
-            return old.map(m => 
-              m.id === member.id 
-                ? { ...m, loadingState: 'error' as const, errorMessage: errorMsg }
-                : m
-            )
-          })
-        }
-
-        completed++
-        updateDataSourceProgress('members', {
-          completed,
-          phase: `Loading member details (${completed}/${total})...`,
-        })
-      }
-
-      // Mark enrichment complete
+      // Mark summary + individual enrichment complete
       if (!abortController.signal.aborted) {
         updateDataSourceProgress('members', {
           state: 'complete',
@@ -303,6 +245,123 @@ export function useMembers() {
       enrichmentRef.current.isEnriching = false
     }
   }, [sectionId, termId, queryClient, app, abortEnrichment, updateDataSourceProgress])
+
+  const loadMemberCustomData = useCallback(
+    async (
+      memberId: string,
+      options?: {
+        signal?: AbortSignal
+      }
+    ) => {
+      if (!isAdmin) {
+        throw new Error('Only administrators can load member details.')
+      }
+      if (!sectionId) {
+        throw new Error('No section selected.')
+      }
+
+      const queryKey = membersKeys.section(app, sectionId, termId)
+      const existingMembers = queryClient.getQueryData<NormalizedMember[]>(queryKey)
+      if (!existingMembers) {
+        throw new Error('Members not loaded yet.')
+      }
+
+      const currentMember = existingMembers.find((m) => m.id === memberId)
+      if (!currentMember) {
+        throw new Error('Member not found in cache.')
+      }
+
+      if (currentMember.loadingState === 'complete') {
+        return { status: 'skipped' as const }
+      }
+
+      queryClient.setQueryData<NormalizedMember[]>(queryKey, (old) => {
+        if (!old) return old
+        return old.map((m) =>
+          m.id === memberId ? { ...m, loadingState: 'customData' as const } : m
+        )
+      })
+
+      try {
+        const customData = await getMemberCustomData({
+          sectionid: Number(sectionId),
+          scoutid: Number(memberId),
+          signal: options?.signal,
+        })
+
+        if (options?.signal?.aborted) {
+          throw new DOMException('Aborted', 'AbortError')
+        }
+
+        const parsed = parseCustomDataGroups(customData.data)
+        queryClient.setQueryData<NormalizedMember[]>(queryKey, (old) => {
+          if (!old) return old
+          return old.map((m) =>
+            m.id === memberId ? updateMemberWithCustomData(m, parsed) : m
+          )
+        })
+
+        return { status: 'loaded' as const }
+      } catch (error) {
+        if (isAbortError(error)) {
+          queryClient.setQueryData<NormalizedMember[]>(queryKey, (old) => {
+            if (!old) return old
+            return old.map((m) => (m.id === memberId ? currentMember : m))
+          })
+          return { status: 'aborted' as const }
+        }
+
+        const errorMsg = error instanceof Error ? error.message : 'Unknown error'
+        console.error(`Failed to fetch custom data for member ${memberId}:`, error)
+        queryClient.setQueryData<NormalizedMember[]>(queryKey, (old) => {
+          if (!old) return old
+          return old.map((m) =>
+            m.id === memberId ? markMemberError(m, errorMsg) : m
+          )
+        })
+        throw error
+      }
+    },
+    [app, isAdmin, queryClient, sectionId, termId]
+  )
+
+  const loadMissingMemberCustomData = useCallback(
+    async (options?: {
+      onProgress?: (progress: { total: number; completed: number }) => void
+      signal?: AbortSignal
+    }) => {
+      if (!sectionId) {
+        throw new Error('No section selected.')
+      }
+
+      const queryKey = membersKeys.section(app, sectionId, termId)
+      const existingMembers = queryClient.getQueryData<NormalizedMember[]>(queryKey) ?? []
+      const pending = existingMembers.filter(
+        (member) => member.loadingState !== 'complete' && member.loadingState !== 'error'
+      )
+
+      const total = pending.length
+      let completed = 0
+      options?.onProgress?.({ total, completed })
+
+      if (total === 0) {
+        return { total, completed }
+      }
+
+      for (const member of pending) {
+        if (options?.signal?.aborted) {
+          throw new DOMException('Aborted', 'AbortError')
+        }
+
+        await loadMemberCustomData(member.id, { signal: options?.signal })
+        completed++
+        options?.onProgress?.({ total, completed })
+      }
+
+      return { total, completed }
+    },
+    [app, loadMemberCustomData, queryClient, sectionId, termId]
+  )
 
   // Start enrichment when Phase 1 data is available
   useEffect(() => {
@@ -364,5 +423,7 @@ export function useMembers() {
     error: query.error,
     isAdmin,
     refresh,
+    loadMemberCustomData,
+    loadMissingMemberCustomData,
   }
 }

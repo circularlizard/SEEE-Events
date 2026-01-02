@@ -3,16 +3,19 @@
 import { useMemo, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { 
-  Camera, 
-  Stethoscope, 
-  AlertTriangle, 
+import {
+  Camera,
+  Stethoscope,
+  AlertTriangle,
   ArrowUpDown,
   ArrowUp,
   ArrowDown,
   Loader2,
   AlertCircle,
-  RefreshCw
+  RefreshCw,
+  Check,
+  Minus,
+  Ellipsis,
 } from 'lucide-react'
 import { useMembers } from '@/hooks/useMembers'
 import type { NormalizedMember } from '@/lib/schemas'
@@ -191,41 +194,52 @@ function MemberStatusIcons({ member }: { member: NormalizedMember }) {
 /**
  * Loading state indicator for individual member
  */
-function MemberLoadingState({ state }: { state: NormalizedMember['loadingState'] }) {
-  if (state === 'complete') {
-    return (
-      <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-green-100 text-green-700" 
-            title="Data fully loaded"
-            aria-label="Data fully loaded">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-          <polyline points="20 6 9 17 4 12"></polyline>
-        </svg>
-      </span>
-    )
-  }
-  
+type StatusVariant = 'loading' | 'partial' | 'complete' | 'error'
+
+function StatusPill({ state }: { state: NormalizedMember['loadingState'] }) {
+  let variant: StatusVariant = 'loading'
+  let label = 'Loading roster'
+  let icon = <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden />
+
   if (state === 'error') {
-    return (
-      <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-amber-100 text-amber-700"
-            title="Error loading data"
-            aria-label="Error loading data">
-        <AlertTriangle className="h-4 w-4" aria-hidden />
-      </span>
-    )
+    variant = 'error'
+    label = 'Load failed'
+    icon = <AlertTriangle className="h-3.5 w-3.5" aria-hidden />
+  } else if (state === 'complete') {
+    variant = 'complete'
+    label = 'All data ready'
+    icon = <Check className="h-3.5 w-3.5" aria-hidden />
+  } else if (state === 'individual') {
+    variant = 'partial'
+    label = 'Details pending'
+    icon = <Ellipsis className="h-3.5 w-3.5" aria-hidden />
+  } else if (state === 'customData') {
+    variant = 'loading'
+    label = 'Loading'
+    icon = <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden />
+  } else if (state === 'summary') {
+    variant = 'loading'
+    label = 'Loading roster'
   }
-  
-  const loadingLabels: Record<string, string> = {
-    pending: 'Pending',
-    summary: 'Loading member',
-    individual: 'Loading details',
-    customData: 'Loading contacts',
-  }
-  
+
+  const tone = {
+    loading: 'bg-blue-100 text-blue-700 border-blue-200',
+    partial: 'bg-amber-100 text-amber-800 border-amber-200',
+    complete: 'bg-emerald-100 text-emerald-700 border-emerald-200',
+    error: 'bg-destructive/10 text-destructive border-destructive/40',
+  }[variant]
+
   return (
-    <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-blue-100 text-blue-700"
-          title={loadingLabels[state] || 'Loading...'}
-          aria-label={loadingLabels[state] || 'Loading...'}>
-      <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
+    <span
+      className={cn(
+        'inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-[11px] font-medium',
+        tone
+      )}
+      title={label}
+      aria-label={label}
+    >
+      {icon}
+      <span className="whitespace-nowrap">{label}</span>
     </span>
   )
 }
@@ -249,7 +263,7 @@ function MemberCard({ member, onClick }: { member: NormalizedMember; onClick?: (
       <div className="flex items-start justify-between">
         <div className="flex items-center gap-3">
           <div className="flex-shrink-0">
-            <MemberLoadingState state={member.loadingState} />
+            <StatusPill state={member.loadingState} />
           </div>
           <div>
             <h3 className="font-semibold text-base">
@@ -342,33 +356,17 @@ export function MembersClient() {
       {/* Icon legend */}
       <div className="flex flex-wrap items-center gap-4 text-xs text-muted-foreground border rounded-lg p-3 bg-muted/30">
         <span className="font-medium">Key:</span>
-        <div className="flex items-center gap-6 flex-wrap">
-          {/* Status icons */}
-          <div className="flex items-center gap-1.5">
-            <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-green-100 text-green-700">
-              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                <polyline points="20 6 9 17 4 12"></polyline>
-              </svg>
-            </span>
-            <span>Loaded</span>
+        <div className="flex flex-wrap items-center gap-4">
+          <div className="flex items-center gap-2">
+            <StatusPill state="customData" />
           </div>
-          <div className="flex items-center gap-1.5">
-            <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-blue-100 text-blue-700">
-              <Loader2 className="h-3 w-3" aria-hidden />
-            </span>
-            <span>Loading</span>
+          <div className="flex items-center gap-2">
+            <StatusPill state="individual" />
           </div>
-          <div className="flex items-center gap-1.5">
-            <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-amber-100 text-amber-700">
-              <AlertTriangle className="h-3 w-3" aria-hidden />
-            </span>
-            <span>Error</span>
+          <div className="flex items-center gap-2">
+            <StatusPill state="complete" />
           </div>
-          
-          {/* Divider */}
           <span className="text-muted-foreground/30">|</span>
-          
-          {/* Detail icons */}
           <div className="flex items-center gap-1.5">
             <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-green-100 text-green-700">
               <Camera className="h-3 w-3" aria-hidden />
@@ -396,14 +394,17 @@ export function MembersClient() {
           <table className="w-full text-sm">
             <thead className="bg-muted">
               <tr className="border-b">
-                <th className="text-center p-4 font-semibold w-16">
+                <th className="text-left p-4 font-semibold w-48">
                   <SortableHeader 
                     label="Status" 
                     field="status" 
                     currentSort={sortConfig} 
                     onSort={handleSort}
-                    className="justify-center"
+                    className="flex-col items-start gap-0.5"
                   />
+                  <span className="text-[11px] font-normal text-muted-foreground">
+                    Roster + details
+                  </span>
                 </th>
                 <th className="text-left p-4 font-semibold">
                   <SortableHeader 
@@ -451,8 +452,8 @@ export function MembersClient() {
                     key={member.id} 
                     className="border-b last:border-b-0 hover:bg-muted/50 transition-colors"
                   >
-                    <td className="p-4 text-center">
-                      <MemberLoadingState state={member.loadingState} />
+                    <td className="p-4">
+                      <StatusPill state={member.loadingState} />
                     </td>
                     <td className="p-4 font-medium">
                       <Link

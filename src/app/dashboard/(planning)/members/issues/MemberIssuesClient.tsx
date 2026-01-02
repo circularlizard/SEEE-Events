@@ -4,6 +4,7 @@ import { useMemo, useState } from 'react'
 import Link from 'next/link'
 import { AlertCircle, AlertTriangle, Info, ChevronDown, ChevronUp, ArrowUpDown } from 'lucide-react'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
+import { Button } from '@/components/ui/button'
 import { useMembers } from '@/hooks/useMembers'
 import { getMemberIssues, getMembersWithIssues, getIssueCounts } from '@/lib/member-issues'
 import type { NormalizedMember } from '@/lib/schemas'
@@ -139,13 +140,43 @@ function SortableTable({ members, issueType }: SortableTableProps) {
 }
 
 export function MemberIssuesClient() {
-  const { members } = useMembers()
+  const { members, loadMissingMemberCustomData, isAdmin } = useMembers()
+  const [bulkStatus, setBulkStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
+  const [bulkError, setBulkError] = useState<string | null>(null)
+  const [bulkProgress, setBulkProgress] = useState<{ total: number; completed: number }>({ total: 0, completed: 0 })
+
+  const pendingMembers = useMemo(
+    () => members.filter((member) => member.loadingState !== 'complete' && member.loadingState !== 'error'),
+    [members]
+  )
 
   const { counts, membersWithIssues } = useMemo(() => {
     const counts = getIssueCounts(members)
     const membersWithIssues = getMembersWithIssues(members)
     return { counts, membersWithIssues }
   }, [members])
+
+  const handleLoadAll = async () => {
+    if (!isAdmin || pendingMembers.length === 0) return
+
+    setBulkStatus('loading')
+    setBulkError(null)
+    setBulkProgress({ total: pendingMembers.length, completed: 0 })
+
+    try {
+      await loadMissingMemberCustomData({
+        onProgress: (progress) => setBulkProgress(progress),
+      })
+      setBulkStatus('success')
+    } catch (error) {
+      if (error instanceof DOMException && error.name === 'AbortError') {
+        setBulkStatus('idle')
+        return
+      }
+      setBulkStatus('error')
+      setBulkError(error instanceof Error ? error.message : 'Failed to load custom data.')
+    }
+  }
 
   if (members.length === 0) {
     return (
@@ -260,6 +291,43 @@ export function MemberIssuesClient() {
 
   return (
     <div className="space-y-4">
+      <div className="rounded-lg border p-4 space-y-2">
+        <div className="flex flex-col gap-1">
+          <p className="text-sm font-medium">Custom data loading</p>
+          <p className="text-sm text-muted-foreground">
+            {pendingMembers.length === 0
+              ? 'All members already have contact, medical, and consent details.'
+              : `${pendingMembers.length} member${pendingMembers.length === 1 ? '' : 's'} still need custom data.`}
+          </p>
+        </div>
+        <div className="flex flex-wrap items-center gap-3">
+          <Button
+            disabled={!isAdmin || pendingMembers.length === 0 || bulkStatus === 'loading'}
+            onClick={handleLoadAll}
+            size="sm"
+            className="min-w-[120px]"
+          >
+            {bulkStatus === 'loading' ? 'Loading…' : 'Load data'}
+          </Button>
+          {bulkStatus === 'loading' ? (
+            <p className="text-xs text-muted-foreground">
+              Loading {bulkProgress.completed}/{bulkProgress.total}
+            </p>
+          ) : null}
+          {bulkStatus === 'success' ? (
+            <p className="text-xs text-emerald-600">Finished loading custom data.</p>
+          ) : null}
+          {bulkStatus === 'error' ? (
+            <p className="text-xs text-destructive">Error: {bulkError ?? 'Unknown error'}</p>
+          ) : null}
+          {!isAdmin ? (
+            <p className="text-xs text-muted-foreground">
+              Only administrators can load detailed data.
+            </p>
+          ) : null}
+        </div>
+      </div>
+
       <div className="mb-6">
         <h2 className="text-xl font-semibold mb-2">Member Data Issues</h2>
         <p className="text-sm text-muted-foreground">
