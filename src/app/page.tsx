@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Eye, Map, ClipboardCheck, Settings } from "lucide-react";
 import Image from "next/image";
-import { APP_LABELS, APP_DESCRIPTIONS, APP_REQUIRES_ADMIN, PRIMARY_APPS, type AppKey } from "@/types/app";
+import { APP_LABELS, APP_DESCRIPTIONS, APP_REQUIRES_ADMIN, getPrimaryApps, type AppKey } from "@/types/app";
 import { getDefaultPathForApp, getRequiredAppForPath } from "@/lib/app-route-guards";
 
 /**
@@ -90,6 +90,8 @@ function LoginContent() {
     });
   };
 
+  const primaryApps = getPrimaryApps()
+
   return (
     <div className="w-full max-w-4xl space-y-8">
       {/* Header */}
@@ -99,8 +101,16 @@ function LoginContent() {
       </div>
       
       {/* 3-Card App Selection */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {PRIMARY_APPS.map((app) => (
+      <div
+        className={`grid w-full gap-6 justify-center ${
+          primaryApps.length === 1
+            ? 'grid-cols-1 max-w-md mx-auto'
+            : primaryApps.length === 2
+            ? 'grid-cols-1 md:grid-cols-2 md:max-w-3xl mx-auto'
+            : 'grid-cols-1 md:grid-cols-3'
+        }`}
+      >
+        {primaryApps.map((app) => (
           <Card 
             key={app}
             className={`cursor-pointer transition-all hover:shadow-xl hover:scale-105 flex flex-col ${
@@ -174,7 +184,7 @@ function LoginContent() {
               </select>
             </div>
             <div className="flex flex-wrap gap-2">
-              {PRIMARY_APPS.map((app) => (
+              {primaryApps.map((app) => (
                 <Button
                   key={app}
                   variant="outline"

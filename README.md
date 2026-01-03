@@ -392,10 +392,14 @@ MSW_MODE=admin,platform NEXT_PUBLIC_USE_MSW=true npm run dev
 cross-env NEXT_PUBLIC_USE_MSW=true MSW_MODE=standard npm run test:bdd
 
 # Playwright covering admin + platform-only specs
-cross-env NEXT_PUBLIC_USE_MSW=true MSW_MODE=admin,platform npm run test:bdd -- --grep "@platform"
+MSW_MODE=admin,platform NEXT_PUBLIC_USE_MSW=true npm run test:bdd -- --grep "@platform"
 ```
 
 When `NEXT_PUBLIC_USE_MSW=false`, the value of `MSW_MODE` is ignored.
+
+### Controlling visible login apps
+
+Set `NEXT_PUBLIC_VISIBLE_APPS` (comma-separated `AppKey` list) to control which app cards render on the login screen. Defaults to `expedition,planning` so unfinished apps like Data Quality stay hidden.
 
 ### Data Sanitization
 

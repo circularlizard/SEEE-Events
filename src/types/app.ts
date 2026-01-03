@@ -35,7 +35,26 @@ export const APP_REQUIRES_ADMIN: Record<AppKey, boolean> = {
 }
 
 /** Apps shown on the main login cards (primary apps) */
-export const PRIMARY_APPS: AppKey[] = ['expedition', 'planning', 'data-quality']
+const ALL_APP_KEYS: AppKey[] = ['planning', 'expedition', 'platform-admin', 'multi', 'data-quality']
+
+const DEFAULT_VISIBLE_APPS: AppKey[] = ['expedition', 'planning']
+
+const isAppKey = (value: string): value is AppKey => {
+  return (ALL_APP_KEYS as string[]).includes(value)
+}
+
+export const getPrimaryApps = (): AppKey[] => {
+  const raw = process.env.NEXT_PUBLIC_VISIBLE_APPS ?? process.env.VISIBLE_APPS
+  if (!raw) {
+    return DEFAULT_VISIBLE_APPS
+  }
+  const apps = raw
+    .split(',')
+    .map((app) => app.trim())
+    .filter(Boolean)
+    .filter(isAppKey)
+  return apps.length > 0 ? apps : DEFAULT_VISIBLE_APPS
+}
 
 export const DEFAULT_APP_FOR_ROLE: Record<'admin' | 'standard', AppKey> = {
   admin: 'planning',

@@ -17,6 +17,9 @@ describe('Login Page', () => {
   beforeEach(() => {
     jest.spyOn(nextAuthReact, 'signIn').mockResolvedValueOnce(undefined as any)
     jest.spyOn(nextAuthReact, 'useSession' as any).mockReturnValue({ data: null, status: 'unauthenticated' })
+    process.env.NEXT_PUBLIC_MOCK_AUTH_ENABLED = 'false'
+    process.env.MOCK_AUTH_ENABLED = 'false'
+    process.env.NEXT_PUBLIC_VISIBLE_APPS = 'expedition,planning'
   })
 
   afterEach(() => {
@@ -24,12 +27,10 @@ describe('Login Page', () => {
   })
 
   test('renders app cards and hides mock panel when disabled', () => {
-    process.env.NEXT_PUBLIC_MOCK_AUTH_ENABLED = 'false'
-    process.env.MOCK_AUTH_ENABLED = 'false'
     render(<Home />)
     expect(screen.getByText('Expedition Viewer')).toBeInTheDocument()
     expect(screen.getByText('Expedition Planner')).toBeInTheDocument()
-    expect(screen.getByText('OSM Data Quality')).toBeInTheDocument()
+    expect(screen.queryByText('OSM Data Quality')).not.toBeInTheDocument()
     expect(screen.queryByText('Development Mode')).toBeNull()
   })
 
@@ -64,5 +65,13 @@ describe('Login Page', () => {
         appSelection: 'expedition',
       })
     )
+  })
+
+  test('shows configured apps from environment variable', () => {
+    process.env.NEXT_PUBLIC_VISIBLE_APPS = 'expedition,planning,data-quality'
+    render(<Home />)
+    expect(screen.getByText('Expedition Viewer')).toBeInTheDocument()
+    expect(screen.getByText('Expedition Planner')).toBeInTheDocument()
+    expect(screen.getByText('OSM Data Quality')).toBeInTheDocument()
   })
 })
