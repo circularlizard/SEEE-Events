@@ -10,6 +10,9 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Label } from '@/components/ui/label'
 import { Skeleton } from '@/components/ui/skeleton'
 import { useConsolidatedAttendance } from './useConsolidatedAttendance'
+import { ExportMenu } from '@/components/domain/export'
+import { useExportViewContext, createExportColumn } from '@/hooks/useExportContext'
+import type { ExportColumn, ExportRow } from '@/lib/export/types'
 
 type ViewMode = 'byEvent' | 'byAttendee'
 
@@ -128,6 +131,38 @@ export function UnitAttendanceDetail({ unitId, overviewHref, eventDetailBaseHref
     return `${start} — ${end}`
   }
 
+  // Build export columns (REQ-VIEW-10)
+  const exportColumns = useMemo<ExportColumn[]>(() => [
+    createExportColumn('participantName', 'Participant', 'string'),
+    createExportColumn('eventName', 'Event', 'string'),
+    createExportColumn('eventDate', 'Date', 'string'),
+    createExportColumn('location', 'Location', 'string'),
+  ], [])
+
+  // Build export rows - one row per participant-event combination (REQ-VIEW-10)
+  const exportRows = useMemo<ExportRow[]>(() => {
+    const rows: ExportRow[] = []
+    for (const event of eventGroups) {
+      for (const attendee of event.attendees) {
+        rows.push({
+          participantName: attendee.name,
+          eventName: event.eventName,
+          eventDate: formatDateRange(event.startDate, event.endDate) || '—',
+          location: event.location || '—',
+        })
+      }
+    }
+    return rows
+  }, [eventGroups])
+
+  // Create export context (REQ-VIEW-10, REQ-VIEW-12)
+  const exportContext = useExportViewContext({
+    id: `unit-attendance-${unitId}`,
+    title: `${unitName} - Event Attendance`,
+    columns: exportColumns,
+    rows: exportRows,
+  })
+
   if (attendees.length === 0) {
     return (
       <div className="p-4 md:p-6">
@@ -195,17 +230,20 @@ export function UnitAttendanceDetail({ unitId, overviewHref, eventDetailBaseHref
               </div>
             </RadioGroup>
 
-            {(eventGroups.length > 0 || attendeeGroups.length > 0) && (
-              <div className="flex gap-2 text-sm">
-                <button onClick={expandAll} className="text-primary hover:underline" type="button">
-                  Expand All
-                </button>
-                <span className="text-muted-foreground">|</span>
-                <button onClick={collapseAll} className="text-primary hover:underline" type="button">
-                  Collapse All
-                </button>
-              </div>
-            )}
+            <div className="flex items-center gap-4">
+              {(eventGroups.length > 0 || attendeeGroups.length > 0) && (
+                <div className="flex gap-2 text-sm">
+                  <button onClick={expandAll} className="text-primary hover:underline" type="button">
+                    Expand All
+                  </button>
+                  <span className="text-muted-foreground">|</span>
+                  <button onClick={collapseAll} className="text-primary hover:underline" type="button">
+                    Collapse All
+                  </button>
+                </div>
+              )}
+              <ExportMenu context={exportContext} label="Export Attendance" />
+            </div>
           </div>
         </CardContent>
       </Card>

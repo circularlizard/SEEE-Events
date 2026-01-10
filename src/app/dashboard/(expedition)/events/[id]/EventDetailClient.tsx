@@ -12,6 +12,13 @@ import { useEventSummaryCache } from '@/hooks/useEventSummaryCache'
 import { usePatrolMap } from '@/hooks/usePatrolMap'
 import Link from 'next/link'
 import { ArrowLeft } from 'lucide-react'
+import { ExportMenu } from '@/components/domain/export'
+import {
+  useExportViewContext,
+  createExportColumn,
+  createExportFilter,
+} from '@/hooks/useExportContext'
+import type { ExportColumn, ExportRow } from '@/lib/export/types'
 // Using event summary for participant-related info (custom fields names live here)
 
 interface Props {
@@ -174,6 +181,60 @@ export default function EventDetailClient({
     return `${years}y ${months}m`
   }
 
+  // Build export columns from visible columns (REQ-VIEW-10)
+  const exportColumns = useMemo<ExportColumn[]>(() => {
+    const cols: ExportColumn[] = [
+      createExportColumn('name', 'Name', 'string'),
+      createExportColumn('unit', 'Unit', 'string'),
+      createExportColumn('attendance', 'Attendance', 'string'),
+      createExportColumn('age', 'Age', 'string'),
+    ]
+    // Add custom field columns
+    customColumnKeys.forEach((title) => {
+      cols.push(createExportColumn(`custom_${title}`, title, 'string'))
+    })
+    return cols
+  }, [customColumnKeys])
+
+  // Build export rows from filtered/sorted participants (REQ-VIEW-10)
+  const exportRows = useMemo<ExportRow[]>(() => {
+    return participants.map((p) => {
+      const row: ExportRow = {
+        name: p.name,
+        unit: getPatrolName(p.patrol),
+        attendance: p.status ?? '—',
+        age: computeAge(p.dob),
+      }
+      // Add custom field values
+      customColumnKeys.forEach((title) => {
+        row[`custom_${title}`] = p.custom?.[title] || '—'
+      })
+      return row
+    })
+  }, [participants, customColumnKeys, getPatrolName])
+
+  // Build export filters from active filters
+  const exportFilters = useMemo(() => {
+    const filters = []
+    if (unitFilter) {
+      filters.push(createExportFilter('unit', 'Unit', unitFilter))
+    }
+    if (statusFilter) {
+      filters.push(createExportFilter('status', 'Attendance', statusFilter))
+    }
+    return filters
+  }, [unitFilter, statusFilter])
+
+  // Create export context (REQ-VIEW-10, REQ-VIEW-12)
+  // Must be called before early returns to satisfy React hooks rules
+  const exportContext = useExportViewContext({
+    id: `event-participants-${eventId}`,
+    title: `Event ${eventId} - Participants`,
+    columns: exportColumns,
+    rows: exportRows,
+    filters: exportFilters,
+  })
+
   if (isLoading) {
     return (
       <div className="space-y-4">
@@ -299,7 +360,7 @@ export default function EventDetailClient({
               <option value="">Unknown</option>
             </select>
           </div>
-          
+          <ExportMenu context={exportContext} label="Export Participants" />
         </div>
       </Card>
 

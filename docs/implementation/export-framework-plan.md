@@ -81,9 +81,9 @@ Deliver a reusable export capability that lets any dashboard view expose "downlo
 - **Mutation testing:** Extend `/mutation-scan` focus set with exporters once core logic lands.
 
 ## 8. Deliverables Checklist
-- [ ] Export types + service + formatters with tests
-- [ ] `useExportContext` hook and Zustand slice
-- [ ] `<ExportMenu>` component
-- [ ] Expedition Viewer participant export integration
-- [ ] SPEC & ARCH updates referencing export framework
-- [ ] BDD + component tests covering export UI
+- [x] Export types + service + formatters with tests
+- [x] `useExportContext` hook and Zustand slice
+- [x] `<ExportMenu>` component
+- [x] Expedition Viewer participant export integration
+- [x] SPEC & ARCH updates referencing export framework (already documented)
+- [x] BDD + component tests covering export UI
