@@ -186,26 +186,36 @@ export function UnitAttendanceDetail({ unitId, overviewHref, eventDetailBaseHref
 
   return (
     <div className="p-4 md:p-6">
-      <div className="mb-6 rounded-lg bg-primary px-4 py-3 text-primary-foreground">
-        <Link
-          href={overviewHref}
-          className="inline-flex items-center gap-2 text-sm font-medium text-primary-foreground/90 transition-opacity hover:text-primary-foreground hover:opacity-100"
-        >
-          <ArrowLeft className="h-4 w-4" aria-hidden />
-          Back to Attendance Overview
-        </Link>
-        <div className="mt-2">
-          <h1 className="text-3xl font-bold">{unitName}</h1>
-          <div className="flex items-center gap-4 text-sm mt-1 opacity-90">
-            <span className="flex items-center gap-1">
-              <Users className="h-4 w-4" aria-hidden />
-              {peopleCount} {peopleCount === 1 ? 'person' : 'people'}
-            </span>
-            <span className="flex items-center gap-1">
-              <Calendar className="h-4 w-4" aria-hidden />
-              {eventGroups.length} {eventGroups.length === 1 ? 'event' : 'events'}
-            </span>
+      <div className="mb-6 rounded-lg bg-primary px-4 py-4 text-primary-foreground">
+        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+          <div>
+            <Link
+              href={overviewHref}
+              className="inline-flex items-center gap-2 text-sm font-medium text-primary-foreground/90 transition-opacity hover:text-primary-foreground hover:opacity-100"
+            >
+              <ArrowLeft className="h-4 w-4" aria-hidden />
+              Back to Attendance Overview
+            </Link>
+            <div className="mt-2">
+              <h1 className="text-3xl font-bold">{unitName}</h1>
+              <div className="flex items-center gap-4 text-sm mt-1 opacity-90">
+                <span className="flex items-center gap-1">
+                  <Users className="h-4 w-4" aria-hidden />
+                  {peopleCount} {peopleCount === 1 ? 'person' : 'people'}
+                </span>
+                <span className="flex items-center gap-1">
+                  <Calendar className="h-4 w-4" aria-hidden />
+                  {eventGroups.length} {eventGroups.length === 1 ? 'event' : 'events'}
+                </span>
+              </div>
+            </div>
           </div>
+          <ExportMenu
+            context={exportContext}
+            label="Export Attendance"
+            buttonVariant="ghost"
+            className="self-start border border-white/30 bg-white/10 text-primary-foreground hover:bg-white/20"
+          />
         </div>
       </div>
 
@@ -230,20 +240,17 @@ export function UnitAttendanceDetail({ unitId, overviewHref, eventDetailBaseHref
               </div>
             </RadioGroup>
 
-            <div className="flex items-center gap-4">
-              {(eventGroups.length > 0 || attendeeGroups.length > 0) && (
-                <div className="flex gap-2 text-sm">
-                  <button onClick={expandAll} className="text-primary hover:underline" type="button">
-                    Expand All
-                  </button>
-                  <span className="text-muted-foreground">|</span>
-                  <button onClick={collapseAll} className="text-primary hover:underline" type="button">
-                    Collapse All
-                  </button>
-                </div>
-              )}
-              <ExportMenu context={exportContext} label="Export Attendance" />
-            </div>
+            {(eventGroups.length > 0 || attendeeGroups.length > 0) && (
+              <div className="flex gap-2 text-sm">
+                <button onClick={expandAll} className="text-primary hover:underline" type="button">
+                  Expand All
+                </button>
+                <span className="text-muted-foreground">|</span>
+                <button onClick={collapseAll} className="text-primary hover:underline" type="button">
+                  Collapse All
+                </button>
+              </div>
+            )}
           </div>
         </CardContent>
       </Card>

@@ -9,7 +9,7 @@
 
 import { useState, useCallback } from 'react'
 import { Download, FileSpreadsheet, FileText, Loader2 } from 'lucide-react'
-import { Button } from '@/components/ui/button'
+import { Button, type ButtonProps } from '@/components/ui/button'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -30,6 +30,10 @@ export interface ExportMenuProps {
   label?: string
   /** Callback when export completes */
   onExportComplete?: (success: boolean, filename?: string, error?: string) => void
+  /** Button variant override */
+  buttonVariant?: ButtonProps['variant']
+  /** Button size override */
+  buttonSize?: ButtonProps['size']
 }
 
 export function ExportMenu({
@@ -37,6 +41,8 @@ export function ExportMenu({
   className,
   label = 'Export',
   onExportComplete,
+  buttonVariant = 'outline',
+  buttonSize = 'sm',
 }: ExportMenuProps) {
   const [isExporting, setIsExporting] = useState(false)
   const [exportingFormat, setExportingFormat] = useState<ExportFormat | null>(null)
@@ -76,8 +82,8 @@ export function ExportMenu({
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button
-          variant="outline"
-          size="sm"
+          variant={buttonVariant}
+          size={buttonSize}
           className={className}
           disabled={isDisabled || isExporting}
           aria-label={`${label} data as spreadsheet or PDF`}

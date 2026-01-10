@@ -1,9 +1,7 @@
 "use client";
 
-import { useStore } from "@/store/use-store";
-import { useSession } from "next-auth/react";
-import { usePathname } from "next/navigation";
 import Link from "next/link";
+import { useSession } from "next-auth/react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
@@ -17,20 +15,14 @@ import { LogOut, TentTree } from "lucide-react";
 import { useLogout } from "@/components/QueryProvider";
 import { APP_LABELS } from "@/types/app";
 import { cn } from "@/lib/utils";
+import { useNavigationMenu } from "./use-navigation";
+import { MobileNavigation } from "./MobileNavigation";
 
 export default function Header() {
-  const currentSection = useStore((s) => s.currentSection);
-  const selectedSections = useStore((s) => s.selectedSections);
-  const availableSections = useStore((s) => s.availableSections);
-  const currentApp = useStore((s) => s.currentApp);
-  const selectedSectionName = currentSection?.sectionName ?? null;
-  const multiNames = selectedSections.length > 0 ? selectedSections.map((s) => s.sectionName) : [];
   const { data: session } = useSession();
-  const pathname = usePathname();
+  const { currentApp, multiNames, selectedSectionName, canChangeSection, changeSectionHref } = useNavigationMenu();
   const logout = useLogout();
 
-  const showChangeSectionButton = availableSections.length > 1;
-  const changeSectionHref = `/dashboard/section-picker?redirect=${encodeURIComponent(pathname || "/dashboard")}`;
   const appLabel = currentApp ? APP_LABELS[currentApp] : APP_LABELS.expedition;
   const initials = (() => {
     const name = session?.user?.name || "";
@@ -46,6 +38,9 @@ export default function Header() {
     <header className="w-full border-b border-slate-200/60 bg-white/80 backdrop-blur-xl supports-[backdrop-filter]:bg-white/70 shadow-[0_8px_30px_rgba(15,23,42,0.06)] sticky top-0 z-40">
       <div className="px-4 h-14 flex items-center justify-between">
         <div className="flex items-center gap-2">
+          <div className="md:hidden">
+            <MobileNavigation />
+          </div>
           <TentTree className="h-6 w-6 text-primary" aria-hidden />
           <span className="font-semibold tracking-tight text-lg">OSM Dashboard</span>
           <span
@@ -56,6 +51,11 @@ export default function Header() {
           >
             {appLabel}
           </span>
+          {canChangeSection && (
+            <Link href={changeSectionHref} className="hidden md:inline-flex">
+              <Button variant="outline" size="sm">Change section</Button>
+            </Link>
+          )}
           <div className="flex items-center gap-2 md:hidden">
             {multiNames.length > 0 ? (
               <TooltipProvider>
@@ -70,13 +70,6 @@ export default function Header() {
               </TooltipProvider>
             ) : (
               selectedSectionName && <span className="text-sm text-muted-foreground">• {selectedSectionName}</span>
-            )}
-            {showChangeSectionButton && (
-              <Link href={changeSectionHref}>
-                <Button variant="outline" size="sm" className="ml-1">
-                  Change Section
-                </Button>
-              </Link>
             )}
           </div>
         </div>

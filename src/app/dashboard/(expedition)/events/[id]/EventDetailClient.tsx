@@ -279,15 +279,25 @@ export default function EventDetailClient({
 
   return (
     <div className="p-4 md:p-6 space-y-6">
-      <div className="mb-6 rounded-lg bg-primary px-4 py-3 text-primary-foreground">
-        <Link
-          href={backHref}
-          className="inline-flex items-center gap-2 text-sm font-medium text-primary-foreground/90 transition-opacity hover:text-primary-foreground hover:opacity-100"
-        >
-          <ArrowLeft className="h-4 w-4" aria-hidden />
-          Back to Events
-        </Link>
-        <h1 className="mt-2 text-3xl font-bold tracking-tight">{name}</h1>
+      <div className="mb-6 rounded-lg bg-primary px-4 py-4 text-primary-foreground">
+        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+          <div>
+            <Link
+              href={backHref}
+              className="inline-flex items-center gap-2 text-sm font-medium text-primary-foreground/90 transition-opacity hover:text-primary-foreground hover:opacity-100"
+            >
+              <ArrowLeft className="h-4 w-4" aria-hidden />
+              Back to Events
+            </Link>
+            <h1 className="mt-2 text-3xl font-bold tracking-tight">{name}</h1>
+          </div>
+          <ExportMenu
+            context={exportContext}
+            label="Export Participants"
+            buttonVariant="ghost"
+            className="self-start border border-white/30 bg-white/10 text-primary-foreground hover:bg-white/20"
+          />
+        </div>
       </div>
 
       <div className="rounded-2xl border border-border/70 bg-card/90 px-5 py-4 shadow-[0_12px_30px_rgba(15,23,42,0.08)] space-y-4 md:grid md:grid-cols-2 md:gap-6">
@@ -338,29 +348,26 @@ export default function EventDetailClient({
       </div>
 
       <Card className="p-4">
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
-            <label htmlFor="unitFilter" className="text-sm">Unit</label>
-            <input
-              id="unitFilter"
-              value={unitFilter}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setUnitFilter(e.target.value)}
-              placeholder="Filter by unit"
-              className="w-40 border rounded px-2 py-1 text-sm"
-            />
-            <select
-              value={statusFilter}
-              onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setStatusFilter(e.target.value)}
-              className="w-40 border rounded px-2 py-1 text-sm"
-            >
-              <option value="">Attendance Status</option>
-              <option value="Yes">Yes</option>
-              <option value="No">No</option>
-              <option value="Invited">Invited</option>
-              <option value="">Unknown</option>
-            </select>
-          </div>
-          <ExportMenu context={exportContext} label="Export Participants" />
+        <div className="flex flex-wrap items-center gap-4">
+          <label htmlFor="unitFilter" className="text-sm">Unit</label>
+          <input
+            id="unitFilter"
+            value={unitFilter}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setUnitFilter(e.target.value)}
+            placeholder="Filter by unit"
+            className="w-40 border rounded px-2 py-1 text-sm"
+          />
+          <select
+            value={statusFilter}
+            onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setStatusFilter(e.target.value)}
+            className="w-40 border rounded px-2 py-1 text-sm"
+          >
+            <option value="">Attendance Status</option>
+            <option value="Yes">Yes</option>
+            <option value="No">No</option>
+            <option value="Invited">Invited</option>
+            <option value="">Unknown</option>
+          </select>
         </div>
       </Card>
 

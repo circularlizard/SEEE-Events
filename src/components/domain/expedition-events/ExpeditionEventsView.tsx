@@ -147,21 +147,24 @@ function Header({
   exportContext?: ReturnType<typeof useExportViewContext>;
 }) {
   return (
-    <div className="mb-6 rounded-lg bg-primary text-primary-foreground px-4 py-3 flex items-center justify-between gap-4">
-      <div>
-        <h1 className="text-3xl font-bold flex items-center gap-2">
-          <CalendarDays className="h-6 w-6" aria-hidden />
-          <span>{title}</span>
-        </h1>
-        <p className="mt-1 text-sm md:text-base opacity-90">{description}</p>
+    <div className="mb-6 rounded-lg bg-primary text-primary-foreground px-4 py-4">
+      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+        <div>
+          <h1 className="text-3xl font-bold flex items-center gap-2">
+            <CalendarDays className="h-6 w-6" aria-hidden />
+            <span>{title}</span>
+          </h1>
+          <p className="mt-1 text-sm md:text-base opacity-90">{description}</p>
+        </div>
+        {exportContext && (
+          <ExportMenu
+            context={exportContext}
+            label="Export All Participants"
+            buttonVariant="ghost"
+            className="self-start border border-white/30 bg-white/10 text-primary-foreground hover:bg-white/20"
+          />
+        )}
       </div>
-      {exportContext && (
-        <ExportMenu 
-          context={exportContext} 
-          label="Export All Participants" 
-          className="bg-primary-foreground/20 hover:bg-primary-foreground/30 text-primary-foreground border-primary-foreground/30"
-        />
-      )}
     </div>
   );
 }
