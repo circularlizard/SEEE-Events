@@ -20,7 +20,7 @@ export const APP_DESCRIPTIONS: Record<AppKey, string> = {
 export const APP_SCOPES: Record<AppKey, string[]> = {
   expedition: ['section:event:read'],
   planning: ['section:event:read', 'section:member:read', 'section:programme:read', 'section:flexirecord:read'],
-  'data-quality': ['section:event:read', 'section:member:read', 'section:programme:read', 'section:flexirecord:read'],
+  'data-quality': ['section:member:read'],
   'platform-admin': ['section:event:read', 'section:member:read', 'section:programme:read', 'section:flexirecord:read'],
   multi: ['section:event:read', 'section:member:read', 'section:programme:read', 'section:flexirecord:read'],
 }
@@ -29,7 +29,7 @@ export const APP_SCOPES: Record<AppKey, string[]> = {
 export const APP_REQUIRES_ADMIN: Record<AppKey, boolean> = {
   expedition: false,
   planning: true,
-  'data-quality': true,
+  'data-quality': false,
   'platform-admin': true,
   multi: true,
 }
@@ -56,7 +56,8 @@ export const getPrimaryApps = (): AppKey[] => {
   return apps.length > 0 ? apps : DEFAULT_VISIBLE_APPS
 }
 
-export const DEFAULT_APP_FOR_ROLE: Record<'admin' | 'standard', AppKey> = {
+export const DEFAULT_APP_FOR_ROLE: Record<'admin' | 'standard' | 'data-quality', AppKey> = {
   admin: 'planning',
   standard: 'expedition',
+  'data-quality': 'data-quality',
 }

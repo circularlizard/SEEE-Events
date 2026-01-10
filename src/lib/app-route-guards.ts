@@ -26,6 +26,18 @@ const startsWith = (prefix: string) => {
     pathname === normalizedPrefix || pathname.startsWith(`${normalizedPrefix}/`);
 };
 
+// Routes that are accessible from any app (no app-specific requirement)
+const appAgnosticRoutes = [
+  "/dashboard/section-picker",
+];
+
+const isAppAgnosticRoute = (pathname: string): boolean => {
+  const normalized = normalizePath(pathname);
+  return appAgnosticRoutes.some(route => 
+    normalized === route || normalized.startsWith(`${route}/`)
+  );
+};
+
 const routeMatchers: RouteMatcher[] = [
   {
     app: "platform-admin",
@@ -42,8 +54,7 @@ const routeMatchers: RouteMatcher[] = [
   {
     app: "multi",
     match: (pathname) =>
-      startsWith("/dashboard/members")(pathname) ||
-      startsWith("/dashboard/section-picker")(pathname),
+      startsWith("/dashboard/members")(pathname),
   },
   {
     app: "planning",
@@ -81,6 +92,12 @@ const DEFAULT_APP_PATH: Record<AppKey, string> = {
 
 export function getRequiredAppForPath(pathname: string): AppKey | null {
   const normalized = normalizePath(pathname);
+  
+  // App-agnostic routes don't require a specific app
+  if (isAppAgnosticRoute(normalized)) {
+    return null;
+  }
+  
   for (const matcher of routeMatchers) {
     if (matcher.match(normalized)) {
       return matcher.app;

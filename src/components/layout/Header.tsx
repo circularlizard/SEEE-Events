@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -20,7 +19,7 @@ import { MobileNavigation } from "./MobileNavigation";
 
 export default function Header() {
   const { data: session } = useSession();
-  const { currentApp, multiNames, selectedSectionName, canChangeSection, changeSectionHref } = useNavigationMenu();
+  const { currentApp, multiNames, selectedSectionName } = useNavigationMenu();
   const logout = useLogout();
 
   const appLabel = currentApp ? APP_LABELS[currentApp] : APP_LABELS.expedition;
@@ -51,11 +50,6 @@ export default function Header() {
           >
             {appLabel}
           </span>
-          {canChangeSection && (
-            <Link href={changeSectionHref} className="hidden md:inline-flex">
-              <Button variant="outline" size="sm">Change section</Button>
-            </Link>
-          )}
           <div className="flex items-center gap-2 md:hidden">
             {multiNames.length > 0 ? (
               <TooltipProvider>

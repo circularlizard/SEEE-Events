@@ -22,7 +22,7 @@ export interface ExtendedUser extends DefaultUser {
   sections?: OAuthData['sections']
   sectionIds?: number[]
   scopes?: string[]
-  roleSelection?: 'admin' | 'standard'
+  roleSelection?: 'admin' | 'standard' | 'data-quality'
   appSelection?: AppKey
 }
 
@@ -55,10 +55,10 @@ interface OsmSection {
 }
 
 /**
- * Role-based scope calculator (legacy - now derived from app)
+ * Role-based scope calculator
  * Determines OAuth scopes based on selected user role
  */
-function getScopesForRole(role: 'admin' | 'standard'): string[] {
+function getScopesForRole(role: 'admin' | 'standard' | 'data-quality'): string[] {
   if (role === 'admin') {
     return [
       'section:event:read',
@@ -66,6 +66,9 @@ function getScopesForRole(role: 'admin' | 'standard'): string[] {
       'section:programme:read',
       'section:flexirecord:read',
     ]
+  }
+  if (role === 'data-quality') {
+    return ['section:member:read']
   }
   // Standard viewer - minimal scope
   return ['section:event:read']
@@ -148,7 +151,7 @@ function getProviders(): AuthOptions['providers'] {
         },
         async authorize(credentials) {
           const username = credentials?.username as string
-          const roleSelection = (credentials?.roleSelection || 'standard') as 'admin' | 'standard'
+          const roleSelection = (credentials?.roleSelection || 'standard') as 'admin' | 'standard' | 'data-quality'
           const appSelection = (credentials?.appSelection as AppKey | undefined) ?? DEFAULT_APP_FOR_ROLE[roleSelection]
           const mockUser = getMockUser(username)
           
@@ -170,9 +173,9 @@ function getProviders(): AuthOptions['providers'] {
   // Production: OSM OAuth providers - separate provider per role
   // This allows different OAuth scopes to be requested based on user's role selection
   
-  const createOAuthProvider = (role: 'admin' | 'standard') => ({
-    id: role === 'admin' ? 'osm-admin' : 'osm-standard',
-    name: `Online Scout Manager (${role === 'admin' ? 'Administrator' : 'Standard Viewer'})`,
+  const createOAuthProvider = (role: 'admin' | 'standard' | 'data-quality') => ({
+    id: role === 'admin' ? 'osm-admin' : role === 'data-quality' ? 'osm-data-quality' : 'osm-standard',
+    name: `Online Scout Manager (${role === 'admin' ? 'Administrator' : role === 'data-quality' ? 'Data Quality' : 'Standard Viewer'})`,
     type: 'oauth' as const,
     version: '2.0',
     authorization: {
@@ -225,6 +228,7 @@ function getProviders(): AuthOptions['providers'] {
   return [
     createOAuthProvider('admin'),
     createOAuthProvider('standard'),
+    createOAuthProvider('data-quality'),
   ] as AuthOptions['providers']
 }
 

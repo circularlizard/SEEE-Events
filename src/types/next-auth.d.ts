@@ -10,7 +10,7 @@ declare module 'next-auth' {
     error?: string
     sectionIds?: number[]
     scopes?: string[]
-    roleSelection?: 'admin' | 'standard'
+    roleSelection?: 'admin' | 'standard' | 'data-quality'
     appSelection?: import('@/types/app').AppKey
   }
 
@@ -34,10 +34,11 @@ declare module 'next-auth/jwt' {
     accessTokenExpires?: number
     sectionIds?: number[]
     scopes?: string[]
-    roleSelection?: 'admin' | 'standard'
+    roleSelection?: 'admin' | 'standard' | 'data-quality'
     appSelection?: import('@/types/app').AppKey
     refreshToken?: string
     error?: string
+    sessionVersion?: number
     user?: {
       id: string
       name: string

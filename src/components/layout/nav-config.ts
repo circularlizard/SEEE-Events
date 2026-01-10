@@ -173,13 +173,11 @@ const dataQualityNav: NavSection[] = [
         label: "Members",
         href: "/dashboard/data-quality/members",
         icon: UsersIcon,
-        requiresAdmin: true,
       },
       {
         label: "Member Data Issues",
         href: "/dashboard/data-quality/members/issues",
         icon: AlertTriangle,
-        requiresAdmin: true,
       },
     ],
   },

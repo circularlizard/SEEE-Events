@@ -45,10 +45,11 @@ function LoginContent() {
   }
 
   const handleAppSelect = (app: AppKey) => {
+    console.log('[Login] handleAppSelect called with app:', app);
     setSelectedApp(app);
     
-    // Determine OAuth provider based on app requirements
-    const provider = APP_REQUIRES_ADMIN[app] ? 'osm-admin' : 'osm-standard';
+    // Determine OAuth provider based on app: data-quality gets its own provider
+    const provider = app === 'data-quality' ? 'osm-data-quality' : (APP_REQUIRES_ADMIN[app] ? 'osm-admin' : 'osm-standard');
     console.log('[Login] Signing in with provider:', provider, 'app:', app);
     
     const resolvedCallbackUrl = (() => {
@@ -63,13 +64,15 @@ function LoginContent() {
       return getDefaultPathForApp(app)
     })()
 
+    console.log('[Login] Calling signIn with provider:', provider, 'callbackUrl:', `${resolvedCallbackUrl}?appSelection=${app}`);
     signIn(provider, {
       callbackUrl: `${resolvedCallbackUrl}?appSelection=${app}`,
     });
   };
   
   const handleMockLogin = (app: AppKey) => {
-    const roleSelection = APP_REQUIRES_ADMIN[app] ? 'admin' : 'standard';
+    // Determine role based on app: data-quality gets its own role type
+    const roleSelection = app === 'data-quality' ? 'data-quality' : (APP_REQUIRES_ADMIN[app] ? 'admin' : 'standard');
     const resolvedCallbackUrl = (() => {
       try {
         const requiredApp = getRequiredAppForPath(callbackUrl)

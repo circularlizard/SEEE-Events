@@ -45,8 +45,9 @@ describe('app-route-guards', () => {
         expect(getRequiredAppForPath('/dashboard/members/issues')).toBe('multi')
       })
 
-      it('detects /dashboard/section-picker routes', () => {
-        expect(getRequiredAppForPath('/dashboard/section-picker')).toBe('multi')
+      it('detects /dashboard/section-picker routes as app-agnostic', () => {
+        // Section picker is app-agnostic (accessible from any app)
+        expect(getRequiredAppForPath('/dashboard/section-picker')).toBeNull()
       })
     })
 
