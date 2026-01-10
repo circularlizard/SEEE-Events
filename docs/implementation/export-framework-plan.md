@@ -43,7 +43,7 @@ Deliver a reusable export capability that lets any dashboard view expose "downlo
    - Column ordering
    - Filter metadata inclusion
    - Unicode name rendering (scout names, patrols)
-4. Introduce `<ExportMenu>` component with Storybook-style visual test (or Jest + Testing Library snapshot) to verify disabled/enabled states.
+4. Introduce `<ExportMenu>` component with Jest + Testing Library interaction tests to verify disabled/enabled states and format selection.
 
 ### Phase B – Expedition Viewer Participant Export
 1. Extend `EventDetailClient`:
