@@ -21,7 +21,7 @@ export default async function PlannerEventDetailPage({ params }: PlannerEventDet
     <EventDetailClient
       eventId={eventId}
       backHref="/dashboard/planning/events"
-      attendanceHrefBase="/dashboard/planning/events/attendance"
+      attendanceHrefBase="/dashboard/planning/events/units"
     />
   )
 }
