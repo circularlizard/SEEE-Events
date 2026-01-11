@@ -19,6 +19,7 @@ import {
 import { useMembers } from '@/hooks/useMembers'
 import type { NormalizedMember } from '@/lib/schemas'
 import { cn } from '@/lib/utils'
+import { useStore } from '@/store/use-store'
 
 /**
  * Format other sections for display (excludes the primary patrol)
@@ -309,7 +310,12 @@ function MemberCard({ member, onClick }: { member: NormalizedMember; onClick?: (
 export function MembersClient() {
   const { members, isLoading, isFetched, refresh } = useMembers()
   const router = useRouter()
+  const currentApp = useStore((s) => s.currentApp)
   const [sortConfig, setSortConfig] = useState<SortConfig>({ field: 'name', direction: 'asc' })
+  const detailBasePath = useMemo(
+    () => (currentApp === 'data-quality' ? '/dashboard/data-quality/members' : '/dashboard/planning/members'),
+    [currentApp]
+  )
   
   const sortedMembers = useMemo(
     () => sortMembers(members, sortConfig),
@@ -346,7 +352,7 @@ export function MembersClient() {
     )
   }
   
-  const detailHref = (id: string) => `/dashboard/planning/members/${encodeURIComponent(id)}?from=members`
+  const detailHref = (id: string) => `${detailBasePath}/${encodeURIComponent(id)}?from=members`
 
   return (
     <div className="space-y-4">
