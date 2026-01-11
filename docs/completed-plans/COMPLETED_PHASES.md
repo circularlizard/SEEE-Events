@@ -399,6 +399,23 @@ Reference documentation for all completed implementation phases. For active/futu
 
 **Summary:** Delivered the reusable client-side export framework and shipped the first Expedition Viewer surface (participants by unit) with XLSX/PDF downloads that mirror on-screen filters and layout fidelity.
 
+---
+
+## **Data Quality Alignment Plan ✅ COMPLETE (Jan 11, 2026)**
+
+**Plan:** [data-quality-alignment-plan-completed-2026-01-11.md](./data-quality-alignment-plan-completed-2026-01-11.md)
+
+**Summary:** Stood up the dedicated Data Quality app with its own login provider, route group, navigation, and section persistence so multi-section admins can investigate member data issues without SEEE-specific constraints.
+
+**Key Deliverables:**
+1. Added the `data-quality` app definition (scopes, labels, default routes) plus route guards and layout shell under `/dashboard/(data-quality)`.
+2. Introduced the `osm-data-quality` OAuth provider, JWT/session role updates, and login flow wiring so the app requests only `section:member:read`.
+3. Persisted per-app section selection in Zustand/localStorage, preventing cross-app contamination and ensuring the Data Quality selector hydrates multi-section admins.
+4. Updated `useMembers`, hydration hooks, and member issues view to honor the new role, removing admin-only guards and enabling detail hydration/exports for Data Quality users.
+5. Blocked events data loading for the Data Quality app to avoid scope errors, fixed hook-order bugs in `ClientShell`, and documented the new behaviors.
+
+**Output:** Fully functioning Data Quality experience aligned with the Expedition apps, with read-only OSM requests scoped to members data, stable navigation, and archived plan documentation.
+
 **Key Deliverables:**
 1. Export types, service orchestration, and SheetJS/react-pdf formatters with Jest coverage plus lazy-loading to protect bundle size.
 2. `useExportContext` hook + Zustand slice with optional prop-based wiring for MVP views.
