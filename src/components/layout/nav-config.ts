@@ -30,6 +30,11 @@ const expeditionNav: NavSection[] = [
   {
     items: [
       {
+        label: "Dashboard",
+        href: "/dashboard",
+        icon: LayoutDashboard,
+      },
+      {
         label: "Unit Overview",
         href: "/dashboard/events/units",
         icon: UsersIcon,

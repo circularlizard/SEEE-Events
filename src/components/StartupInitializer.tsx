@@ -6,7 +6,6 @@ import { useRouter, usePathname } from 'next/navigation'
 import { useStore } from '@/store/use-store'
 import { validateAppPermissions } from '@/lib/permissions'
 import type { OAuthData } from '@/lib/redis'
-import type { OsmPermissions } from '@/lib/permissions'
 import type { AppKey } from '@/types/app'
 import { SEEE_FALLBACK_SECTION, SEEE_SECTION_ID } from '@/lib/seee'
 
@@ -23,15 +22,6 @@ type OAuthSection = OAuthData['sections'][number] & {
   upgrades?: { events?: boolean; programme?: boolean }
   terms?: Array<{ term_id?: string | number }>
   section_type?: string
-}
-
-/** Role from startup data with permissions */
-interface StartupRole {
-  sectionid: string
-  sectionname: string
-  section?: string
-  permissions?: OsmPermissions
-  [key: string]: unknown
 }
 
 /**
@@ -179,91 +169,35 @@ export default function StartupInitializer() {
         const isSEEEApp = Boolean(currentApp && seeeApps.includes(currentApp))
         
         // Validate permissions for the selected app (REQ-AUTH-16)
-        // Fetch startup data to get permissions from globals.roles
-        if (currentApp) {
-          try {
-            const startupResponse = await fetch('/api/proxy/ext/generic/startup/?action=getData')
-            if (startupResponse.ok) {
-              const startupData = await startupResponse.json()
-              const roles = startupData?.globals?.roles as StartupRole[] | undefined
-
-              const rolesWithPermissions = (roles || []).filter((r) => Boolean(r?.permissions))
-              const permissionsBySectionId = new Map<string, OsmPermissions>()
-              for (const r of rolesWithPermissions) {
-                permissionsBySectionId.set(String(r.sectionid), r.permissions as OsmPermissions)
-              }
-
-              // Filter sections to those that are usable for the current app.
-              // - SEEE apps: only SEEE section is usable.
-              // - Multi-section apps: any section where permissions satisfy the app is usable.
-              const permittedSections = (() => {
-                if (isSEEEApp) {
-                  const seeeSection = storeSections.find((s: { sectionId: string }) => s.sectionId === SEEE_SECTION_ID)
-                  return seeeSection ? [seeeSection] : []
-                }
-                return storeSections.filter((s: { sectionId: string }) => {
-                  const perms = permissionsBySectionId.get(s.sectionId)
-                  return validateAppPermissions(currentApp, perms).length === 0
-                })
-              })()
-
-              // Decide permission validation outcome.
-              if (isSEEEApp) {
-                const hasSeeeSectionAccess = storeSections.some((s: { sectionId: string }) => s.sectionId === SEEE_SECTION_ID)
-                if (!hasSeeeSectionAccess) {
-                  const missing = validateAppPermissions(currentApp, null)
-                  console.warn('[StartupInitializer] SEEE section not present in accessible sections for app:', currentApp, missing)
-                  setMissingPermissions(missing)
-                  setPermissionValidated(false)
-                  return
-                }
-                const seeePerms = permissionsBySectionId.get(SEEE_SECTION_ID)
-                const missing = validateAppPermissions(currentApp, seeePerms)
-                if (missing.length > 0) {
-                  console.warn('[StartupInitializer] Missing SEEE permissions for app:', currentApp, missing)
-                  setMissingPermissions(missing)
-                  setPermissionValidated(false)
-                  return
-                }
-              } else {
-                if (permittedSections.length === 0) {
-                  // Compute a helpful missing list using the "best" candidate section (fewest missing perms)
-                  const candidates = Array.from(permissionsBySectionId.entries())
-                  let bestMissing: string[] | null = null
-                  for (const [, perms] of candidates) {
-                    const missing = validateAppPermissions(currentApp, perms)
-                    if (!bestMissing || missing.length < bestMissing.length) {
-                      bestMissing = missing
-                    }
-                  }
-                  const missingToShow = bestMissing ?? validateAppPermissions(currentApp, null)
-                  console.warn('[StartupInitializer] Missing permissions on all sections for app:', currentApp, missingToShow)
-                  setMissingPermissions(missingToShow)
-                  setPermissionValidated(false)
-                  return
-                }
-              }
-
-              // Permissions OK: publish filtered sections.
-              setAvailableSections(permittedSections)
-              setPermissionValidated(true)
-              setMissingPermissions([])
-              if (process.env.NODE_ENV !== 'production') {
-                console.debug('[StartupInitializer] Permission validation passed for app:', currentApp, 'permittedSections:', permittedSections.length)
-              }
-            } else {
-              // If we cannot load startup data, fail open (do not block the user).
-              // This keeps behaviour consistent with the catch branch.
-              setAvailableSections(storeSections)
-              setPermissionValidated(true)
-              setMissingPermissions([])
-            }
-          } catch (error) {
-            console.error('[StartupInitializer] Failed to fetch startup data for permission validation:', error)
-            // Continue without permission validation on error - fail open for now
-            setAvailableSections(storeSections)
+        // For SEEE apps, we only need to check if user has access to the SEEE section
+        // (available from OAuth data). For other apps, we'd need startup data for
+        // detailed permissions, but that endpoint returns JSONP not JSON.
+        if (isSEEEApp) {
+          // SEEE apps: validate access to SEEE section from OAuth data
+          const seeeSection = storeSections.find((s: { sectionId: string }) => s.sectionId === SEEE_SECTION_ID)
+          if (seeeSection) {
+            setAvailableSections([seeeSection])
             setPermissionValidated(true)
             setMissingPermissions([])
+            if (process.env.NODE_ENV !== 'production') {
+              console.debug('[StartupInitializer] SEEE section access validated for app:', currentApp)
+            }
+          } else {
+            const missing = validateAppPermissions(currentApp as AppKey, null)
+            console.warn('[StartupInitializer] SEEE section not present in accessible sections for app:', currentApp, missing)
+            setMissingPermissions(missing)
+            setPermissionValidated(false)
+            return
+          }
+        } else if (currentApp) {
+          // Non-SEEE apps: use all available sections from OAuth data
+          // Note: The ext/generic/startup endpoint returns JSONP (JavaScript), not JSON,
+          // so we cannot use it for detailed permission validation. Fall back to OAuth sections.
+          setAvailableSections(storeSections)
+          setPermissionValidated(true)
+          setMissingPermissions([])
+          if (process.env.NODE_ENV !== 'production') {
+            console.debug('[StartupInitializer] Using OAuth sections for app:', currentApp, 'sections:', storeSections.length)
           }
         } else {
           // No app selected yet - skip permission validation

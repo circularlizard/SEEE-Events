@@ -32,7 +32,7 @@ export default function EventDetailClient({
   backHref = '/dashboard/events',
   attendanceHrefBase = '/dashboard/events/attendance',
 }: Props) {
-  const { data, isLoading, isError } = useEventDetail(eventId)
+  const { data, isLoading, isPending, isError } = useEventDetail(eventId)
   const [unitFilter, setUnitFilter] = useState<string>('')
   const [statusFilter, setStatusFilter] = useState<string>('Yes')
   const [sortKey, setSortKey] = useState<string>('name')
@@ -235,7 +235,8 @@ export default function EventDetailClient({
     filters: exportFilters,
   })
 
-  if (isLoading) {
+  // Show loading state when query is loading OR when it's pending (disabled, waiting for auth)
+  if (isLoading || isPending) {
     return (
       <div className="space-y-4">
         <Skeleton className="h-8 w-64" />

@@ -117,7 +117,7 @@ describe('Proxy Route Integration', () => {
       ok: true,
       status: 200,
       headers,
-      json: async () => mockBody,
+      text: async () => JSON.stringify(mockBody),
     } as any
     const fetchSpy = jest.spyOn(global, 'fetch' as any).mockResolvedValueOnce(mockResponse)
 
@@ -152,7 +152,7 @@ describe('Proxy Route Integration', () => {
       ok: true,
       status: 200,
       headers,
-      json: async () => mockBody,
+      text: async () => JSON.stringify(mockBody),
     } as any
     const fetchSpy = jest.spyOn(global, 'fetch' as any).mockResolvedValueOnce(mockResponse)
 
@@ -180,7 +180,7 @@ describe('Proxy Route Integration', () => {
       ok: true,
       status: 200,
       headers,
-      json: async () => mockBody,
+      text: async () => JSON.stringify(mockBody),
     } as any
     const fetchSpy = jest.spyOn(global, 'fetch' as any).mockResolvedValueOnce(mockResponse)
 

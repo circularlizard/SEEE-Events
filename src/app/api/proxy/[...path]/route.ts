@@ -609,7 +609,40 @@ export async function GET(
     }
 
     // Parse and cache successful response
-    const data = await response.json()
+    // OSM sometimes returns JavaScript (e.g., "var data_h...") instead of JSON
+    // when authentication is invalid or the endpoint doesn't support the request.
+    // We need to handle this gracefully.
+    const responseText = await response.text()
+    let data: unknown
+    try {
+      data = JSON.parse(responseText)
+    } catch {
+      // Response is not valid JSON (likely JavaScript or HTML from OSM)
+      console.error(`[Proxy] Non-JSON response from OSM for ${path}: ${responseText.slice(0, 100)}...`)
+      logProxyRequest({
+        method: 'GET',
+        path,
+        status: 502,
+        duration: Date.now() - startTime,
+        error: 'Non-JSON response from upstream',
+      })
+      return NextResponse.json(
+        {
+          error: 'INVALID_UPSTREAM_RESPONSE',
+          message: 'OSM returned a non-JSON response. This may indicate an authentication issue.',
+        },
+        {
+          status: 502,
+          headers: await buildSafetyHeaders({
+            targetUrl,
+            cache: 'BYPASS',
+            upstreamHeaders: response.headers,
+            upstreamRequestHeaders: { ...upstreamRequestHeaders, Authorization: 'Bearer REDACTED' },
+          }),
+        }
+      )
+    }
+
     if (!bypassCache && cacheEnabled && cacheKey && cacheTtlSeconds) {
       await setCachedResponse(cacheKey, JSON.stringify(data), cacheTtlSeconds)
       logCache({ operation: 'set', key: cacheKey, ttl: cacheTtlSeconds })

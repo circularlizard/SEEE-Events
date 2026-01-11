@@ -2,16 +2,21 @@ import { renderHook, waitFor } from '@testing-library/react'
 import React from 'react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 
+jest.mock('next-auth/react', () => ({
+  useSession: jest.fn(() => ({ status: 'authenticated' })),
+}))
+
 jest.mock('@/lib/api', () => ({
   getEventDetails: jest.fn(async () => ({ details: true })),
   getEventSummary: jest.fn(async () => ({ summary: true })),
 }))
 
 jest.mock('@/store/use-store', () => ({
-  useStore: <T,>(selector: (s: { currentSection: { termId: string } }) => T) =>
-    selector({ currentSection: { termId: 't1' } }),
+  useStore: <T,>(selector: (s: { currentApp: string | null }) => T) =>
+    selector({ currentApp: 'expedition' }),
 }))
 
+import { useSession } from 'next-auth/react'
 import { getEventDetails, getEventSummary } from '@/lib/api'
 import { useEventDetail } from '../useEventDetail'
 
@@ -28,6 +33,7 @@ function createWrapper() {
 describe('useEventDetail', () => {
   beforeEach(() => {
     jest.clearAllMocks()
+    ;(useSession as jest.Mock).mockReturnValue({ status: 'authenticated' })
   })
 
   it('passes AbortSignal to getEventDetails/getEventSummary', async () => {
@@ -43,5 +49,17 @@ describe('useEventDetail', () => {
 
     expect(detailArgs[1]).toBeInstanceOf(AbortSignal)
     expect(summaryArgs[1]).toBeInstanceOf(AbortSignal)
+  })
+
+  it('does not fetch when unauthenticated', async () => {
+    ;(useSession as jest.Mock).mockReturnValue({ status: 'unauthenticated' })
+
+    renderHook(() => useEventDetail(123), { wrapper: createWrapper() })
+
+    // Wait a tick to ensure no fetch is triggered
+    await new Promise((r) => setTimeout(r, 50))
+
+    expect(getEventDetails).not.toHaveBeenCalled()
+    expect(getEventSummary).not.toHaveBeenCalled()
   })
 })

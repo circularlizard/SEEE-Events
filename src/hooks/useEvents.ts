@@ -82,6 +82,7 @@ export function useEvents() {
 
   // Compute loading state
   const isLoading = queries.some((q) => q.isLoading)
+  const isPending = queries.some((q) => q.isPending)
   const isFetching = queries.some((q) => q.isFetching)
   const isFetched = queries.length > 0 && queries.every((q) => q.isFetched)
   const hasError = queries.some((q) => q.isError)
@@ -202,6 +203,7 @@ export function useEvents() {
     data: merged ?? single.data,
     events: events.length > 0 ? events : (single.data?.items ?? []),
     isLoading: useMulti ? isLoading : single.isLoading,
+    isPending: useMulti ? isPending : single.isPending,
     isFetching: useMulti ? isFetching : single.isFetching,
     isFetched: useMulti ? isFetched : single.isFetched,
     isError: useMulti ? hasError : single.isError,

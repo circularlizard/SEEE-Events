@@ -9,7 +9,7 @@ import { useEvents } from '@/hooks/useEvents'
  * Displays all events for the selected section using React Query as the single source of truth
  */
 export default function EventsPage() {
-  const { events, isLoading, isError, error } = useEvents()
+  const { events, isLoading, isPending, isError, error } = useEvents()
 
   const filteredIds = new Set(
     getFilteredEvents(
@@ -21,10 +21,11 @@ export default function EventsPage() {
   )
   const visibleEvents = events.filter((e) => filteredIds.has(String(e.eventid)))
 
+  // Show loading state when query is loading OR when it's pending (waiting for section to be set)
   return (
     <ExpeditionEventsView
       events={visibleEvents}
-      isLoading={isLoading}
+      isLoading={isLoading || isPending}
       isError={isError}
       error={error as Error | null}
     />
