@@ -1,18 +1,23 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+"use client";
+
+import { useEffect } from "react";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { PlanningDashboardHome } from "@/components/domain/PlanningDashboardHome";
 
 export default function PlanningHomePage() {
-  return (
-    <div className="p-4 md:p-6">
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-2xl md:text-3xl font-semibold">Planning</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="text-sm text-muted-foreground">
-            Planning workspace is under construction.
-          </div>
-        </CardContent>
-      </Card>
-    </div>
-  )
+  const { status } = useSession();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (status === "unauthenticated") {
+      router.push("/?callbackUrl=/dashboard/planning");
+    }
+  }, [status, router]);
+
+  if (status === "loading") {
+    return null;
+  }
+
+  return <PlanningDashboardHome />;
 }
