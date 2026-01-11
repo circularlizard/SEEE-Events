@@ -157,7 +157,7 @@ function SortableTable({ members, issueType, basePath }: SortableTableProps) {
 }
 
 export function MemberIssuesClient() {
-  const { members, loadMissingMemberCustomData, isAdmin } = useMembers()
+  const { members, loadMissingMemberCustomData } = useMembers()
   const currentApp = useStore((s) => s.currentApp)
   const [bulkStatus, setBulkStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
   const [bulkError, setBulkError] = useState<string | null>(null)
@@ -187,6 +187,7 @@ export function MemberIssuesClient() {
     'no-contact-info': 'No Contact Information',
     'no-email-or-phone': 'No Email or Phone',
     'no-emergency-contact': 'No Emergency Contact',
+    'no-primary-contacts-under-18': 'No Primary Contact (Under 18)',
     'missing-doctor-info': 'Missing Doctor Info',
     'duplicate-emergency-contact': 'Duplicate Emergency Contact',
     'missing-member-contact': 'Missing Member Contact',
@@ -467,6 +468,15 @@ export function MemberIssuesClient() {
       title: 'No Emergency Contact',
       description: 'Members without an emergency contact defined',
       count: counts.noEmergencyContact,
+      severity: 'critical' as const,
+      icon: AlertCircle,
+      members: membersWithIssues.critical,
+    },
+    {
+      id: 'no-primary-contacts-under-18',
+      title: 'No Primary Contact (Under 18)',
+      description: 'Under 18 members missing both primary contacts',
+      count: counts.noPrimaryContactsForMinors,
       severity: 'critical' as const,
       icon: AlertCircle,
       members: membersWithIssues.critical,

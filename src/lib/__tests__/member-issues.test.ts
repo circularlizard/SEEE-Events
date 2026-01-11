@@ -2,6 +2,7 @@ import {
   hasNoContactInformation,
   hasNoEmailOrPhone,
   hasNoEmergencyContact,
+  hasMissingPrimaryContactsForMinor,
   hasMissingDoctorInfo,
   hasDuplicateEmergencyContact,
   hasMissingMemberContactDetails,
@@ -261,6 +262,28 @@ describe('member-issues', () => {
     })
   })
 
+  describe('hasMissingPrimaryContactsForMinor', () => {
+    it('returns false for adult missing contacts', () => {
+      const member = createMember({
+        dateOfBirth: null,
+        age: '19 / 2',
+        primaryContact1: null,
+        primaryContact2: null,
+      })
+      expect(hasMissingPrimaryContactsForMinor(member)).toBe(false)
+    })
+
+    it('returns true for minor missing both contacts', () => {
+      const member = createMember({
+        dateOfBirth: null,
+        age: '15 / 0',
+        primaryContact1: null,
+        primaryContact2: null,
+      })
+      expect(hasMissingPrimaryContactsForMinor(member)).toBe(true)
+    })
+  })
+
   describe('hasMissingDoctorInfo', () => {
     it('returns true when all doctor fields are null', () => {
       const member = createMember({
@@ -424,11 +447,18 @@ describe('member-issues', () => {
       expect(hasMissingPhotoConsent(member)).toBe(true)
     })
 
-    it('returns true when photoConsent is false', () => {
+    it('returns true when photoConsent is undefined', () => {
+      const member = createMember({
+        consents: { photoConsent: undefined as unknown as boolean, medicalConsent: true },
+      })
+      expect(hasMissingPhotoConsent(member)).toBe(true)
+    })
+
+    it('returns false when photoConsent is false', () => {
       const member = createMember({
         consents: { photoConsent: false, medicalConsent: true },
       })
-      expect(hasMissingPhotoConsent(member)).toBe(true)
+      expect(hasMissingPhotoConsent(member)).toBe(false)
     })
 
     it('returns false when photoConsent is true', () => {
@@ -443,11 +473,18 @@ describe('member-issues', () => {
       expect(hasMissingMedicalConsent(member)).toBe(true)
     })
 
-    it('returns true when medicalConsent is false', () => {
+    it('returns true when medicalConsent is undefined', () => {
+      const member = createMember({
+        consents: { photoConsent: true, medicalConsent: undefined as unknown as boolean },
+      })
+      expect(hasMissingMedicalConsent(member)).toBe(true)
+    })
+
+    it('returns false when medicalConsent is false', () => {
       const member = createMember({
         consents: { photoConsent: true, medicalConsent: false },
       })
-      expect(hasMissingMedicalConsent(member)).toBe(true)
+      expect(hasMissingMedicalConsent(member)).toBe(false)
     })
 
     it('returns false when medicalConsent is true', () => {
@@ -472,10 +509,11 @@ describe('member-issues', () => {
       })
       const issues = getMemberIssues(member)
       const criticalIssues = issues.filter((i) => i.severity === 'critical')
-      expect(criticalIssues).toHaveLength(3)
+      expect(criticalIssues).toHaveLength(4)
       expect(issues.map((i) => i.type)).toContain('no-contact-info')
       expect(issues.map((i) => i.type)).toContain('no-email-or-phone')
       expect(issues.map((i) => i.type)).toContain('no-emergency-contact')
+      expect(issues.map((i) => i.type)).toContain('no-primary-contacts-under-18')
     })
 
     it('returns medium issues', () => {
@@ -497,7 +535,7 @@ describe('member-issues', () => {
 
     it('returns low issues', () => {
       const member = createMember({
-        consents: { photoConsent: false, medicalConsent: false },
+        consents: { photoConsent: null, medicalConsent: null },
       })
       const issues = getMemberIssues(member)
       const lowIssues = issues.filter((i) => i.severity === 'low')
@@ -532,7 +570,7 @@ describe('member-issues', () => {
       })
       const low = createMember({
         id: 'low',
-        consents: { photoConsent: false, medicalConsent: true },
+        consents: { photoConsent: null, medicalConsent: null },
       })
 
       const result = getMembersWithIssues([critical, medium, low])
@@ -556,11 +594,19 @@ describe('member-issues', () => {
       const members = [
         createMember({ id: '1', emergencyContact: null }),
         createMember({ id: '2', doctorName: null, doctorPhone: null, doctorAddress: null }),
-        createMember({ id: '3', consents: { photoConsent: false, medicalConsent: false } }),
+        createMember({ id: '3', consents: { photoConsent: null, medicalConsent: null } }),
+        createMember({
+          id: '4',
+          dateOfBirth: null,
+          age: '15 / 1',
+          primaryContact1: null,
+          primaryContact2: null,
+        }),
       ]
 
       const counts = getIssueCounts(members)
       expect(counts.noEmergencyContact).toBe(1)
+      expect(counts.noPrimaryContactsForMinors).toBe(1)
       expect(counts.missingDoctorInfo).toBe(1)
       expect(counts.missingPhotoConsent).toBe(1)
       expect(counts.missingMedicalConsent).toBe(1)
@@ -571,6 +617,7 @@ describe('member-issues', () => {
       expect(counts.noContactInfo).toBe(0)
       expect(counts.noEmailOrPhone).toBe(0)
       expect(counts.noEmergencyContact).toBe(0)
+      expect(counts.noPrimaryContactsForMinors).toBe(0)
       expect(counts.missingDoctorInfo).toBe(0)
       expect(counts.duplicateEmergencyContact).toBe(0)
       expect(counts.missingMemberContact).toBe(0)

@@ -166,6 +166,7 @@ export function useEvents() {
       })
     }
   }, [
+    appSupportsEvents,
     multiEnabled,
     isLoading,
     isFetched,

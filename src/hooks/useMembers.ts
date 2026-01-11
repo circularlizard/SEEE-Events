@@ -326,7 +326,7 @@ export function useMembers() {
         throw error
       }
     },
-    [app, isAdmin, queryClient, sectionId, termId]
+    [app, canLoadDetailedData, queryClient, sectionId, termId]
   )
 
   const loadMissingMemberCustomData = useCallback(

@@ -52,6 +52,31 @@ function contactsMatch(
   return !!(email1Match || email2Match || phone1Match || phone2Match)
 }
 
+function calculateAgeFromDob(dob: string | null): number | null {
+  if (!dob) return null
+  const birthDate = new Date(dob)
+  if (Number.isNaN(birthDate.getTime())) return null
+  const today = new Date()
+  let age = today.getFullYear() - birthDate.getFullYear()
+  const monthDiff = today.getMonth() - birthDate.getMonth()
+  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+    age--
+  }
+  return age
+}
+
+function calculateAgeFromString(ageString: string | null | undefined): number | null {
+  if (!ageString) return null
+  const match = ageString.match(/(\d{1,3})/)
+  return match ? Number(match[1]) : null
+}
+
+function isUnder18(member: NormalizedMember): boolean {
+  const age = calculateAgeFromDob(member.dateOfBirth) ?? calculateAgeFromString(member.age)
+  if (age === null) return false
+  return age < 18
+}
+
 export function hasNoContactInformation(member: NormalizedMember): boolean {
   return (
     !hasAnyContactData(member.memberContact) &&
@@ -72,6 +97,11 @@ export function hasNoEmailOrPhone(member: NormalizedMember): boolean {
 
 export function hasNoEmergencyContact(member: NormalizedMember): boolean {
   return !hasAnyContactData(member.emergencyContact)
+}
+
+export function hasMissingPrimaryContactsForMinor(member: NormalizedMember): boolean {
+  if (!isUnder18(member)) return false
+  return !hasAnyContactData(member.primaryContact1) && !hasAnyContactData(member.primaryContact2)
 }
 
 export function hasMissingDoctorInfo(member: NormalizedMember): boolean {
@@ -124,11 +154,13 @@ export function hasMissingMemberContactDetails(member: NormalizedMember): {
 }
 
 export function hasMissingPhotoConsent(member: NormalizedMember): boolean {
-  return !member.consents?.photoConsent
+  if (!member.consents) return true
+  return member.consents.photoConsent === null || member.consents.photoConsent === undefined
 }
 
 export function hasMissingMedicalConsent(member: NormalizedMember): boolean {
-  return !member.consents?.medicalConsent
+  if (!member.consents) return true
+  return member.consents.medicalConsent === null || member.consents.medicalConsent === undefined
 }
 
 export function getMemberIssues(member: NormalizedMember): MemberIssue[] {
@@ -158,6 +190,14 @@ export function getMemberIssues(member: NormalizedMember): MemberIssue[] {
       type: 'no-emergency-contact',
       severity: 'critical',
       description: 'No emergency contact defined',
+    })
+  }
+
+  if (hasMissingPrimaryContactsForMinor(member)) {
+    issues.push({
+      type: 'no-primary-contacts-under-18',
+      severity: 'critical',
+      description: 'Under 18 member without a recorded primary contact',
     })
   }
 
@@ -246,6 +286,7 @@ export function getIssueCounts(members: NormalizedMember[]): {
   noContactInfo: number
   noEmailOrPhone: number
   noEmergencyContact: number
+  noPrimaryContactsForMinors: number
   missingDoctorInfo: number
   duplicateEmergencyContact: number
   missingMemberContact: number
@@ -256,6 +297,7 @@ export function getIssueCounts(members: NormalizedMember[]): {
     noContactInfo: members.filter(hasNoContactInformation).length,
     noEmailOrPhone: members.filter(hasNoEmailOrPhone).length,
     noEmergencyContact: members.filter(hasNoEmergencyContact).length,
+    noPrimaryContactsForMinors: members.filter(hasMissingPrimaryContactsForMinor).length,
     missingDoctorInfo: members.filter(hasMissingDoctorInfo).length,
     duplicateEmergencyContact: members.filter(
       // Stryker disable next-line ArrowFunction -- inline arrow keeps the

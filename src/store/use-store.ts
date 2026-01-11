@@ -287,8 +287,9 @@ export const useStore = create<StoreState>()(
       appSections: {},
       setAppSection: (app, section) => set((state) => {
         if (section === null) {
-          const { [app]: _, ...rest } = state.appSections
-          return { appSections: rest }
+          const updatedSections = { ...state.appSections }
+          delete updatedSections[app]
+          return { appSections: updatedSections }
         }
         return {
           appSections: {

@@ -75,6 +75,14 @@ function extractContact(group: CustomDataGroup): NormalizedContact {
   }
 }
 
+function parseConsentValue(value: string): boolean | null {
+  const normalized = value.trim().toLowerCase()
+  if (!normalized) return null
+  if (['yes', 'y', 'true', '1'].includes(normalized)) return true
+  if (['no', 'n', 'false', '0'].includes(normalized)) return false
+  return null
+}
+
 /**
  * Extract consents from the consents group
  */
@@ -86,16 +94,16 @@ function extractConsents(group: CustomDataGroup): NormalizedConsents {
                      getColumnValue(cols, 'consent_photo') ||
                      getColumnValue(cols, 'photography') ||
                      getColumnValue(cols, 'photographs_all')
-  
+
   // Medical consent - look for various possible varnames
   const medicalValue = getColumnValue(cols, 'medical_consent') ||
                        getColumnValue(cols, 'consent_medical') ||
                        getColumnValue(cols, 'medical') ||
                        getColumnValue(cols, 'sensitive')
-  
+
   return {
-    photoConsent: photoValue.toLowerCase() === 'yes' || photoValue === '1',
-    medicalConsent: medicalValue.toLowerCase() === 'yes' || medicalValue === '1',
+    photoConsent: parseConsentValue(photoValue),
+    medicalConsent: parseConsentValue(medicalValue),
   }
 }
 

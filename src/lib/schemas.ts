@@ -421,8 +421,8 @@ export type NormalizedContact = z.infer<typeof NormalizedContactSchema>
  * Normalized Consents Schema
  */
 export const NormalizedConsentsSchema = z.object({
-  photoConsent: z.boolean(),
-  medicalConsent: z.boolean(),
+  photoConsent: z.boolean().nullable(),
+  medicalConsent: z.boolean().nullable(),
   // Additional consent fields can be added as needed
 })
 

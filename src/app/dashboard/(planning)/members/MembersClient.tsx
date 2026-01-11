@@ -148,19 +148,31 @@ function SortableHeader({
  * Status icons for member data quality
  */
 function MemberStatusIcons({ member }: { member: NormalizedMember }) {
-  const hasPhotoConsent = member.consents?.photoConsent ?? false
+  const photoConsent = member.consents?.photoConsent ?? null
   const hasMedicalInfo = !!member.medicalNotes
   const hasAllergies = !!member.allergyNotes
+  const photoTone =
+    photoConsent === true
+      ? 'bg-green-100 text-green-700'
+      : photoConsent === false
+        ? 'bg-destructive/15 text-destructive'
+        : 'bg-gray-100 text-gray-400'
+  const photoTitle =
+    photoConsent === true
+      ? 'Photo consent given'
+      : photoConsent === false
+        ? 'Photo consent declined'
+        : 'Photo consent missing'
   
   return (
     <div className="flex items-center gap-2">
       <span 
         className={cn(
           "inline-flex items-center justify-center w-6 h-6 rounded-full",
-          hasPhotoConsent ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-400"
+          photoTone
         )}
-        title={hasPhotoConsent ? "Photo consent given" : "No photo consent"}
-        aria-label={hasPhotoConsent ? "Photo consent given" : "No photo consent"}
+        title={photoTitle}
+        aria-label={photoTitle}
       >
         <Camera className="h-3.5 w-3.5" aria-hidden />
       </span>
@@ -353,7 +365,7 @@ export function MembersClient() {
       </div>
 
       {/* Icon legend */}
-      <div className="flex flex-wrap items-center gap-4 text-xs text-muted-foreground border rounded-lg p-3 bg-muted/30">
+      <div className="flex items-center gap-4 text-xs text-muted-foreground border rounded-lg p-3 bg-muted/30">
         <span className="font-medium">Key:</span>
         <div className="flex flex-wrap items-center gap-4">
           <div className="flex items-center gap-2">
@@ -370,7 +382,19 @@ export function MembersClient() {
             <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-green-100 text-green-700">
               <Camera className="h-3 w-3" aria-hidden />
             </span>
-            <span>Photo consent</span>
+            <span>Photo consent (yes)</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-destructive/15 text-destructive">
+              <Camera className="h-3 w-3" aria-hidden />
+            </span>
+            <span>Photo consent (no)</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-gray-100 text-gray-400">
+              <Camera className="h-3 w-3" aria-hidden />
+            </span>
+            <span>Photo consent (missing)</span>
           </div>
           <div className="flex items-center gap-1.5">
             <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-blue-100 text-blue-700">

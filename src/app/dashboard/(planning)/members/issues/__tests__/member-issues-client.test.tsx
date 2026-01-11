@@ -121,7 +121,7 @@ describe('MemberIssuesClient', () => {
 
   it('displays low priority issues in accordion sections', () => {
     const members = [
-      createMember({ id: '1', consents: { photoConsent: false, medicalConsent: false } }),
+      createMember({ id: '1', consents: { photoConsent: null, medicalConsent: null } }),
     ]
     ;(useMembers as jest.Mock).mockReturnValue({ members, isLoading: false, isFetched: true, isError: false, error: null, isAdmin: true, refresh: jest.fn() })
     render(<MemberIssuesClient />)
