@@ -81,6 +81,8 @@ function getScopesForRole(role: 'admin' | 'standard' | 'data-quality'): string[]
 const OSM_OAUTH_URL = process.env.OSM_OAUTH_URL || 'https://www.onlinescoutmanager.co.uk/oauth'
 const MOCK_AUTH_ENABLED = process.env.MOCK_AUTH_ENABLED === 'true'
 
+const ABSOLUTE_REAUTH_MS = 12 * 60 * 60 * 1000
+
 /**
  * Refresh the access token using the refresh token
  * Called automatically when access token expires
@@ -293,6 +295,22 @@ export function getAuthConfig(): AuthOptions {
         
         console.log(`[JWT] Provider: ${account.provider}, Role: "${roleSelection}", App: "${token.appSelection}" (will be overridden client-side if URL has appSelection), Scopes: ${scopes.join(', ')}`)
       }
+
+      // Absolute reauthentication: invalidate any JWT older than 12 hours.
+      // This prevents a long-lived cached session cookie from being accepted indefinitely.
+      if (typeof (token as { iat?: unknown }).iat === 'number') {
+        const issuedAtMs = (token as { iat: number }).iat * 1000
+        if (Date.now() - issuedAtMs > ABSOLUTE_REAUTH_MS) {
+          return {
+            ...token,
+            error: 'SessionExpired',
+            accessToken: undefined,
+            refreshToken: undefined,
+            accessTokenExpires: 0,
+            user: undefined,
+          }
+        }
+      }
       
       // Validate session version on every request
       if (typeof token.sessionVersion === 'number') {
@@ -406,11 +424,11 @@ export function getAuthConfig(): AuthOptions {
     signIn: '/',
     error: '/auth/error',
   },
-    session: {
-      strategy: 'jwt',
-      maxAge: 30 * 24 * 60 * 60, // 30 days (matches typical refresh token lifetime)
-    },
-    secret: process.env.NEXTAUTH_SECRET,
+  session: {
+    strategy: 'jwt',
+    maxAge: 12 * 60 * 60,
+  },
+  secret: process.env.NEXTAUTH_SECRET,
   }
 }
 
