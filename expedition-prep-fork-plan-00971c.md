@@ -22,13 +22,132 @@ This plan outlines the transformation of the current SEEE web-based dashboard (a
 ## Key Design Decisions (Post-User Input)
 
 | Aspect | Decision | Rationale |
-|--------|----------|-----------|
+| ------ | -------- | --------- |
 | **Database** | PostgreSQL in Docker | Containerized stack, robust local storage, encrypted volumes |
 | **Tutor LMS** | API integration with Tutor LMS Pro | Direct pull of course attendance/completion records |
 | **Multi-Section** | Per-section data with section-scoped expedition views | Teams don't span sections; separate Bronze/Silver/Gold expeditions |
 | **OSM Sync** | Hybrid OAuth with startup sync + manual trigger | Balances freshness with OSM rate limit compliance |
 | **Architecture** | Web app in Docker container | Next.js served from container, accessed at localhost:3000 |
 | **OAuth** | OSM OAuth 2.0 with PKCE | Secure, no client secret needed for public clients |
+
+---
+
+## Phase 0: Fork Execution
+
+**Goal:** Create the physical fork of the repository and establish the new project structure.
+
+### 0.1 Fork Strategy
+
+**Option A: Git Fork (Recommended)**
+```bash
+# Create new repository from current
+git clone /home/david/projects/OSM-Tools /home/david/projects/expedition-prep
+cd /home/david/projects/expedition-prep
+git remote remove origin
+git remote add origin <new-repo-url>
+```
+
+**Option B: In-Place Branch (if keeping same repo)**
+```bash
+git checkout -b expedition-prep-fork
+# Or work in existing repo with feature flags
+```
+
+### 0.2 Initial Cleanup
+
+**Files to Remove:**
+- Vercel-specific config files (if any)
+- Redis docker-compose.yml (will replace with PostgreSQL)
+
+**Files to Modify:**
+- `package.json` - remove ioredis, add pg
+- `README.md` - rewrite for local installation
+
+### 0.3 Entry/Exit Criteria
+
+**Entry Criteria:**
+- [ ] Decision on fork strategy (new repo vs branch)
+
+**Exit Criteria:**
+```bash
+# 1. Clean fork exists
+# 2. Can run npm install successfully
+# 3. Original git history preserved (if needed)
+# 4. New project name established
+```
+
+---
+
+## Component Reuse Analysis
+
+Based on review of `/home/david/projects/OSM-Tools`, here's what to reuse vs create fresh:
+
+### REUSE (Minimal Changes)
+
+| Component | Location | Rationale |
+| --------- | -------- | --------- |
+| **Zod Schemas** | `src/lib/schemas.ts` | Same OSM data shapes. Only add DB-specific schemas for local tables |
+| **UI Components** | `src/components/ui/*.tsx` | shadcn/ui components are framework-agnostic. Keep as-is |
+| **Export Utilities** | `src/lib/export/*` | Excel/PDF formatting logic unchanged. Just swap data source |
+| **API Endpoint Definitions** | `src/lib/api-endpoints.ts` | Same OSM endpoints. Reuse for URL construction |
+| **Bottleneck (Rate Limiter)** | `src/lib/bottleneck.ts` | Core throttling logic reusable. Replace Redis quota storage with PostgreSQL |
+| **Domain Components** | `src/components/domain/EventCard.tsx`, `EventsTable.tsx`, etc. | UI components adaptable with new data hooks |
+| **Tailwind Config** | `tailwind.config.ts`, `globals.css` | Styling system remains identical |
+| **Testing Setup** | `jest.config.ts`, `playwright.config.ts` | Test frameworks reusable. Adapt tests for new data layer |
+
+### ADAPT (Modify for Local-First)
+
+| Component | Location | Changes Required |
+| --------- | -------- | ---------------- |
+| **TanStack Query Hooks** | `src/hooks/use*.ts` | Swap from calling `/api/proxy/*` to calling local API routes that query PostgreSQL |
+| **Session/Auth** | `src/components/Session*.tsx` | Replace NextAuth session with custom PKCE OAuth session stored in PostgreSQL |
+| **Startup Initializer** | `src/components/StartupInitializer.tsx` | Replace Redis checks with PostgreSQL connection checks |
+| **Section Selector** | `src/components/SectionSelector.tsx` | Adapt to read from local DB instead of session |
+| **Query Keys** | `src/lib/query-keys.ts` | Keep key patterns, but cache invalidation strategy changes |
+
+### REPLACE (Create Fresh)
+
+| Component | Current | Replacement |
+| --------- | ------- | ----------- |
+| **Authentication** | `src/lib/auth.ts` (NextAuth) | Custom PKCE OAuth flow: `src/lib/oauth/pkce.ts` |
+| **Redis Client** | `src/lib/redis.ts` | PostgreSQL client: `src/lib/db/postgres.ts` |
+| **API Proxy Layer** | `src/app/api/proxy/[...path]/route.ts` | Local sync service: `src/lib/sync/osm-sync.ts` |
+| **Config Loader** | `src/lib/config-loader.ts` (Redis-based) | PostgreSQL-based config storage |
+| **Docker Compose** | `docker-compose.yml` (Redis only) | New: PostgreSQL + app services |
+| **Database Schema** | None (Redis key-value) | New: `sql/init-schema.sql` with table definitions |
+| **Token Storage** | Redis `setOAuthData` | PostgreSQL encrypted token storage |
+| **Rate Limit Quota** | Redis `getQuota/updateQuota` | PostgreSQL quota tracking |
+
+### PACKAGE CHANGES
+
+**Remove:**
+- `ioredis` - No longer needed
+- `next-auth` - Replaced with custom PKCE
+
+**Add:**
+- `pg` - PostgreSQL client
+- `crypto` (built-in) - For PKCE code generation and token encryption
+
+### FILE MAPPINGS (Example)
+
+```
+Current Architecture                    Fork Architecture
+--------------------                    -------------------
+src/lib/redis.ts         ──────────→   DELETE
+src/lib/auth.ts          ──────────→   DELETE
+src/lib/bottleneck.ts    ──────────→   ADAPT (replace Redis calls)
+src/lib/schemas.ts       ──────────→   REUSE (add DB schemas)
+src/lib/api.ts           ──────────→   ADAPT (replace proxy calls)
+src/lib/export/*         ──────────→   REUSE
+src/components/ui/*      ──────────→   REUSE
+src/components/domain/* ──────────→   ADAPT (new data hooks)
+src/hooks/use*.ts        ──────────→   ADAPT (local DB source)
+src/app/api/proxy/*      ──────────→   DELETE
+src/app/api/sync/*       ──────────→   NEW (local sync API)
+src/lib/db/*             ──────────→   NEW (PostgreSQL layer)
+src/lib/oauth/*          ──────────→   NEW (PKCE implementation)
+src/lib/sync/*           ──────────→   NEW (OSM sync service)
+```
 
 ---
 
